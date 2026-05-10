@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRIAL. — Hire on conviction, not on CVs</title>
+  <meta name="description" content="Pre-interview assessment for hospitality hires. Trial. helps independent venues make sure candidates actually know how to work in hospitality. Launching 1 June 2026.">
+
+  <!-- Open Graph / Social -->
+  <meta property="og:title" content="TRIAL. — Hire on conviction, not on CVs">
+  <meta property="og:description" content="Pre-interview assessment for hospitality hires. Launching 1 June 2026.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hiretrial.com.au">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23000'/%3E%3Ctext x='50' y='62' font-family='Playfair Display, serif' font-size='32' font-weight='900' text-anchor='middle' fill='%23fff' letter-spacing='1'%3ETRIAL%3C/text%3E%3Ccircle cx='82' cy='62' r='4' fill='%23c8a96e'/%3E%3C/svg%3E">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --black: #0a0a0a;
+      --off-black: #141414;
+      --white: #fafafa;
+      --off-white: #ededed;
+      --grey: #6b6b6b;
+      --light-grey: #d4d4d4;
+      --accent: #c8a96e;
+      --accent-soft: rgba(200, 169, 110, 0.08);
+      --border: rgba(255, 255, 255, 0.08);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      line-height: 1.5;
+      font-weight: 400;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Subtle grain texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.06;
+      pointer-events: none;
+      z-index: 1;
+      mix-blend-mode: overlay;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Header */
+    header {
+      padding: 32px 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 28px;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+    }
+
+    .logo .dot {
+      color: var(--accent);
+      font-size: 32px;
+    }
+
+    .header-meta {
+      font-size: 13px;
+      color: var(--grey);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 80px 0 100px;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--light-grey);
+      margin-bottom: 40px;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(44px, 8vw, 96px);
+      line-height: 1;
+      letter-spacing: -1.5px;
+      margin-bottom: 32px;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+    }
+
+    .hero-title .highlight {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+      position: relative;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(17px, 1.6vw, 21px);
+      color: var(--light-grey);
+      max-width: 680px;
+      line-height: 1.5;
+      font-weight: 400;
+      margin-bottom: 56px;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+    }
+
+    .hero-subtitle strong {
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    /* Countdown */
+    .countdown-section {
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+      margin-bottom: 48px;
+    }
+
+    .countdown-label {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .countdown {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .countdown-block {
+      min-width: 92px;
+      padding: 20px 24px;
+      background: var(--off-black);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      text-align: center;
+      transition: border-color 0.3s ease;
+    }
+
+    .countdown-block:hover {
+      border-color: var(--accent);
+    }
+
+    .countdown-number {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 38px;
+      line-height: 1;
+      color: var(--white);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .countdown-unit {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    /* CTA Buttons */
+    .cta-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 28px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--black);
+    }
+
+    .btn-primary:hover {
+      background: #dcc090;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--white);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--white);
+    }
+
+    .btn-arrow {
+      display: inline-block;
+      transition: transform 0.25s ease;
+    }
+
+    .btn:hover .btn-arrow {
+      transform: translateX(3px);
+    }
+
+    /* Form Section */
+    .form-section {
+      padding: 100px 0;
+      border-top: 1px solid var(--border);
+      position: relative;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .form-intro h2 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(36px, 5vw, 56px);
+      line-height: 1.05;
+      letter-spacing: -1px;
+      margin-bottom: 24px;
+    }
+
+    .form-intro h2 .italic {
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .form-intro p {
+      font-size: 16px;
+      color: var(--light-grey);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .qualifies {
+      margin-top: 40px;
+      padding: 24px;
+      background: var(--off-black);
+      border-left: 2px solid var(--accent);
+      border-radius: 2px;
+    }
+
+    .qualifies-label {
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .qualifies p {
+      font-size: 14px;
+      color: var(--light-grey);
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .qualifies p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Form */
+    .demo-form {
+      background: var(--off-black);
+      padding: 40px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .form-field label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--light-grey);
+      font-weight: 600;
+    }
+
+    .form-field label .required {
+      color: var(--accent);
+      margin-left: 2px;
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      background: var(--black);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 14px 16px;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      transition: border-color 0.2s ease;
+      width: 100%;
+    }
+
+    .form-field input::placeholder,
+    .form-field textarea::placeholder {
+      color: var(--grey);
+    }
+
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .form-field textarea {
+      resize: vertical;
+      min-height: 100px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .form-field select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+
+    .form-submit {
+      width: 100%;
+      background: var(--accent);
+      color: var(--black);
+      border: none;
+      padding: 18px 28px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-top: 8px;
+    }
+
+    .form-submit:hover:not(:disabled) {
+      background: #dcc090;
+      transform: translateY(-1px);
+    }
+
+    .form-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .form-helper {
+      font-size: 12px;
+      color: var(--grey);
+      margin-top: 16px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .form-success.active {
+      display: block;
+    }
+
+    .form-success .check {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .form-success h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    .form-success p {
+      color: var(--light-grey);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .form-error {
+      display: none;
+      background: rgba(255, 50, 50, 0.1);
+      border: 1px solid rgba(255, 50, 50, 0.3);
+      border-radius: 4px;
+      padding: 16px;
+      margin-top: 16px;
+      color: #ff8080;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .form-error.active {
+      display: block;
+    }
+
+    /* Footer */
+    footer {
+      padding: 60px 0 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .footer-meta {
+      font-size: 12px;
+      color: var(--grey);
+      line-height: 1.8;
+    }
+
+    .footer-meta a {
+      color: var(--light-grey);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-meta a:hover {
+      color: var(--accent);
+    }
+
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--grey);
+    }
+
+    .footer-brand .dot {
+      color: var(--accent);
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 24px;
+      }
+
+      header {
+        padding: 24px 0;
+      }
+
+      .hero {
+        padding: 60px 0 80px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .demo-form {
+        padding: 28px 24px;
+      }
+
+      .countdown-block {
+        min-width: 70px;
+        padding: 16px;
+      }
+
+      .countdown-number {
+        font-size: 28px;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 44px;
+      }
+
+      .countdown {
+        gap: 6px;
+      }
+
+      .countdown-block {
+        min-width: 64px;
+        padding: 14px 8px;
+      }
+
+      .cta-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <div class="logo">TRIAL<span class="dot">.</span></div>
+        <div class="header-meta">For Independent Hospitality</div>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-eyebrow">
+        <span class="pulse-dot"></span>
+        <span>Launching 1 June 2026</span>
+      </div>
+
+      <h1 class="hero-title">
+        Hire on <span class="highlight">conviction</span>,<br>
+        not on CVs.
+      </h1>
+
+      <p class="hero-subtitle">
+        <strong>Trial.</strong> is what hospitality venues use to make sure the candidates in front of them actually know how to work in hospitality. It&rsquo;s a pre-interview assessment that speeds up your process &mdash; so you stop wasting interviews on people who can&rsquo;t do the job.
+      </p>
+
+      <div class="countdown-section">
+        <div class="countdown-label">Doors open in</div>
+        <div class="countdown" id="countdown">
+          <div class="countdown-block">
+            <div class="countdown-number" id="days">22</div>
+            <div class="countdown-unit">Days</div>
+          </div>
+          <div class="countdown-block">
+            <div class="countdown-number" id="hours">00</div>
+            <div class="countdown-unit">Hours</div>
+          </div>
+          <div class="countdown-block">
+            <div class="countdown-number" id="minutes">00</div>
+            <div class="countdown-unit">Minutes</div>
+          </div>
+          <div class="countdown-block">
+            <div class="countdown-number" id="seconds">00</div>
+            <div class="countdown-unit">Seconds</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <a href="#early-access" class="btn btn-primary">
+          Request Early Access
+          <span class="btn-arrow">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section" id="early-access">
+    <div class="container">
+      <div class="form-grid">
+        <div class="form-intro">
+          <h2>Be one of <span class="italic">the first.</span></h2>
+          <p>
+            We&rsquo;re onboarding a small group of founding venues before public launch on 1 June.
+            Founding partners get six months of intro pricing, white-glove setup with the founder,
+            and direct input into the product roadmap.
+          </p>
+          <p>
+            Tell us a bit about your venue and we&rsquo;ll be in touch within 24 hours.
+          </p>
+
+          <div class="qualifies">
+            <div class="qualifies-label">Trial. is built for</div>
+            <p>Independent venues with 4&ndash;50+ staff hiring 2+ times a year.</p>
+            <p>Owner&ndash;operators and venue managers who do their own hiring.</p>
+            <p>Cafés, restaurants, bars, hotels &mdash; across Australia.</p>
+          </div>
+        </div>
+
+        <div>
+          <form class="demo-form" id="demoForm" action="https://formspree.io/f/REPLACE_WITH_FORM_ID" method="POST">
+            <div class="form-row">
+              <div class="form-field">
+                <label for="name">Your Name <span class="required">*</span></label>
+                <input type="text" id="name" name="name" required placeholder="First and last">
+              </div>
+              <div class="form-field">
+                <label for="email">Email <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="you@venue.com.au">
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="venue">Venue Name <span class="required">*</span></label>
+              <input type="text" id="venue" name="venue" required placeholder="The name on your front door">
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="venue_type">Venue Type <span class="required">*</span></label>
+                <select id="venue_type" name="venue_type" required>
+                  <option value="">Select one</option>
+                  <option value="Cafe">Café</option>
+                  <option value="Restaurant">Restaurant</option>
+                  <option value="Bar">Bar</option>
+                  <option value="Hotel">Hotel / Accommodation</option>
+                  <option value="Multiple">Multiple venues</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="staff">Number of Staff</label>
+                <select id="staff" name="staff">
+                  <option value="">Select range</option>
+                  <option value="1-3">1&ndash;3 (just starting out)</option>
+                  <option value="4-10">4&ndash;10</option>
+                  <option value="11-25">11&ndash;25</option>
+                  <option value="26-50">26&ndash;50</option>
+                  <option value="51-100">51&ndash;100</option>
+                  <option value="100+">100+</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="phone">Phone (Optional)</label>
+              <input type="tel" id="phone" name="phone" placeholder="In case email's unreliable">
+            </div>
+
+            <div class="form-field">
+              <label for="message">What's your hiring problem? (Optional)</label>
+              <textarea id="message" name="message" placeholder="Tell us in a sentence or two — what's costing you sleep right now?"></textarea>
+            </div>
+
+            <!-- Honeypot for bots -->
+            <input type="text" name="_gotcha" style="display:none">
+
+            <button type="submit" class="form-submit" id="submitBtn">
+              Request Early Access &rarr;
+            </button>
+
+            <div class="form-error" id="formError">
+              Something went wrong. Please email <a href="mailto:hello@hiretrial.com.au" style="color:#ff8080;">hello@hiretrial.com.au</a> directly.
+            </div>
+
+            <p class="form-helper">
+              We&rsquo;ll reply personally within 24 hours.<br>
+              No marketing automation, no spam, no shenanigans.
+            </p>
+          </form>
+
+          <div class="form-success" id="formSuccess">
+            <div class="check">&#10003;</div>
+            <h3>Got it.</h3>
+            <p>
+              Thanks for reaching out. We&rsquo;ll be in touch within 24 hours from
+              <strong>anders@hiretrial.com.au</strong> &mdash; check your spam folder if you don't see it.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-meta">
+          ABN 71 441 417 792 &middot; Newcastle, NSW &middot; <a href="mailto:hello@hiretrial.com.au">hello@hiretrial.com.au</a>
+        </div>
+        <div class="footer-brand">
+          TRIAL<span class="dot">.</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Countdown to 1 June 2026 12:00am AEST
+    // AEST is UTC+10, so midnight 1 June 2026 AEST = 31 May 2026 14:00 UTC
+    const launchDate = new Date('2026-05-31T14:00:00Z').getTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = launchDate - now;
+
+      if (distance < 0) {
+        document.getElementById('countdown').innerHTML = '<div style="font-family:Playfair Display,serif;font-size:32px;font-weight:900;">We&rsquo;re live.</div>';
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById('days').textContent = String(days).padStart(2, '0');
+      document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+      document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // Form submission with Formspree
+    const form = document.getElementById('demoForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const successMessage = document.getElementById('formSuccess');
+    const errorMessage = document.getElementById('formError');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMessage.classList.remove('active');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.ok) {
+          form.style.display = 'none';
+          successMessage.classList.add('active');
+        } else {
+          throw new Error('Submission failed');
+        }
+      } catch (error) {
+        errorMessage.classList.add('active');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Request Early Access →';
+      }
+    });
+  </script>
+</body>
+</html>
