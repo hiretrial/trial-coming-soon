@@ -1,2269 +1,887 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TRIAL. — Launch Roadmap</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #0a0a0a;
-  --bg2: #111;
-  --bg3: #161616;
-  --card: #131313;
-  --card-hover: #181818;
-  --border: rgba(255,255,255,0.06);
-  --border2: rgba(255,255,255,0.1);
-  --border-strong: rgba(255,255,255,0.18);
-  --white: #f8f6f0;
-  --muted: rgba(255,255,255,0.55);
-  --dim: rgba(255,255,255,0.32);
-  --faint: rgba(255,255,255,0.18);
-  --accent: #c8a96e;
-  --accent2: #d4b887;
-  --accent-dim: rgba(200,169,110,0.5);
-  --accent-bg: rgba(200,169,110,0.06);
-  --accent-bg-strong: rgba(200,169,110,0.12);
-  --success: #6db58a;
-  --warning: #d4a04a;
-  --danger: #d97757;
-  --danger-soft: rgba(217,119,87,0.1);
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRIAL. — Hire on conviction, not on CVs</title>
+  <meta name="description" content="Pre-interview assessment for hospitality hires. Trial. helps independent venues make sure candidates actually know how to work in hospitality. Launching 1 July 2026.">
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+  <!-- Open Graph / Social -->
+  <meta property="og:title" content="TRIAL. — Hire on conviction, not on CVs">
+  <meta property="og:description" content="Pre-interview assessment for hospitality hires. Launching 1 July 2026.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hiretrial.com.au">
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--white);
-  line-height: 1.6;
-  font-weight: 300;
-  min-height: 100vh;
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(200,169,110,0.06), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(200,169,110,0.03), transparent);
-  background-attachment: fixed;
-  -webkit-font-smoothing: antialiased;
-}
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23000'/%3E%3Ctext x='50' y='62' font-family='Playfair Display, serif' font-size='32' font-weight='900' text-anchor='middle' fill='%23fff' letter-spacing='1'%3ETRIAL%3C/text%3E%3Ccircle cx='82' cy='62' r='4' fill='%23c8a96e'/%3E%3C/svg%3E">
 
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 60px 32px 80px;
-}
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-/* ═══ Header ═══ */
-header { margin-bottom: 48px; }
-.logo {
-  font-family: 'Playfair Display', serif;
-  font-size: 32px;
-  font-weight: 900;
-  letter-spacing: -0.5px;
-  display: inline-flex;
-  align-items: baseline;
-}
-.logo span { color: var(--accent); font-size: 38px; }
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-.tagline {
-  font-size: 11px;
-  color: var(--accent);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  font-weight: 600;
-  margin-top: 24px;
-  margin-bottom: 14px;
-}
+    :root {
+      --black: #0a0a0a;
+      --off-black: #141414;
+      --white: #fafafa;
+      --off-white: #ededed;
+      --grey: #6b6b6b;
+      --light-grey: #d4d4d4;
+      --accent: #c8a96e;
+      --accent-soft: rgba(200, 169, 110, 0.08);
+      --border: rgba(255, 255, 255, 0.08);
+    }
 
-h1 {
-  font-family: 'Playfair Display', serif;
-  font-weight: 800;
-  font-size: clamp(40px, 6vw, 64px);
-  line-height: 1.05;
-  letter-spacing: -1.5px;
-  margin-bottom: 18px;
-}
-h1 .italic { font-style: italic; font-weight: 400; color: var(--accent); }
+    html {
+      scroll-behavior: smooth;
+    }
 
-.subtitle {
-  color: var(--muted);
-  font-size: 17px;
-  max-width: 640px;
-  font-weight: 400;
-  line-height: 1.55;
-  margin-bottom: 36px;
-}
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      line-height: 1.5;
+      font-weight: 400;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
 
-/* ═══ Launch banner ═══ */
-.launch-banner {
-  background: linear-gradient(135deg, var(--accent-bg-strong), var(--accent-bg));
-  border: 1px solid var(--accent-dim);
-  border-radius: 12px;
-  padding: 28px 32px;
-  margin-bottom: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 32px;
-  flex-wrap: wrap;
-}
-.launch-info { flex: 1 1 auto; min-width: 240px; }
-.launch-eyebrow {
-  font-size: 10px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--accent);
-  font-weight: 600;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.launch-eyebrow::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: pulse 2s ease-in-out infinite;
-}
-.launch-date {
-  font-family: 'Playfair Display', serif;
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -0.4px;
-}
-.launch-story {
-  font-size: 13px;
-  color: var(--muted);
-  margin-top: 6px;
-  font-style: italic;
-}
+    /* Subtle grain texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.06;
+      pointer-events: none;
+      z-index: 1;
+      mix-blend-mode: overlay;
+    }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.85); }
-}
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      position: relative;
+      z-index: 2;
+    }
 
-.countdown-timer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.cd-unit { display: flex; flex-direction: column; align-items: center; min-width: 56px; }
-.cd-num {
-  font-family: 'Playfair Display', serif;
-  font-size: 32px;
-  font-weight: 800;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-.cd-label {
-  font-size: 9px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-top: 4px;
-  font-weight: 500;
-}
-.cd-sep { font-size: 24px; color: var(--accent-dim); margin-bottom: 14px; }
+    /* Header */
+    header {
+      padding: 32px 0;
+      position: relative;
+      z-index: 10;
+    }
 
-/* ═══ Progress dashboard ═══ */
-.progress-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 28px 32px;
-  margin-bottom: 32px;
-}
-.progress-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 28px;
-}
-.stat-label {
-  font-size: 10px;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  color: var(--dim);
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-.stat-value {
-  font-family: 'Playfair Display', serif;
-  font-size: 38px;
-  font-weight: 800;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-.stat-value.accent { color: var(--accent); }
-.stat-sub {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 6px;
-}
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-.progress-bar {
-  height: 6px;
-  background: var(--bg3);
-  border-radius: 3px;
-  margin-top: 12px;
-  overflow: hidden;
-}
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  border-radius: 3px;
-  transition: width 0.4s ease;
-}
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 28px;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+    }
 
-/* ═══ Tabs ═══ */
-.tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 28px;
-  border-bottom: 1px solid var(--border2);
-  flex-wrap: wrap;
-}
-.tab {
-  background: transparent;
-  border: none;
-  color: var(--muted);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  padding: 14px 22px;
-  cursor: pointer;
-  position: relative;
-  transition: color 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.tab:hover { color: var(--white); }
-.tab.active { color: var(--white); }
-.tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--accent);
-}
-.tab-icon { font-size: 16px; }
+    .logo .dot {
+      color: var(--accent);
+      font-size: 32px;
+    }
 
-.tab-panel { display: none; }
-.tab-panel.active { display: block; animation: fadeIn 0.3s ease; }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    .header-meta {
+      font-size: 13px;
+      color: var(--grey);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
 
-/* ═══ Filters (tasks tab) ═══ */
-.filters {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-.filter-pill {
-  background: var(--card);
-  border: 1px solid var(--border2);
-  color: var(--muted);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.4px;
-  padding: 8px 16px;
-  border-radius: 100px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.filter-pill:hover { color: var(--white); border-color: var(--border-strong); }
-.filter-pill.active {
-  background: var(--accent-bg-strong);
-  border-color: var(--accent-dim);
-  color: var(--accent);
-}
+    /* Hero */
+    .hero {
+      padding: 80px 0 100px;
+      position: relative;
+    }
 
-/* ═══ Week sections ═══ */
-.week-section { margin-bottom: 48px; }
-.week-header {
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-}
-.week-eyebrow {
-  font-size: 10px;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  color: var(--accent);
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-.week-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.4px;
-  margin-bottom: 4px;
-}
-.week-dates {
-  font-size: 13px;
-  color: var(--muted);
-}
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--light-grey);
+      margin-bottom: 40px;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+    }
 
-/* ═══ Tasks ═══ */
-.task {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px 24px;
-  margin-bottom: 12px;
-  display: flex;
-  gap: 18px;
-  transition: all 0.2s ease;
-  position: relative;
-}
-.task:hover {
-  background: var(--card-hover);
-  border-color: var(--border2);
-}
-.task.done {
-  opacity: 0.5;
-}
-.task.done .task-title {
-  text-decoration: line-through;
-  color: var(--muted);
-}
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
 
-/* Priority dot indicators */
-.task-priority-dot {
-  position: absolute;
-  top: 24px;
-  left: -4px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.task-priority-dot.priority {
-  background: var(--danger);
-  animation: pulse 2s ease-in-out infinite;
-  box-shadow: 0 0 8px rgba(217,119,87,0.5);
-}
-.task-priority-dot.essential {
-  background: var(--warning);
-}
-.task-priority-dot.deferrable {
-  background: var(--success);
-  opacity: 0.7;
-}
-.task.done .task-priority-dot {
-  animation: none;
-  opacity: 0.3;
-}
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
 
-/* ═══ Custom items (added by user) ═══ */
-.custom-tag {
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 3px;
-  background: var(--accent-bg-strong);
-  color: var(--accent);
-  border: 1px solid var(--accent-dim);
-}
-.delete-btn {
-  background: transparent;
-  border: 1px solid var(--border2);
-  color: var(--muted);
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.delete-btn:hover {
-  background: var(--danger-soft);
-  border-color: var(--danger);
-  color: var(--danger);
-}
-.task .delete-btn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  opacity: 0;
-}
-.task:hover .delete-btn { opacity: 1; }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(44px, 8vw, 96px);
+      line-height: 1;
+      letter-spacing: -1.5px;
+      margin-bottom: 32px;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+    }
 
-/* ═══ Add buttons ═══ */
-.add-btn {
-  background: transparent;
-  border: 1.5px dashed var(--border-strong);
-  color: var(--muted);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  padding: 14px 20px;
-  border-radius: 10px;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 8px;
-  margin-bottom: 12px;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-.add-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-bg);
-}
-.add-btn-icon {
-  font-size: 16px;
-  font-weight: 300;
-}
+    .hero-title .highlight {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+      position: relative;
+    }
 
-/* ═══ Add forms ═══ */
-.add-form {
-  background: var(--card);
-  border: 1px solid var(--accent-dim);
-  border-radius: 10px;
-  padding: 24px;
-  margin-bottom: 12px;
-  display: none;
-}
-.add-form.open { display: block; }
-.add-form-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: var(--accent);
-}
-.add-form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-@media (max-width: 600px) {
-  .add-form-row { grid-template-columns: 1fr; }
-}
-.add-form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-.add-form-field label {
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--dim);
-  font-weight: 600;
-}
-.add-form-field input,
-.add-form-field textarea,
-.add-form-field select {
-  background: var(--bg3);
-  border: 1px solid var(--border-strong);
-  border-radius: 6px;
-  color: var(--white);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  padding: 10px 12px;
-  width: 100%;
-}
-.add-form-field input:focus,
-.add-form-field textarea:focus,
-.add-form-field select:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-.add-form-field textarea { resize: vertical; min-height: 70px; }
-.add-form-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  margin-top: 16px;
-}
-.add-form-actions .btn {
-  font-size: 13px;
-  padding: 10px 18px;
-}
-.add-form-actions .btn.primary {
-  background: var(--accent);
-  color: var(--bg);
-  border-color: var(--accent);
-  font-weight: 600;
-}
-.add-form-actions .btn.primary:hover {
-  background: var(--accent2);
-  border-color: var(--accent2);
-}
+    .hero-subtitle {
+      font-size: clamp(17px, 1.6vw, 21px);
+      color: var(--light-grey);
+      max-width: 680px;
+      line-height: 1.5;
+      font-weight: 400;
+      margin-bottom: 32px;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+    }
 
-.task-checkbox {
-  flex-shrink: 0;
-  margin-top: 2px;
-  margin-left: 8px;
-}
-.task-checkbox input {
-  width: 22px;
-  height: 22px;
-  appearance: none;
-  background: var(--bg3);
-  border: 1.5px solid var(--border-strong);
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.2s ease;
-}
-.task-checkbox input:hover { border-color: var(--accent); }
-.task-checkbox input:checked {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-.task-checkbox input:checked::after {
-  content: '✓';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: var(--bg);
-  font-size: 14px;
-  font-weight: 700;
-}
+    .hero-subtitle strong {
+      color: var(--white);
+      font-weight: 600;
+    }
 
-.task-content { flex: 1; min-width: 0; }
-.task-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-.task-tag {
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 3px;
-}
-.task-tag.priority {
-  background: var(--danger-soft);
-  color: var(--danger);
-}
-.task-tag.essential {
-  background: rgba(212,160,74,0.1);
-  color: var(--warning);
-}
-.task-tag.deferrable {
-  background: rgba(109,181,138,0.1);
-  color: var(--success);
-}
-.task-time {
-  font-size: 11px;
-  color: var(--dim);
-  letter-spacing: 0.5px;
-}
-.task-time::before { content: '◷ '; opacity: 0.6; }
-.task-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  line-height: 1.3;
-}
-.task-description {
-  color: var(--muted);
-  font-size: 13.5px;
-  line-height: 1.55;
-  font-weight: 400;
-}
-.task-description strong { color: var(--white); font-weight: 600; }
-.task-description code {
-  font-family: 'SF Mono', 'Monaco', monospace;
-  background: var(--bg3);
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 12px;
-  color: var(--accent2);
-}
-.task-cost {
-  display: inline-block;
-  margin-top: 10px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  padding: 4px 10px;
-  border-radius: 4px;
-  background: rgba(109,181,138,0.1);
-  color: var(--success);
-}
-.task-cost.spend {
-  background: var(--danger-soft);
-  color: var(--danger);
-}
+    .hero-emphasis {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(18px, 1.7vw, 22px);
+      font-style: italic;
+      font-weight: 500;
+      color: var(--gold);
+      max-width: 680px;
+      line-height: 1.4;
+      margin-bottom: 56px;
+      letter-spacing: -0.2px;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+    }
 
-/* ═══ Milestone ═══ */
-.milestone {
-  background: linear-gradient(135deg, var(--accent-bg-strong), var(--accent-bg));
-  border: 1px solid var(--accent-dim);
-  border-radius: 12px;
-  padding: 32px;
-  margin: 40px 0;
-  text-align: center;
-}
-.milestone-eyebrow {
-  font-size: 10px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--accent);
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-.milestone-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 32px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  margin-bottom: 8px;
-}
-.milestone-subtitle {
-  color: var(--muted);
-  font-size: 14px;
-  font-style: italic;
-}
+    /* Countdown */
+    .countdown-section {
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+      margin-bottom: 48px;
+    }
 
-/* ═══ Costs Tab ═══ */
-.costs-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
-}
-.cost-summary-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px 24px;
-}
-.cost-summary-label {
-  font-size: 10px;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  color: var(--dim);
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-.cost-summary-value {
-  font-family: 'Playfair Display', serif;
-  font-size: 28px;
-  font-weight: 800;
-  line-height: 1;
-}
-.cost-summary-value.accent { color: var(--accent); }
-.cost-summary-value.success { color: var(--success); }
-.cost-summary-value.warning { color: var(--warning); }
-.cost-summary-sub {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 6px;
-}
+    .countdown-label {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
 
-.cost-section { margin-bottom: 36px; }
-.cost-section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-}
-.cost-section-count {
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--muted);
-  font-family: 'DM Sans', sans-serif;
-}
+    .countdown {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
-.cost-table {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-}
-.cost-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 0.8fr 0.8fr;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
-  gap: 16px;
-}
-.cost-row:last-child { border-bottom: none; }
-.cost-row:hover { background: var(--card-hover); }
-.cost-row.header {
-  background: var(--bg3);
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--dim);
-  font-weight: 600;
-}
-.cost-row.header:hover { background: var(--bg3); }
-.cost-name {
-  font-weight: 500;
-  font-size: 14px;
-}
-.cost-name-desc {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 2px;
-  line-height: 1.4;
-}
-.cost-amount {
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  font-size: 17px;
-  font-variant-numeric: tabular-nums;
-}
-.cost-cycle {
-  font-size: 11px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--muted);
-  font-weight: 600;
-}
-.cost-cycle.monthly { color: var(--accent); }
-.cost-cycle.annual { color: var(--warning); }
-.cost-cycle.oneoff { color: var(--success); }
-.cost-status {
-  font-size: 11px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 4px;
-  text-align: center;
-  white-space: nowrap;
-}
-.cost-status.paid { background: rgba(109,181,138,0.1); color: var(--success); }
-.cost-status.pending { background: rgba(212,160,74,0.1); color: var(--warning); }
-.cost-status.deferred { background: var(--danger-soft); color: var(--danger); }
-.cost-status.skip { background: var(--bg3); color: var(--dim); }
-.cost-when {
-  font-size: 11px;
-  color: var(--muted);
-  font-weight: 500;
-}
+    .countdown-block {
+      min-width: 92px;
+      padding: 20px 24px;
+      background: var(--off-black);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      text-align: center;
+      transition: border-color 0.3s ease;
+    }
 
-/* ═══ Pool banner (top of Costs + Cash Flow tabs) ═══ */
-.pool-banner {
-  background: linear-gradient(135deg, var(--accent-bg-strong), var(--accent-bg));
-  border: 1px solid var(--accent-dim);
-  border-radius: 12px;
-  padding: 24px 28px;
-  margin-bottom: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 20px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  backdrop-filter: blur(8px);
-}
-.pool-banner.warn {
-  background: linear-gradient(135deg, var(--danger-soft), rgba(217,119,87,0.04));
-  border-color: var(--danger);
-}
-.pool-info { flex: 1 1 auto; min-width: 180px; }
-.pool-eyebrow {
-  font-size: 10px;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  color: var(--accent);
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-.pool-banner.warn .pool-eyebrow { color: var(--danger); }
-.pool-balance {
-  font-family: 'Playfair Display', serif;
-  font-size: 38px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-.pool-balance.negative { color: var(--danger); }
-.pool-balance.warn { color: var(--warning); }
-.pool-balance.healthy { color: var(--accent); }
-.pool-stats {
-  display: flex;
-  gap: 28px;
-  flex-wrap: wrap;
-}
-.pool-stat {
-  text-align: right;
-}
-.pool-stat-label {
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--dim);
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-.pool-stat-value {
-  font-family: 'Playfair Display', serif;
-  font-size: 18px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.pool-stat-value.in { color: var(--success); }
-.pool-stat-value.out { color: var(--danger); }
+    .countdown-block:hover {
+      border-color: var(--accent);
+    }
 
-.pool-warning {
-  width: 100%;
-  font-size: 12px;
-  color: var(--danger);
-  margin-top: 8px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(217,119,87,0.2);
-}
+    .countdown-number {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 38px;
+      line-height: 1;
+      color: var(--white);
+      font-variant-numeric: tabular-nums;
+    }
 
-/* ═══ Cost row: now with checkbox column ═══ */
-.cost-row {
-  grid-template-columns: 28px 2fr 1fr 1fr 0.9fr 0.9fr;
-}
-.cost-row.header {
-  grid-template-columns: 28px 2fr 1fr 1fr 0.9fr 0.9fr;
-}
-.cost-checkbox {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.cost-checkbox input {
-  width: 18px;
-  height: 18px;
-  appearance: none;
-  background: var(--bg3);
-  border: 1.5px solid var(--border-strong);
-  border-radius: 4px;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.2s ease;
-}
-.cost-checkbox input:hover:not(:disabled) { border-color: var(--accent); }
-.cost-checkbox input:checked {
-  background: var(--success);
-  border-color: var(--success);
-}
-.cost-checkbox input:checked::after {
-  content: '✓';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: var(--bg);
-  font-size: 12px;
-  font-weight: 700;
-}
-.cost-checkbox input:disabled {
-  cursor: not-allowed;
-  opacity: 0.4;
-}
-.cost-row.paid-row {
-  opacity: 0.6;
-}
-.cost-row.paid-row .cost-name {
-  text-decoration: line-through;
-  color: var(--muted);
-}
+    .countdown-unit {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-top: 8px;
+      font-weight: 500;
+    }
 
-/* ═══ Cash flow editable inputs ═══ */
-.allocation-input-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
-  flex-wrap: wrap;
-}
-.allocation-label {
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--dim);
-  font-weight: 600;
-  flex: 0 0 auto;
-}
-.allocation-input {
-  background: var(--bg3);
-  border: 1px solid var(--border-strong);
-  border-radius: 6px;
-  color: var(--white);
-  font-family: 'Playfair Display', serif;
-  font-size: 18px;
-  font-weight: 700;
-  padding: 8px 12px;
-  width: 130px;
-  font-variant-numeric: tabular-nums;
-  transition: border-color 0.2s ease;
-}
-.allocation-input:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-.allocation-input::-webkit-outer-spin-button,
-.allocation-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.allocation-input[type=number] { -moz-appearance: textfield; }
+    /* CTA Buttons */
+    .cta-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+    }
 
-.received-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-left: auto;
-  cursor: pointer;
-  user-select: none;
-}
-.received-checkbox input {
-  width: 22px;
-  height: 22px;
-  appearance: none;
-  background: var(--bg3);
-  border: 1.5px solid var(--border-strong);
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.2s ease;
-}
-.received-checkbox input:hover { border-color: var(--accent); }
-.received-checkbox input:checked {
-  background: var(--success);
-  border-color: var(--success);
-}
-.received-checkbox input:checked::after {
-  content: '✓';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: var(--bg);
-  font-size: 14px;
-  font-weight: 700;
-}
-.received-label {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  color: var(--muted);
-}
-.received-checkbox input:checked + .received-label { color: var(--success); }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 28px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+    }
 
-.paycheck-block.received {
-  border-left: 3px solid var(--success);
-}
+    .btn-primary {
+      background: var(--accent);
+      color: var(--black);
+    }
 
-.allocation-summary {
-  margin-top: 10px;
-  font-size: 12px;
-  color: var(--muted);
-  font-style: italic;
-}
-.allocation-summary .pool-add {
-  color: var(--success);
-  font-weight: 600;
-  font-style: normal;
-}
+    .btn-primary:hover {
+      background: #dcc090;
+      transform: translateY(-1px);
+    }
 
-/* ═══ Cash Flow Tab ═══ */
-.cashflow-intro {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: 10px;
-  padding: 22px 28px;
-  margin-bottom: 32px;
-}
-.cashflow-intro h3 {
-  font-family: 'Playfair Display', serif;
-  font-size: 20px;
-  margin-bottom: 8px;
-  font-weight: 700;
-}
-.cashflow-intro p {
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.6;
-}
+    .btn-secondary {
+      background: transparent;
+      color: var(--white);
+      border-color: var(--border);
+    }
 
-.paycheck-block {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 24px 28px;
-  margin-bottom: 16px;
-  position: relative;
-}
-.paycheck-block.launch {
-  border-color: var(--accent-dim);
-  background: linear-gradient(135deg, var(--accent-bg-strong), var(--accent-bg));
-}
-.paycheck-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.paycheck-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-}
-.paycheck-name .accent { color: var(--accent); }
-.paycheck-date {
-  font-size: 12px;
-  color: var(--muted);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
+    .btn-secondary:hover {
+      border-color: var(--white);
+    }
 
-.paycheck-body {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-@media (max-width: 700px) {
-  .paycheck-body { grid-template-columns: 1fr; }
-}
+    .btn-arrow {
+      display: inline-block;
+      transition: transform 0.25s ease;
+    }
 
-.paycheck-section h4 {
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--dim);
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-.paycheck-list {
-  list-style: none;
-  font-size: 13px;
-  color: var(--muted);
-  line-height: 1.8;
-}
-.paycheck-list li {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px dashed var(--border);
-  padding: 4px 0;
-}
-.paycheck-list li:last-child { border-bottom: none; }
-.paycheck-list .item-name { font-weight: 400; }
-.paycheck-list .item-amount {
-  font-weight: 600;
-  color: var(--white);
-  font-variant-numeric: tabular-nums;
-}
-.paycheck-list .item-amount.spend { color: var(--danger); }
-.paycheck-list .total {
-  margin-top: 6px;
-  padding-top: 8px;
-  border-top: 1px solid var(--border-strong);
-  font-weight: 600;
-  color: var(--accent);
-}
-.paycheck-list .total .item-amount { color: var(--accent); }
-.paycheck-note {
-  font-size: 12px;
-  color: var(--muted);
-  font-style: italic;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
-}
+    .btn:hover .btn-arrow {
+      transform: translateX(3px);
+    }
 
-/* ═══ Footer / actions ═══ */
-.footer-actions {
-  margin-top: 48px;
-  padding-top: 32px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-.last-saved {
-  font-size: 12px;
-  color: var(--muted);
-}
-.btn {
-  background: var(--card);
-  border: 1px solid var(--border-strong);
-  color: var(--white);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 10px 18px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.btn:hover { background: var(--card-hover); border-color: var(--accent-dim); }
-.btn.danger { color: var(--danger); }
-.btn.danger:hover { background: var(--danger-soft); border-color: var(--danger); }
+    /* Form Section */
+    .form-section {
+      padding: 100px 0;
+      border-top: 1px solid var(--border);
+      position: relative;
+    }
 
-/* ═══ Mobile ═══ */
-@media (max-width: 640px) {
-  .container { padding: 32px 18px 60px; }
-  h1 { font-size: 36px; }
-  .launch-banner { flex-direction: column; align-items: flex-start; }
-  .countdown-timer { width: 100%; justify-content: space-between; }
-  .cost-row {
-    grid-template-columns: 1fr;
-    gap: 6px;
-    padding: 16px;
-  }
-  .cost-row.header { display: none; }
-  .cost-row .cost-amount,
-  .cost-row .cost-cycle,
-  .cost-row .cost-status,
-  .cost-row .cost-when {
-    display: inline-block;
-    margin-right: 12px;
-  }
-}
-</style>
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .form-intro h2 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(36px, 5vw, 56px);
+      line-height: 1.05;
+      letter-spacing: -1px;
+      margin-bottom: 24px;
+    }
+
+    .form-intro h2 .italic {
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .form-intro p {
+      font-size: 16px;
+      color: var(--light-grey);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .qualifies {
+      margin-top: 40px;
+      padding: 24px;
+      background: var(--off-black);
+      border-left: 2px solid var(--accent);
+      border-radius: 2px;
+    }
+
+    .qualifies-label {
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .qualifies p {
+      font-size: 14px;
+      color: var(--light-grey);
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .qualifies p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Form */
+    .demo-form {
+      background: var(--off-black);
+      padding: 40px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .form-field label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--light-grey);
+      font-weight: 600;
+    }
+
+    .form-field label .required {
+      color: var(--accent);
+      margin-left: 2px;
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      background: var(--black);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 14px 16px;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      transition: border-color 0.2s ease;
+      width: 100%;
+    }
+
+    .form-field input::placeholder,
+    .form-field textarea::placeholder {
+      color: var(--grey);
+    }
+
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .form-field textarea {
+      resize: vertical;
+      min-height: 100px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .form-field select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+
+    .form-submit {
+      width: 100%;
+      background: var(--accent);
+      color: var(--black);
+      border: none;
+      padding: 18px 28px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-top: 8px;
+    }
+
+    .form-submit:hover:not(:disabled) {
+      background: #dcc090;
+      transform: translateY(-1px);
+    }
+
+    .form-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .form-helper {
+      font-size: 12px;
+      color: var(--grey);
+      margin-top: 16px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .form-success.active {
+      display: block;
+    }
+
+    .form-success .check {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .form-success h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    .form-success p {
+      color: var(--light-grey);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .form-error {
+      display: none;
+      background: rgba(255, 50, 50, 0.1);
+      border: 1px solid rgba(255, 50, 50, 0.3);
+      border-radius: 4px;
+      padding: 16px;
+      margin-top: 16px;
+      color: #ff8080;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .form-error.active {
+      display: block;
+    }
+
+    /* Footer */
+    footer {
+      padding: 60px 0 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .footer-meta {
+      font-size: 12px;
+      color: var(--grey);
+      line-height: 1.8;
+    }
+
+    .footer-meta a {
+      color: var(--light-grey);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-meta a:hover {
+      color: var(--accent);
+    }
+
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--grey);
+    }
+
+    .footer-brand .dot {
+      color: var(--accent);
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 24px;
+      }
+
+      header {
+        padding: 24px 0;
+      }
+
+      .hero {
+        padding: 60px 0 80px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .demo-form {
+        padding: 28px 24px;
+      }
+
+      .countdown-block {
+        min-width: 70px;
+        padding: 16px;
+      }
+
+      .countdown-number {
+        font-size: 28px;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 44px;
+      }
+
+      .countdown {
+        gap: 6px;
+      }
+
+      .countdown-block {
+        min-width: 64px;
+        padding: 14px 8px;
+      }
+
+      .cta-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn {
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
 
-  <!-- HEADER -->
   <header>
-    <div class="logo">TRIAL<span>.</span></div>
-    <div class="tagline">Launch Roadmap</div>
-    <h1>From here to <span class="italic">launch</span>.</h1>
-    <p class="subtitle">Every task, every dollar, every paycheck mapped to 1 July. Tabs split tasks, costs, and cash flow. Tick as you go — auto-saves to your browser.</p>
-
-    <div class="launch-banner">
-      <div class="launch-info">
-        <div class="launch-eyebrow">Public Launch</div>
-        <div class="launch-date">1 July 2026 · 12:00 AM AEST</div>
-        <div class="launch-story">The day after Anders's 34th birthday.</div>
-      </div>
-      <div class="countdown-timer" id="countdown-timer">
-        <div class="cd-unit"><span class="cd-num" id="cd-days">—</span><span class="cd-label">Days</span></div>
-        <div class="cd-sep">:</div>
-        <div class="cd-unit"><span class="cd-num" id="cd-hours">—</span><span class="cd-label">Hours</span></div>
-        <div class="cd-sep">:</div>
-        <div class="cd-unit"><span class="cd-num" id="cd-minutes">—</span><span class="cd-label">Mins</span></div>
-        <div class="cd-sep">:</div>
-        <div class="cd-unit"><span class="cd-num" id="cd-seconds">—</span><span class="cd-label">Secs</span></div>
+    <div class="container">
+      <div class="header-inner">
+        <div class="logo">TRIAL<span class="dot">.</span></div>
+        <div class="header-meta">For Independent Hospitality</div>
       </div>
     </div>
   </header>
 
-  <!-- PROGRESS DASHBOARD -->
-  <div class="progress-card">
-    <div class="progress-grid">
-      <div class="stat">
-        <div class="stat-label">Tasks Done</div>
-        <div class="stat-value accent" id="stat-done">0</div>
-        <div class="stat-sub">of <span id="stat-total">0</span> total</div>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-eyebrow">
+        <span class="pulse-dot"></span>
+        <span>Launching 1 July 2026</span>
       </div>
-      <div class="stat">
-        <div class="stat-label">Days Left</div>
-        <div class="stat-value" id="stat-days">52</div>
-        <div class="stat-sub">until 1 July launch</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Spent So Far</div>
-        <div class="stat-value" id="stat-spent">$87</div>
-        <div class="stat-sub">domain + email</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Progress</div>
-        <div class="stat-value" id="stat-pct">0%</div>
-        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-      </div>
-    </div>
-  </div>
 
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab active" data-tab="tasks"><span class="tab-icon">☑</span><span>Tasks</span></button>
-    <button class="tab" data-tab="costs"><span class="tab-icon">$</span><span>Costs</span></button>
-    <button class="tab" data-tab="cashflow"><span class="tab-icon">⇄</span><span>Cash Flow</span></button>
-  </div>
+      <h1 class="hero-title">
+        Hire on <span class="highlight">conviction</span>,<br>
+        not on CVs.
+      </h1>
 
-  <!-- TASKS TAB -->
-  <div class="tab-panel active" data-panel="tasks">
-    <div class="filters">
-      <button class="filter-pill active" data-filter="all">All</button>
-      <button class="filter-pill" data-filter="priority">Priority</button>
-      <button class="filter-pill" data-filter="essential">Essential</button>
-      <button class="filter-pill" data-filter="deferrable">Deferrable</button>
-      <button class="filter-pill" data-filter="open">Open only</button>
-    </div>
-    <div id="tasks-container"></div>
-  </div>
+      <p class="hero-subtitle">
+        <strong>Trial.</strong> is what hospitality venues use to make sure the candidates in front of them actually know how to work in hospitality. We don&rsquo;t replace your judgement &mdash; we protect it. Pre-interview assessment that gets the right people to your shortlist, so your interview time is spent on people who can actually do the job.
+      </p>
 
-  <!-- COSTS TAB -->
-  <div class="tab-panel" data-panel="costs">
-    <div class="pool-banner" id="pool-banner-costs">
-      <div class="pool-info">
-        <div class="pool-eyebrow">TRIAL. Funds Available</div>
-        <div class="pool-balance" id="pool-balance-costs">$0</div>
-      </div>
-      <div class="pool-stats">
-        <div class="pool-stat">
-          <div class="pool-stat-label">Allocated In</div>
-          <div class="pool-stat-value in" id="pool-in-costs">$0</div>
-        </div>
-        <div class="pool-stat">
-          <div class="pool-stat-label">Spent</div>
-          <div class="pool-stat-value out" id="pool-out-costs">$0</div>
-        </div>
-      </div>
-    </div>
+      <p class="hero-emphasis">
+        You only pay when a hire stays 90 days.
+      </p>
 
-    <div class="costs-summary">
-      <div class="cost-summary-card">
-        <div class="cost-summary-label">Already Paid</div>
-        <div class="cost-summary-value success" id="cost-paid">$87.29</div>
-        <div class="cost-summary-sub">Domain + Microsoft 365</div>
-      </div>
-      <div class="cost-summary-card">
-        <div class="cost-summary-label">Mandatory Pre-Launch</div>
-        <div class="cost-summary-value warning" id="cost-mandatory">$424</div>
-        <div class="cost-summary-sub">Across 3 paychecks</div>
-      </div>
-      <div class="cost-summary-card">
-        <div class="cost-summary-label">Monthly Recurring</div>
-        <div class="cost-summary-value" id="cost-monthly">~$130/mo</div>
-        <div class="cost-summary-sub">Steady-state post-launch</div>
-      </div>
-      <div class="cost-summary-card">
-        <div class="cost-summary-label">Annual Equivalent</div>
-        <div class="cost-summary-value accent" id="cost-annual">~$1,560/yr</div>
-        <div class="cost-summary-sub">Operating cost projection</div>
-      </div>
-    </div>
-
-    <div class="cost-section">
-      <div class="cost-section-title">Already Paid <span class="cost-section-count">2 items · $87.29</span></div>
-      <div class="cost-table">
-        <div class="cost-row header"><div>Item</div><div>Amount</div><div>Cycle</div><div>Status</div><div>When</div></div>
-      </div>
-      <div class="cost-table" id="cost-table-paid"></div>
-    </div>
-
-    <div class="cost-section">
-      <div class="cost-section-title">Mandatory — Before Launch <span class="cost-section-count">~$424 across 3 paychecks</span></div>
-      <div class="cost-table">
-        <div class="cost-row header"><div>Item</div><div>Amount</div><div>Cycle</div><div>Status</div><div>When</div></div>
-      </div>
-      <div class="cost-table" id="cost-table-mandatory"></div>
-    </div>
-
-    <div class="cost-section">
-      <div class="cost-section-title">Recurring — Post-Launch <span class="cost-section-count">Steady-state ~$130/mo</span></div>
-      <div class="cost-table">
-        <div class="cost-row header"><div>Item</div><div>Amount</div><div>Cycle</div><div>Status</div><div>When</div></div>
-      </div>
-      <div class="cost-table" id="cost-table-recurring"></div>
-    </div>
-
-    <div class="cost-section">
-      <div class="cost-section-title">Skipping / Deferred <span class="cost-section-count">Decided not to spend</span></div>
-      <div class="cost-table">
-        <div class="cost-row header"><div>Item</div><div>Amount</div><div>Cycle</div><div>Status</div><div>When</div></div>
-      </div>
-      <div class="cost-table" id="cost-table-skip"></div>
-    </div>
-  </div>
-
-  <!-- CASH FLOW TAB -->
-  <div class="tab-panel" data-panel="cashflow">
-    <div class="pool-banner" id="pool-banner-cf">
-      <div class="pool-info">
-        <div class="pool-eyebrow">TRIAL. Funds Available</div>
-        <div class="pool-balance" id="pool-balance-cf">$0</div>
-      </div>
-      <div class="pool-stats">
-        <div class="pool-stat">
-          <div class="pool-stat-label">Allocated In</div>
-          <div class="pool-stat-value in" id="pool-in-cf">$0</div>
-        </div>
-        <div class="pool-stat">
-          <div class="pool-stat-label">Spent</div>
-          <div class="pool-stat-value out" id="pool-out-cf">$0</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="cashflow-intro">
-      <h3>Three paychecks to launch.</h3>
-      <p>Tick "Pay received" when each payday lands and the allocated amount drops into the pool. Tick costs as paid (Costs tab) to drain the pool. Hard rule: can't pay a cost if it would push the pool negative — discipline forced.</p>
-    </div>
-
-    <div id="cashflow-container"></div>
-  </div>
-
-  <!-- FOOTER -->
-  <div class="footer-actions">
-    <span class="last-saved" id="last-saved">Auto-saved · ready</span>
-    <div style="display:flex;gap:8px">
-      <button class="btn" onclick="exportProgress()">Export</button>
-      <button class="btn danger" onclick="resetAll()">Reset all</button>
-    </div>
-  </div>
-
-</div>
-
-<script>
-// ═══════════════════════════════════════════════════════════════
-// DATA
-// ═══════════════════════════════════════════════════════════════
-
-const WEEKS = [
-  {
-    id: 'sunday',
-    eyebrow: 'Sunday — Done',
-    title: 'Foundation laid',
-    dates: 'Sunday 10 May 2026',
-    tasks: [
-      { id: 's1', priority: 'priority', time: '15 min', cost: '$87.29', costType: 'spend', title: 'Buy domain + email hosting', desc: 'Bought <strong>hiretrial.com.au</strong> via GoDaddy (3-year registration, $43.95) plus Microsoft 365 Email Essentials annual ($35.40). Total $87.29 paid. <strong>Done.</strong>' },
-      { id: 's2', priority: 'priority', time: '40 min', cost: '$3/mo', costType: 'spend', title: 'Email hosting + auth records', desc: 'Microsoft 365 Email Essentials via GoDaddy. <code>anders@hiretrial.com.au</code> + aliases (support@, hello@, billing@). SPF corrected to Microsoft. DMARC monitor mode. DKIM CNAMEs published. MFA enabled. <strong>Done — toggle DKIM Monday morning per next task.</strong>' },
-      { id: 's2b', priority: 'priority', time: '5 min', title: '🌅 Monday morning: flip DKIM toggle + tick alias send-from boxes', desc: '30-second cleanup tasks for tomorrow with coffee: (1) <code>security.microsoft.com/dkimv2</code> → click hiretrial.com.au row → toggle Enabled. (2) Outlook → Settings → Mail → Compose and reply → scroll to "Addresses to send from" → tick all three aliases. (3) Test send from support@.' },
-      { id: 's-coming-soon', priority: 'priority', time: 'Done Sunday', title: 'Deploy TRIAL. coming-soon page', desc: 'Custom-built coming-soon at <strong>hiretrial.com.au</strong>. Gold/black, Playfair + DM Sans. Live countdown. Demo request form delivering to anders@ via Formspree. Mobile responsive. SSL active. GitHub repo auto-redeploys on push. <strong>First form submissions confirmed Sunday night.</strong>' },
-      { id: 's4', priority: 'priority', time: '15 min', title: 'Point domain to Vercel', desc: 'GoDaddy DNS: A record @ → 216.198.79.1, CNAME www → Vercel. Both domains Valid Configuration. SSL provisioned. <strong>Done.</strong>' }
-    ]
-  },
-  {
-    id: 'week1',
-    eyebrow: 'Week 1 — No Spend',
-    title: 'Build foundation',
-    dates: 'Mon 11 May → Wed 20 May · 10 days',
-    tasks: [
-      { id: 'w1-mobile-test', priority: 'priority', time: '20 min', title: 'Mobile responsiveness validation', desc: 'Open <code>hiretrial.com.au</code> on real iPhone (Safari) AND real Android (Chrome). Test the candidate assessment flow end-to-end on each. Intake form fields. Question text. Submit button. Hospo people check this on phones during service breaks.' },
-      { id: 'w1-stripe-prep', priority: 'priority', time: '45 min', title: 'Stripe pricing rework + Stripe Tax + free trial mechanics', desc: 'Archive <strong>Interview Request</strong> product. Create new Per-Hire Fee products at $135/$99/$89/$69. Café Founding Partner ($79/mo). All subscriptions: <strong>14-day free trial — BROWSE-ONLY mode</strong> (card required, can view candidates but cannot Request Interview or Mark as Hired during trial). Enable Stripe Tax with GST.' },
-      { id: 'w1-gst', priority: 'priority', time: '20 min', title: 'Register for GST voluntarily', desc: 'Free, online via ATO Business Portal using your ABN. 5-10 min to submit, ~24-48 hrs confirm. Lets you claim GST credits on Legal123, Vercel, insurance.' },
-      { id: 'w1-pricing-reconcile', priority: 'priority', time: '15 min', title: 'Reconcile pricing copy across all materials', desc: 'Old model had "free interview per role" tier benefits. NEW model is "free unlimited interviews" for all tiers. Lead message everywhere: "Free unlimited interviews. Pay only when your hire stays 90 days."' },
-      { id: 'w1-analytics', priority: 'priority', time: '15 min', title: 'Set up analytics on the live site', desc: 'Vercel Analytics (free with Hobby tier) — turn on in dashboard. Track: pricing page visits, demo bookings, signups.', cost: '$0', costType: 'free' },
-      { id: 'w1-anti-bot', priority: 'essential', time: '20 min', title: 'Anti-bot protection on candidate intake', desc: 'Add Cloudflare Turnstile (free) to candidate intake. Without this, you WILL get bot-spam in your assessment data within weeks of launch.' },
-      { id: 'w1-supabase-prep', priority: 'priority', time: '~3 hrs', title: 'Supabase Auth (magic-link) + real data wiring', desc: 'Replace hardcoded sample candidates with real data flow. Magic-link email login (no passwords). Single user per venue at v1. Add columns: <code>pendingHireFee</code>, <code>hireFeeStatus</code>, <code>nextHireFeeWaived</code>, <code>candidate_verified</code>, <code>dispute_flagged</code>, <code>trial_status</code>.' },
-      { id: 'w1-trial-gating', priority: 'priority', time: '~1 hr', title: 'Implement free-trial browse-only mode', desc: 'When <code>trial_status = active</code>: candidates and assessments visible, but "Request Interview" and "Mark as Hired" buttons disabled with tooltip. Removes the trial-and-cancel exploit. Critical for unit economics.' },
-      { id: 'w1-candidate-consent', priority: 'priority', time: '~1 hr', title: 'Build candidate AI consent flow', desc: 'On the assessment intake page, add explicit AI transparency notice + checkbox: "Your responses will be analysed by AI to produce a score and summary that hiring managers will see. You have the right to request human review." Required by emerging Australian AI fairness laws.' },
-      { id: 'w1-data-export', priority: 'priority', time: '~1 hr', title: 'Build basic data export endpoint', desc: 'Australian Privacy Act gives users right to access + delete data. At launch, MANUAL is fine: customer requests via email, you run a Supabase query, send CSV. Build as simple admin function.' },
-      { id: 'w1-legal123-email', priority: 'essential', time: '15 min', title: 'Email Legal123 with the AI consent question', desc: '"Hi — building hospitality SaaS with AI scoring + per-hire success fees. Does the Website Legal Package cover this, or do I need custom drafting?" Don\'t buy yet. Wait for their answer.' },
-      { id: 'w1-insurance-quotes', priority: 'essential', time: '30 min', title: 'Get insurance quotes', desc: 'BizCover, Upcover, Aon. Professional Indemnity $1M cover. Get monthly billing options. Don\'t buy yet — collect quotes.' },
-      { id: 'w1-google-alerts', priority: 'deferrable', time: '5 min', title: 'Set up Google Alerts for competitive monitoring', desc: 'Free. Monitor: "trial." + "hospitality hiring Australia" + "hospo SaaS" + competitor names. Weekly digest. Catches copycats early.' }
-    ]
-  },
-  {
-    id: 'week2',
-    eyebrow: 'Week 2 — Pay #1 Spend Block',
-    title: 'Legal + AI calibration',
-    dates: 'Thu 21 May → Wed 3 Jun · 14 days',
-    tasks: [
-      { id: 'w2-legal-buy', priority: 'priority', time: '30 min', cost: '$219', costType: 'spend', title: '💰 Buy Legal123 Website Legal Package', desc: 'After their email reply confirms scope. $199 + GST = <strong>$218.90</strong>. Watch the video walkthrough as you fill in templates. <strong>From Pay #1 (May 21).</strong>' },
-      { id: 'w2-ai-calibration', priority: 'priority', time: '~3 days', cost: '~$100', costType: 'spend', title: '💰 Synthetic AI scoring calibration', desc: 'Run 200 carefully designed test cases. Mix 20-30 real answers from Anders/friends to avoid AI-generated answer cleanliness bias. Cost: ~$100 USD API + ~6 hrs compute. <strong>From Pay #1 (May 21).</strong>' },
-      { id: 'w2-legal-customise', priority: 'priority', time: '~2 hrs', title: 'Customise Legal123 templates for Trial.', desc: 'With Claude. Customise Terms, Privacy Policy, Disclaimer. Lock in: subscription billing, 14-day BROWSE-ONLY trial, 90-day per-hire fee, auto-charge after 7 days, candidate cross-check, AI transparency, network reputation data sharing, data export rights.' },
-      { id: 'w2-deploy-apps', priority: 'priority', time: '45 min', title: 'Deploy 3 main HTML files to Vercel', desc: 'Upload <code>trial-assessment.html</code>, <code>trial-manager.html</code>, <code>trial-admin.html</code> to existing Vercel project. Live as routes (<code>/assessment</code>, <code>/manager</code>, <code>/admin</code>). Vercel infrastructure already set up.' },
-      { id: 'w2-stripe-products', priority: 'priority', time: '~3 hrs', title: 'Café Founding Partner Stripe product live', desc: 'Stripe product created. Payment link generated. Description references the per-hire model. 14-day browse-only trial enabled.' },
-      { id: 'w2-pricing-page', priority: 'priority', time: '~1 hr', title: 'Pricing page on hiretrial.com.au', desc: 'Hybrid approach. Solo public ($199/mo, 14-day free trial), Starter/Growth "Talk to us", Pay Per Hire de-emphasised, Founding Partner hidden. Make sure free trial mechanic is clear.' },
-      { id: 'w2-stripe-webhooks', priority: 'priority', time: '~2 hrs', title: 'Stripe webhooks + Customer Portal setup', desc: 'Webhook fires on payment → customer record created in Supabase. Trial → paid conversion triggers full feature unlock. Welcome email triggered. Enable Stripe Customer Portal — saves you from every cancellation being a manual support ticket.' },
-      { id: 'w2-90day-timer', priority: 'priority', time: '~3 hrs', title: '90-day retention timer + auto-charge logic', desc: 'Cron jobs for 30/60/90 day candidate check-ins. 7-day grace period. Auto-charge at day 97 if venue non-responsive. 14-day dispute window. Candidate cross-check email at day 90.' },
-      { id: 'w2-onboarding-emails', priority: 'essential', time: '~3 hrs', title: 'Onboarding email sequence — minimum viable', desc: 'Build Touchpoint 1 (welcome) and Touchpoint 8 (90-day retention check) at minimum. Other 6 can ship post-launch. Set up Resend (free tier covers 100/day, 3000/mo — enough for first 1-2 months).' },
-      { id: 'w2-welcome-video', priority: 'essential', time: '~30 min', title: 'Record welcome walkthrough video (Loom)', desc: '90-second screen tour. You on camera. "Hey, this is Anders. Here\'s how Trial. works in 90 seconds." Embed in welcome email. Free. Authentic beats polished.' },
-      { id: 'w2-crm', priority: 'essential', time: '~1 hr', title: 'Set up CRM (HubSpot Free)', desc: 'Track every demo booked, every "thinking about it" reply, every conversion. Inbox is NOT a CRM. HubSpot Free is genuinely good ($0).' },
-      { id: 'w2-bug-playbook', priority: 'essential', time: '30 min', title: 'Bug response playbook', desc: '1-page doc. P0 (service down) = same-day fix. P1 (broken for one venue) = within 48 hrs. P2 (cosmetic) = backlog. Communication template for each tier.' },
-      { id: 'w2-self-onboarding', priority: 'essential', time: '~1 hr', title: 'Self-onboarding test', desc: 'Sign up as a fake venue (free trial, browse-only mode). Run a real assessment. Test the upgrade-to-paid flow. End-to-end. Find the broken bits before customers do.' },
-      { id: 'w2-calendly', priority: 'essential', time: '~2 hrs', title: 'Calendly properly configured', desc: '45-min walkthrough slots. Buffer 15 min. Description: "A proper walkthrough of how Trial. works, plus a chat about whether it fits your venue. No pitch."' },
-      { id: 'w2-demo-script', priority: 'essential', time: '~2 hrs', title: 'Build the 30-min demo script', desc: '0-5 min: their hiring pain. 5-15 min: walkthrough. 15-25 min: pricing + objections. 25-30 min: next steps. Use competitor positioning doc for objection handling.' },
-      { id: 'w2-cold-email', priority: 'essential', time: '~1 hr', title: 'Cold outreach email template + tracking', desc: 'V1 template locked. Founder story hook + offer + soft CTA. Send first 50-100 manually via Gmail with link tracking — defer paid Mixmax/Apollo until post-launch. Test by sending to 2 friendly hospo contacts for feedback before mass send.' },
-      { id: 'w2-warm-list', priority: 'essential', time: '~2 hrs', title: 'Warm contact list completed', desc: '50+ names. Sorted: tier-1 (close friends, will say yes), tier-2 (worked with), tier-3 (mutuals). Add to your CRM. Soft launch fuel.' },
-      { id: 'w2-paul', priority: 'deferrable', time: '~2 hrs', title: 'First Paul Wilson conversation', desc: 'First meaningful "I want you involved" pitch. Frame as advisor, not employee. Open about equity vs cash discussion.' }
-    ]
-  },
-  {
-    id: 'week3',
-    eyebrow: 'Week 3 — Soft Beta + Move',
-    title: 'Pressure test + Melbourne',
-    dates: 'Thu 4 Jun → Wed 17 Jun · 14 days',
-    tasks: [
-      { id: 'w3-warm-outreach', priority: 'priority', time: '~5 hrs', title: 'Send 10-15 warm beta outreach emails', desc: 'To Tier-1 friendlies. Goal: 3-5 convert into paying Founding Partners <strong>before</strong> 1 July. They become first revenue, testimonials, case studies. Beta is FREE during June — no Stripe processing yet, just feedback.' },
-      { id: 'w3-practice-demos', priority: 'priority', time: '~3 hrs', title: 'Run 3-5 practice demos with friendlies', desc: 'Use the demo script from Week 2. Time each demo. Note which sections land, which don\'t. By end of Week 3 you should be able to demo Trial. in 30 minutes without notes.' },
-      { id: 'w3-melbourne-move', priority: 'priority', time: 'days', title: '🚚 Melbourne move', desc: 'The big move likely lands somewhere this fortnight. Build/launch work pauses while you and Gresi physically relocate. Schedule it deliberately — pick a 4-6 day window, do nothing TRIAL.-related during it.' },
-      { id: 'w3-incident', priority: 'essential', time: '~30 min', title: 'Write the incident response playbook (1 page)', desc: 'What if Trial. is down at 8pm Saturday during a venue\'s service? 1-page doc: (1) status check steps, (2) email template to affected customers, (3) escalation contacts (Vercel, Supabase). Pin it on your phone.' },
-      { id: 'w3-revenue-cadence', priority: 'essential', time: '15 min', title: 'Set up weekly revenue review cadence', desc: 'Every Sunday, 15 min. Open Stripe dashboard. Single file: new MRR, churn, failed payments, upcoming renewals. First entry: end of Week 3.' },
-      { id: 'w3-linkedin-draft', priority: 'essential', time: '~2 hrs', title: 'LinkedIn launch post draft', desc: 'Use the founder story workhorse paragraph. Aim for 250 words. Refine across June. New angle: "moving cities, smashing debt, launching the day after my 34th birthday."' },
-      { id: 'w3-founder-deck', priority: 'essential', time: '~1 hr', title: 'Founding Partner deck/email locked', desc: 'For warm outreach to Tier-1 contacts. Specific offer. Why this is rare. Why now. Personal.' },
-      { id: 'w3-fb-permission', priority: 'essential', time: '~30 min', title: 'Send permission DMs to FB group admins', desc: 'All 5 hospo FB groups. Format: "Hi, hospo veteran building [X], can I post about it here? Happy to follow whatever rules you have." Treat as secondary channel.' }
-    ]
-  },
-  {
-    id: 'week4',
-    eyebrow: 'Week 4 — Pay #3 Spend Block',
-    title: 'Insurance + email infra',
-    dates: 'Thu 18 Jun → Tue 30 Jun · 13 days',
-    tasks: [
-      { id: 'w4-insurance', priority: 'priority', time: '~30 min', cost: '$90/mo', costType: 'spend', title: '💰 Buy Professional Indemnity insurance', desc: 'Choose best-priced quote from Week 1 research. Monthly billing. $1M cover. <strong>From Pay #3 (June 18).</strong> Don\'t launch without this — selling AI hiring SaaS to businesses without PI is a real legal risk.' },
-      { id: 'w4-resend', priority: 'priority', time: '~30 min', cost: '$15/mo', costType: 'spend', title: '💰 Resend transactional email', desc: 'For welcome emails when first venues sign up. Free tier (100/day, 3000/mo) probably enough for launch month — only pay if you exceed. <strong>From Pay #3 (June 18) if needed.</strong>' },
-      { id: 'w4-supabase-backup', priority: 'priority', time: '30 min', title: 'Set up Supabase database backups (free script)', desc: 'Defer Supabase Pro upgrade ($25/mo) until first revenue. Tonight: free nightly export script that dumps to S3 or local. Without backups, a Supabase outage = data loss = business over.' },
-      { id: 'w4-pressure-test', priority: 'priority', time: '~2 hrs', title: 'Full end-to-end pressure test', desc: 'Get a friend to sign up as a "venue" (free trial browse-only), explore candidates, simulate upgrade-to-paid moment, post a role, share candidate link, run full loop including dashboard, scoring, hire confirmation, even cancellation via Customer Portal. Find every bug.' },
-      { id: 'w4-linkedin-finalise', priority: 'priority', time: '~2 hrs', title: 'LinkedIn announcement post finalised', desc: 'Refine the draft. Read aloud. Cut anything corporate. Schedule for 1 July 7am AEST. The 34th-birthday-eve framing is the hook.' },
-      { id: 'w4-checkpoint', priority: 'priority', time: '5 min', title: '🎯 Pre-launch end-of-day checkpoint', desc: 'Confirm: 3 app HTMLs deployed, Stripe products live with browse-only trial, GST registered, insurance live, analytics tracking, anti-bot active, copy reconciled, terms/privacy live, AI calibration done, demo script locked, warm list contacted. <strong>If ANY of these isn\'t done, finish before launch.</strong>' },
-      { id: 'w4-status-page', priority: 'deferrable', time: '~1 hr', title: 'Status page setup (optional)', desc: '<code>status.hiretrial.com.au</code>. BetterUptime free tier. Helps credibility, not essential at launch.' },
-      { id: 'w4-legal-review', priority: 'deferrable', time: '~1 hr', cost: '$300-500', costType: 'spend', title: 'Legal123 Website Legal Review (optional)', desc: 'Submit live site URL for lawyer review. Best done after deploy + before public launch. Skip unless cash allows.' }
-    ]
-  },
-  {
-    isMilestone: true,
-    title: 'Public Launch — 1 July 2026',
-    subtitle: 'You\'re live. The work changes from building to selling.'
-  },
-  {
-    id: 'launch-week',
-    eyebrow: 'Launch Week',
-    title: 'Going live & early signal',
-    dates: 'Wed 1 Jul → Tue 7 Jul · 7 days',
-    tasks: [
-      { id: 'lw-linkedin', priority: 'priority', time: '~30 min', title: 'Publish LinkedIn launch post', desc: '7am AEST Wednesday 1 July. Personal account. Tag relevant hospo contacts. Reply to every single comment in first 24 hours.' },
-      { id: 'lw-cold-batch', priority: 'priority', time: '~3 hrs', title: 'Send first batch of cold outreach (50-100 venues)', desc: 'Personalised. Use the locked template. Schedule sends across 3-4 days, not all at once. Track open/reply rates.' },
-      { id: 'lw-fb-soft-post', priority: 'priority', time: 'ongoing', title: 'Soft-post in FB groups (where admin approved)', desc: 'Lead with value, not the product. Contribution-style post. Mention Trial. as a footnote. Reply to every comment.' },
-      { id: 'lw-demos', priority: 'priority', time: '~10 hrs', title: 'Run all booked demos', desc: 'Manual onboarding for first 10. Take notes. Watch what confuses people, what excites them. The first 10 customers teach you the next 50. Update CRM after every demo.' },
-      { id: 'lw-replies', priority: 'essential', time: '~1 hr/day', title: 'Reply to every email within 24 hours', desc: 'Per the Support Model commitment. Every. Single. One. This is how reputation gets built in week 1.' },
-      { id: 'lw-day7', priority: 'essential', time: '~30 min', title: 'Day 7 reflection journal', desc: '7 July. What landed? What didn\'t? What surprised you? Strongest signal from week 1? Write 500 words.' },
-      { id: 'lw-day14', priority: 'essential', time: '~30 min', title: 'Day 14 reality check', desc: '15 July. Honest measurement: demos booked, demos run, demo→paid conversion rate, why people are saying no. If signals are bad, what\'s the pivot?' },
-      { id: 'lw-customer-interviews', priority: 'essential', time: 'ongoing', title: 'Set up 30-day customer interview cadence', desc: 'Every paying customer, 30 days into subscription, book a 20-min "how\'s it going?" call. Recurring forever. The first 10-20 of these interviews shape your entire product roadmap.' },
-      { id: 'lw-referral', priority: 'deferrable', time: '~30 min', title: 'Set up informal referral system', desc: 'When you have 3+ happy paying customers, ask: "Know any other venues that\'d benefit?" Offer: 1 month free for them + 1 month free for the referred venue.' }
-    ]
-  }
-];
-
-// ═══════════════════════════════════════════════════════════════
-// COSTS DATA
-// ═══════════════════════════════════════════════════════════════
-
-const COSTS = {
-  paid: [
-    { id: 'c-domain', name: 'hiretrial.com.au domain', desc: '3-year registration via GoDaddy', amount: 43.95, amountDisplay: '$43.95', cycle: 'oneoff', cycleLabel: '3-year', when: 'Sun 10 May', preTicked: true },
-    { id: 'c-m365', name: 'Microsoft 365 Email Essentials', desc: '1-year prepay via GoDaddy bundle (anders@ + 3 aliases)', amount: 35.40, amountDisplay: '$35.40', cycle: 'annual', cycleLabel: 'Annual', when: 'Sun 10 May', preTicked: true }
-  ],
-  mandatory: [
-    { id: 'c-legal123', name: 'Legal123 Website Legal Package', desc: 'Terms, Privacy, Disclaimer, Email, Cookie templates ($199 + GST)', amount: 219, amountDisplay: '$219', cycle: 'oneoff', cycleLabel: 'One-off', when: 'Pay #1 · 21 May' },
-    { id: 'c-ai-cal', name: 'Synthetic AI scoring calibration', desc: '200 test cases via Anthropic API + ~6 hrs compute', amount: 100, amountDisplay: '~$100', cycle: 'oneoff', cycleLabel: 'One-off', when: 'Pay #1 · 21 May' },
-    { id: 'c-pi-1', name: 'Professional Indemnity insurance', desc: '1st month, $1M cover, monthly billing', amount: 90, amountDisplay: '$90', cycle: 'monthly', cycleLabel: 'Monthly', when: 'Pay #3 · 18 Jun' },
-    { id: 'c-resend-1', name: 'Resend transactional email', desc: '1st month, only if free tier exceeded', amount: 15, amountDisplay: '$15', cycle: 'monthly', cycleLabel: 'Monthly', when: 'Pay #3 · 18 Jun (maybe)' }
-  ],
-  recurring: [
-    { id: 'c-m365-renew', name: 'Microsoft 365 Email Essentials', desc: 'Auto-renews May 2027', amount: 0, amountDisplay: '$35/yr', cycle: 'annual', cycleLabel: 'Annual', when: 'Renews May 2027', noTrack: true },
-    { id: 'c-domain-renew', name: 'hiretrial.com.au renewal', desc: 'After 3-year prepay expires', amount: 0, amountDisplay: '$22/yr', cycle: 'annual', cycleLabel: 'Annual', when: 'Renews May 2029', noTrack: true },
-    { id: 'c-pi-ongoing', name: 'Professional Indemnity insurance', desc: 'Ongoing monthly', amount: 0, amountDisplay: '$90/mo', cycle: 'monthly', cycleLabel: 'Monthly', when: 'From Jun 2026', noTrack: true },
-    { id: 'c-resend-ongoing', name: 'Resend transactional email', desc: 'Ongoing if needed beyond free tier', amount: 0, amountDisplay: '$15/mo', cycle: 'monthly', cycleLabel: 'Monthly', when: 'From Jul 2026', noTrack: true },
-    { id: 'c-supabase', name: 'Supabase Pro', desc: 'Daily backups, 7-day retention. Defer until first revenue.', amount: 0, amountDisplay: '$25/mo', cycle: 'monthly', cycleLabel: 'Monthly', when: 'Pay #4 · 2 Jul (post-launch)', noTrack: true },
-    { id: 'c-xero', name: 'Xero Starter', desc: 'GST tracking, BAS prep. Defer until first revenue.', amount: 0, amountDisplay: '$35/mo', cycle: 'monthly', cycleLabel: 'Monthly', when: 'Pay #4 · 2 Jul (post-launch)', noTrack: true },
-    { id: 'c-claude', name: 'Claude Max', desc: 'Operational backbone (already paying separately)', amount: 0, amountDisplay: '$162.22/mo', cycle: 'monthly', cycleLabel: 'Monthly', when: 'Existing', noTrack: true }
-  ],
-  skip: [
-    { id: 'c-skip-1', name: 'Cold email tracking (Mixmax/Apollo)', desc: 'Send first 50-100 manually via Gmail. Reconsider at scale.', amount: 0, amountDisplay: '$30-60/mo', cycle: 'monthly', cycleLabel: 'Monthly', when: 'Skip pre-launch', noTrack: true },
-    { id: 'c-skip-2', name: 'Plausible Analytics', desc: 'Vercel free tier covers it for now', amount: 0, amountDisplay: '$9/mo', cycle: 'monthly', cycleLabel: 'Monthly', when: 'Use Vercel free', noTrack: true },
-    { id: 'c-skip-3', name: 'Vercel Pro', desc: 'Hobby tier sufficient until team or analytics demands grow', amount: 0, amountDisplay: '$20/mo', cycle: 'monthly', cycleLabel: 'Monthly', when: 'Free Hobby tier', noTrack: true },
-    { id: 'c-skip-4', name: 'Legal123 Optional Review', desc: '$300-500 lawyer review. Optional, skip unless cash allows.', amount: 0, amountDisplay: '$300-500', cycle: 'oneoff', cycleLabel: 'One-off', when: 'Defer post-launch', noTrack: true },
-    { id: 'c-skip-5', name: 'Calendly Pro', desc: 'Free tier handles 1 event type, fine for launch', amount: 0, amountDisplay: '$10/mo', cycle: 'monthly', cycleLabel: 'Monthly', when: 'Free tier', noTrack: true },
-    { id: 'c-skip-6', name: 'Formspree paid', desc: 'Free tier (50/mo) enough pre-launch', amount: 0, amountDisplay: '$10/mo', cycle: 'monthly', cycleLabel: 'Monthly', when: 'Free tier', noTrack: true }
-  ]
-};
-
-// ═══════════════════════════════════════════════════════════════
-// CASH FLOW DATA
-// ═══════════════════════════════════════════════════════════════
-
-const CASHFLOW = [
-  {
-    id: 'pay-1',
-    name: 'Pay #1',
-    accent: true,
-    date: 'Thu 21 May 2026',
-    suggestedAlloc: 319,
-    note: 'Big-ticket fortnight. Mandatory pre-launch spend lands here so Legal123 templates can be customised in Week 2 and AI calibration runs through Weeks 2-3. After this, debt payments + rent + food + Melbourne savings.',
-    plannedSpend: ['Legal123 Website Package · $219', 'Synthetic AI calibration · ~$100']
-  },
-  {
-    id: 'pay-2',
-    name: 'Pay #2',
-    date: 'Thu 4 Jun 2026',
-    suggestedAlloc: 0,
-    note: 'No TRIAL. spend planned. This fortnight goes to: rent, food, fuel, debt fortnightly payments, and Melbourne move savings. Soft beta with warm contacts is happening this fortnight — costs nothing.',
-    plannedSpend: ['(no TRIAL. spend)']
-  },
-  {
-    id: 'pay-3',
-    name: 'Pay #3',
-    date: 'Thu 18 Jun 2026',
-    suggestedAlloc: 105,
-    note: 'Insurance live before launch ✅. This fortnight likely lands during/just after the Melbourne move. Final pre-launch fortnight — pressure test, finalise LinkedIn post, lock founding partner emails.',
-    plannedSpend: ['Professional Indemnity (1st mo) · $90', 'Resend (1st mo, if needed) · $15']
-  },
-  {
-    id: 'launch-day',
-    name: '🚀 Launch',
-    launch: true,
-    date: 'Wed 1 Jul 2026',
-    isLaunch: true,
-    note: 'LinkedIn post 7am AEST. First cold outreach batch sends. First demos run. The work shifts from building to selling.',
-    plannedSpend: ['(no spend day-of)']
-  },
-  {
-    id: 'pay-4',
-    name: 'Pay #4',
-    date: 'Thu 2 Jul 2026',
-    suggestedAlloc: 60,
-    note: 'First post-launch paycheck lands two days after launch. Now on steady-state: ~$130/mo recurring (insurance + Resend + Supabase + Xero) plus any usage-based costs. Hopefully offset by first MRR.',
-    plannedSpend: ['Supabase Pro · $25', 'Xero Starter (1st mo) · $35']
-  }
-];
-
-// ═══════════════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════════════
-
-const STORAGE_KEY = 'trial-launch-checklist-v3';
-
-// One-time migration v2: tick off Sunday tasks + pre-mark already-paid costs (domain + M365)
-(function migrateCompletedTasks() {
-  const MIGRATION_KEY = 'trial-launch-checklist-v3-migration-v2';
-  if (localStorage.getItem(MIGRATION_KEY)) return;
-  let saved;
-  try {
-    saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-  } catch (e) {
-    saved = {};
-  }
-  saved.completed = saved.completed || {};
-  saved.paidCosts = saved.paidCosts || {};
-  saved.allocations = saved.allocations || {};
-  saved.received = saved.received || {};
-
-  // Tick Sunday tasks
-  ['s1', 's2', 's-coming-soon', 's4'].forEach(id => { saved.completed[id] = true; });
-
-  // Mark already-paid costs (domain + M365 — they're sunk costs from outside the pool)
-  saved.paidCosts['c-domain'] = { paid: true, fromPool: false };
-  saved.paidCosts['c-m365'] = { paid: true, fromPool: false };
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
-  localStorage.setItem(MIGRATION_KEY, '1');
-})();
-
-// Migration v3: tick off Monday morning 11 May tasks already completed (DKIM toggle, alias send-from, Bitwarden, customer journey map)
-(function migrateMondayMorning() {
-  const MIGRATION_KEY = 'trial-launch-checklist-v3-migration-monday11may';
-  if (localStorage.getItem(MIGRATION_KEY)) return;
-  let saved;
-  try {
-    saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-  } catch (e) {
-    saved = {};
-  }
-  saved.completed = saved.completed || {};
-  // s2b = DKIM toggle + alias send-from (Monday morning cleanup task)
-  saved.completed['s2b'] = true;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
-  localStorage.setItem(MIGRATION_KEY, '1');
-})();
-
-let state = loadState();
-let activeFilter = 'all';
-let activeTab = 'tasks';
-
-function loadState() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    const parsed = saved ? JSON.parse(saved) : {};
-    return {
-      completed: parsed.completed || {},
-      paidCosts: parsed.paidCosts || {},  // {costId: {paid: true, fromPool: bool}}
-      allocations: parsed.allocations || {},  // {paycheckId: amount}
-      received: parsed.received || {},  // {paycheckId: true}
-      customTasks: parsed.customTasks || {},  // {weekId: [task, ...]}
-      customCosts: parsed.customCosts || {}  // {section: [cost, ...]}
-    };
-  } catch (e) {
-    return { completed: {}, paidCosts: {}, allocations: {}, received: {}, customTasks: {}, customCosts: {} };
-  }
-}
-
-function saveState() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    flashSaved();
-  } catch (e) { console.error('Save failed', e); }
-}
-
-function flashSaved() {
-  const el = document.getElementById('last-saved');
-  el.textContent = 'Saved · ' + new Date().toLocaleTimeString('en-AU', {hour:'2-digit', minute:'2-digit'});
-  el.style.color = 'var(--success)';
-  setTimeout(() => {
-    el.style.color = '';
-    el.textContent = 'Auto-saved · ready';
-  }, 2000);
-}
-
-// ═══════════════════════════════════════════════════════════════
-// RENDER — TASKS
-// ═══════════════════════════════════════════════════════════════
-
-function renderTasks() {
-  const container = document.getElementById('tasks-container');
-  container.innerHTML = WEEKS.map(week => {
-    if (week.isMilestone) {
-      return `
-        <div class="milestone">
-          <div class="milestone-eyebrow">Milestone</div>
-          <div class="milestone-title">${week.title}</div>
-          <div class="milestone-subtitle">${week.subtitle}</div>
-        </div>
-      `;
-    }
-
-    // Combine original tasks + custom tasks for this week
-    const customTasks = state.customTasks[week.id] || [];
-    const allTasks = [...week.tasks, ...customTasks];
-
-    const filteredTasks = allTasks.filter(task => {
-      if (activeFilter === 'all') return true;
-      if (activeFilter === 'open') return !state.completed[task.id];
-      return task.priority === activeFilter;
-    });
-
-    return `
-      <div class="week-section">
-        <div class="week-header">
-          <div class="week-eyebrow">${week.eyebrow}</div>
-          <div class="week-title">${week.title}</div>
-          <div class="week-dates">${week.dates}</div>
-        </div>
-        ${filteredTasks.map(task => renderTask(task)).join('')}
-        <div class="add-form" id="add-form-${week.id}">
-          <div class="add-form-title">Add custom task</div>
-          <div class="add-form-field">
-            <label>Title *</label>
-            <input type="text" id="newtask-title-${week.id}" placeholder="e.g. Reach out to Bistro Sant — Tier-2 contact">
+      <div class="countdown-section">
+        <div class="countdown-label">Doors open in</div>
+        <div class="countdown" id="countdown">
+          <div class="countdown-block">
+            <div class="countdown-number" id="days">51</div>
+            <div class="countdown-unit">Days</div>
           </div>
-          <div class="add-form-field">
-            <label>Description</label>
-            <textarea id="newtask-desc-${week.id}" placeholder="More detail (optional)"></textarea>
+          <div class="countdown-block">
+            <div class="countdown-number" id="hours">00</div>
+            <div class="countdown-unit">Hours</div>
           </div>
-          <div class="add-form-row">
-            <div class="add-form-field">
-              <label>Priority</label>
-              <select id="newtask-priority-${week.id}">
-                <option value="essential">Essential</option>
-                <option value="priority">Priority</option>
-                <option value="deferrable">Deferrable</option>
-              </select>
+          <div class="countdown-block">
+            <div class="countdown-number" id="minutes">00</div>
+            <div class="countdown-unit">Minutes</div>
+          </div>
+          <div class="countdown-block">
+            <div class="countdown-number" id="seconds">00</div>
+            <div class="countdown-unit">Seconds</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <a href="#early-access" class="btn btn-primary">
+          Request Early Access
+          <span class="btn-arrow">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section" id="early-access">
+    <div class="container">
+      <div class="form-grid">
+        <div class="form-intro">
+          <h2>Be one of <span class="italic">the first.</span></h2>
+          <p>
+            We&rsquo;re onboarding a small group of founding venues before public launch on 1 July.
+            Founding partners get six months of intro pricing, white-glove setup with the founder,
+            and direct input into the product roadmap.
+          </p>
+          <p>
+            Tell us a bit about your venue and we&rsquo;ll be in touch within 24 hours.
+          </p>
+
+          <div class="qualifies">
+            <div class="qualifies-label">Trial. is built for</div>
+            <p>Independent venues with 4&ndash;50+ staff hiring 2+ times a year.</p>
+            <p>Owner&ndash;operators and venue managers who do their own hiring.</p>
+            <p>Cafés, restaurants, bars, hotels &mdash; across Australia.</p>
+          </div>
+        </div>
+
+        <div>
+          <form class="demo-form" id="demoForm" action="https://formspree.io/f/mjglpppa" method="POST">
+            <div class="form-row">
+              <div class="form-field">
+                <label for="name">Your Name <span class="required">*</span></label>
+                <input type="text" id="name" name="name" required placeholder="First and last">
+              </div>
+              <div class="form-field">
+                <label for="email">Email <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="you@venue.com.au">
+              </div>
             </div>
-            <div class="add-form-field">
-              <label>Time estimate</label>
-              <input type="text" id="newtask-time-${week.id}" placeholder="e.g. 30 min">
+
+            <div class="form-field">
+              <label for="venue">Venue Name <span class="required">*</span></label>
+              <input type="text" id="venue" name="venue" required placeholder="The name on your front door">
             </div>
-          </div>
-          <div class="add-form-actions">
-            <button class="btn" data-cancel-week="${week.id}">Cancel</button>
-            <button class="btn primary" data-save-task="${week.id}">Add task</button>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="venue_type">Venue Type <span class="required">*</span></label>
+                <select id="venue_type" name="venue_type" required>
+                  <option value="">Select one</option>
+                  <option value="Cafe">Café</option>
+                  <option value="Restaurant">Restaurant</option>
+                  <option value="Bar">Bar</option>
+                  <option value="Hotel">Hotel / Accommodation</option>
+                  <option value="Multiple">Multiple venues</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="staff">Number of Staff</label>
+                <select id="staff" name="staff">
+                  <option value="">Select range</option>
+                  <option value="1-3">1&ndash;3 (just starting out)</option>
+                  <option value="4-10">4&ndash;10</option>
+                  <option value="11-25">11&ndash;25</option>
+                  <option value="26-50">26&ndash;50</option>
+                  <option value="51-100">51&ndash;100</option>
+                  <option value="100+">100+</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="phone">Phone (Optional)</label>
+              <input type="tel" id="phone" name="phone" placeholder="In case email's unreliable">
+            </div>
+
+            <div class="form-field">
+              <label for="message">What's your hiring problem? (Optional)</label>
+              <textarea id="message" name="message" placeholder="Tell us in a sentence or two — what's costing you sleep right now?"></textarea>
+            </div>
+
+            <!-- Honeypot for bots -->
+            <input type="text" name="_gotcha" style="display:none">
+
+            <button type="submit" class="form-submit" id="submitBtn">
+              Request Early Access &rarr;
+            </button>
+
+            <div class="form-error" id="formError">
+              Something went wrong. Please email <a href="mailto:hello@hiretrial.com.au" style="color:#ff8080;">hello@hiretrial.com.au</a> directly.
+            </div>
+
+            <p class="form-helper">
+              We&rsquo;ll reply personally within 24 hours.<br>
+              No marketing automation, no spam, no shenanigans.
+            </p>
+          </form>
+
+          <div class="form-success" id="formSuccess">
+            <div class="check">&#10003;</div>
+            <h3>Got it.</h3>
+            <p>
+              Thanks for reaching out. We&rsquo;ll be in touch within 24 hours from
+              <strong>anders@hiretrial.com.au</strong> &mdash; check your spam folder if you don't see it.
+            </p>
           </div>
         </div>
-        <button class="add-btn" data-add-week="${week.id}">
-          <span class="add-btn-icon">+</span><span>Add task to ${week.eyebrow.toLowerCase()}</span>
-        </button>
       </div>
-    `;
-  }).join('');
+    </div>
+  </section>
 
-  // Wire up checkboxes
-  document.querySelectorAll('.task-checkbox input').forEach(input => {
-    input.addEventListener('change', (e) => {
-      const id = e.target.dataset.id;
-      if (e.target.checked) state.completed[id] = true;
-      else delete state.completed[id];
-      saveState();
-      renderProgress();
-      renderTasks();
-    });
-  });
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-meta">
+          ABN 71 441 417 792 &middot; Newcastle, NSW &middot; <a href="mailto:hello@hiretrial.com.au">hello@hiretrial.com.au</a>
+        </div>
+        <div class="footer-brand">
+          TRIAL<span class="dot">.</span>
+        </div>
+      </div>
+    </div>
+  </footer>
 
-  // Wire up delete buttons (custom tasks only)
-  document.querySelectorAll('[data-delete-task]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const taskId = btn.dataset.deleteTask;
-      const weekId = btn.dataset.deleteWeek;
-      if (!confirm('Delete this custom task?')) return;
-      state.customTasks[weekId] = (state.customTasks[weekId] || []).filter(t => t.id !== taskId);
-      delete state.completed[taskId];
-      saveState();
-      renderTasks();
-      renderProgress();
-    });
-  });
+  <script>
+    // Countdown to 1 July 2026 12:00am AEST
+    // AEST is UTC+10, so midnight 1 July 2026 AEST = 30 June 2026 14:00 UTC
+    const launchDate = new Date('2026-06-30T14:00:00Z').getTime();
 
-  // Wire up Add Task buttons (open form)
-  document.querySelectorAll('[data-add-week]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const weekId = btn.dataset.addWeek;
-      const form = document.getElementById(`add-form-${weekId}`);
-      form.classList.add('open');
-      btn.style.display = 'none';
-      document.getElementById(`newtask-title-${weekId}`).focus();
-    });
-  });
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = launchDate - now;
 
-  // Wire up Cancel buttons
-  document.querySelectorAll('[data-cancel-week]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const weekId = btn.dataset.cancelWeek;
-      document.getElementById(`add-form-${weekId}`).classList.remove('open');
-      document.querySelector(`[data-add-week="${weekId}"]`).style.display = '';
-    });
-  });
-
-  // Wire up Save buttons
-  document.querySelectorAll('[data-save-task]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const weekId = btn.dataset.saveTask;
-      const title = document.getElementById(`newtask-title-${weekId}`).value.trim();
-      if (!title) {
-        alert('Title is required.');
+      if (distance < 0) {
+        document.getElementById('countdown').innerHTML = '<div style="font-family:Playfair Display,serif;font-size:32px;font-weight:900;">We&rsquo;re live.</div>';
         return;
       }
-      const desc = document.getElementById(`newtask-desc-${weekId}`).value.trim();
-      const priority = document.getElementById(`newtask-priority-${weekId}`).value;
-      const time = document.getElementById(`newtask-time-${weekId}`).value.trim() || 'TBD';
 
-      const newTask = {
-        id: 'custom-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
-        title,
-        desc: desc || '<em>No description</em>',
-        priority,
-        time,
-        custom: true
-      };
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-      if (!state.customTasks[weekId]) state.customTasks[weekId] = [];
-      state.customTasks[weekId].push(newTask);
-      saveState();
-      renderTasks();
-      renderProgress();
-    });
-  });
-}
-
-function renderTask(task) {
-  const done = !!state.completed[task.id];
-  const tagLabel = task.priority === 'priority' ? 'Priority' : task.priority === 'essential' ? 'Essential' : 'Deferrable';
-
-  // Determine which week this task belongs to (for delete)
-  let weekId = '';
-  if (task.custom) {
-    for (const [wid, tasks] of Object.entries(state.customTasks)) {
-      if (tasks.find(t => t.id === task.id)) { weekId = wid; break; }
+      document.getElementById('days').textContent = String(days).padStart(2, '0');
+      document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+      document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
     }
-  }
 
-  return `
-    <div class="task ${done ? 'done' : ''}" data-id="${task.id}" data-priority="${task.priority}">
-      <div class="task-priority-dot ${task.priority}"></div>
-      <div class="task-checkbox">
-        <input type="checkbox" data-id="${task.id}" ${done ? 'checked' : ''}>
-      </div>
-      <div class="task-content">
-        <div class="task-meta">
-          <span class="task-tag ${task.priority}">${tagLabel}</span>
-          ${task.custom ? '<span class="custom-tag">Custom</span>' : ''}
-          <span class="task-time">${task.time}</span>
-        </div>
-        <div class="task-title">${task.title}</div>
-        <div class="task-description">${task.desc}</div>
-        ${task.cost ? `<span class="task-cost ${task.costType === 'spend' ? 'spend' : ''}">${task.cost}</span>` : ''}
-      </div>
-      ${task.custom ? `<button class="delete-btn" data-delete-task="${task.id}" data-delete-week="${weekId}" title="Delete custom task">×</button>` : ''}
-    </div>
-  `;
-}
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
 
-// ═══════════════════════════════════════════════════════════════
-// POOL CALCULATION
-// ═══════════════════════════════════════════════════════════════
+    // Form submission with Formspree
+    const form = document.getElementById('demoForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const successMessage = document.getElementById('formSuccess');
+    const errorMessage = document.getElementById('formError');
 
-function calculatePool() {
-  // Total allocated income (only from paychecks marked received)
-  let allocatedIn = 0;
-  CASHFLOW.forEach(p => {
-    if (state.received[p.id]) {
-      allocatedIn += parseFloat(state.allocations[p.id] || 0);
-    }
-  });
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMessage.classList.remove('active');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
 
-  // Total spent (only costs that were paid FROM the pool)
-  let spent = 0;
-  Object.entries(state.paidCosts).forEach(([id, info]) => {
-    if (info.paid && info.fromPool) {
-      const cost = findCost(id);
-      if (cost) spent += cost.amount;
-    }
-  });
+      const formData = new FormData(form);
 
-  return {
-    allocatedIn,
-    spent,
-    balance: allocatedIn - spent
-  };
-}
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
 
-function findCost(id) {
-  for (const section of ['paid', 'mandatory', 'recurring', 'skip']) {
-    const found = COSTS[section].find(c => c.id === id);
-    if (found) return found;
-    const custom = (state.customCosts[section] || []).find(c => c.id === id);
-    if (custom) return custom;
-  }
-  return null;
-}
-
-function renderPoolBanners() {
-  const { allocatedIn, spent, balance } = calculatePool();
-  const balanceClass = balance < 0 ? 'negative' : balance < 100 ? 'warn' : 'healthy';
-
-  ['costs', 'cf'].forEach(suffix => {
-    const banner = document.getElementById(`pool-banner-${suffix}`);
-    if (!banner) return;
-    banner.classList.toggle('warn', balance < 0);
-    const balEl = document.getElementById(`pool-balance-${suffix}`);
-    balEl.className = 'pool-balance ' + balanceClass;
-    balEl.textContent = (balance < 0 ? '-$' : '$') + Math.abs(balance).toFixed(2);
-    document.getElementById(`pool-in-${suffix}`).textContent = '$' + allocatedIn.toFixed(2);
-    document.getElementById(`pool-out-${suffix}`).textContent = '$' + spent.toFixed(2);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// RENDER — COSTS
-// ═══════════════════════════════════════════════════════════════
-
-function renderCosts() {
-  const sections = [
-    { key: 'paid', el: 'cost-table-paid', label: 'paid items' },
-    { key: 'mandatory', el: 'cost-table-mandatory', label: 'mandatory items' },
-    { key: 'recurring', el: 'cost-table-recurring', label: 'recurring items' },
-    { key: 'skip', el: 'cost-table-skip', label: 'skip items' }
-  ];
-
-  sections.forEach(({ key, el, label }) => {
-    const tableEl = document.getElementById(el);
-    if (!tableEl) return;
-
-    const allItems = [...COSTS[key], ...(state.customCosts[key] || [])];
-
-    const itemsHtml = allItems.map(item => {
-      const paidInfo = state.paidCosts[item.id];
-      const isPaid = !!(paidInfo && paidInfo.paid);
-      const isTrackable = !item.noTrack;
-      const status = isPaid ? 'paid' : (key === 'skip' ? 'skip' : key === 'recurring' ? 'pending' : key === 'mandatory' ? 'pending' : 'paid');
-      const statusLabel = isPaid ? 'paid' : status;
-
-      return `
-        <div class="cost-row ${isPaid ? 'paid-row' : ''}">
-          <div class="cost-checkbox">
-            ${isTrackable ? `<input type="checkbox" data-cost-id="${item.id}" ${isPaid ? 'checked' : ''}>` : ''}
-          </div>
-          <div>
-            <div class="cost-name">${item.name} ${item.custom ? '<span class="custom-tag" style="margin-left:8px;font-size:8px;padding:2px 6px;">Custom</span>' : ''}</div>
-            <div class="cost-name-desc">${item.desc}</div>
-          </div>
-          <div class="cost-amount">${item.amountDisplay}</div>
-          <div class="cost-cycle ${item.cycle}">${item.cycleLabel}</div>
-          <div><span class="cost-status ${status}">${statusLabel}</span></div>
-          <div class="cost-when" style="display:flex;align-items:center;gap:8px;justify-content:space-between;">
-            <span>${item.when}</span>
-            ${item.custom ? `<button class="delete-btn" data-delete-cost="${item.id}" data-delete-section="${key}" title="Delete custom cost" style="position:static;opacity:1;width:22px;height:22px;font-size:12px;">×</button>` : ''}
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    // Add the form + button at the end of each section's table
-    tableEl.innerHTML = itemsHtml + `
-      <div class="add-form" id="add-cost-form-${key}" style="margin: 12px;">
-        <div class="add-form-title">Add custom cost — ${label}</div>
-        <div class="add-form-field">
-          <label>Item name *</label>
-          <input type="text" id="newcost-name-${key}" placeholder="e.g. Notion Plus subscription">
-        </div>
-        <div class="add-form-field">
-          <label>Description</label>
-          <textarea id="newcost-desc-${key}" placeholder="What's it for? (optional)"></textarea>
-        </div>
-        <div class="add-form-row">
-          <div class="add-form-field">
-            <label>Amount ($, AUD) *</label>
-            <input type="number" id="newcost-amount-${key}" placeholder="0" step="0.01" min="0">
-          </div>
-          <div class="add-form-field">
-            <label>Cycle</label>
-            <select id="newcost-cycle-${key}">
-              <option value="monthly">Monthly</option>
-              <option value="annual">Annual</option>
-              <option value="oneoff">One-off</option>
-            </select>
-          </div>
-        </div>
-        <div class="add-form-field">
-          <label>When (e.g. "Pay #2 · 4 Jun" or "ASAP")</label>
-          <input type="text" id="newcost-when-${key}" placeholder="When you'll pay it">
-        </div>
-        <div class="add-form-actions">
-          <button class="btn" data-cancel-cost="${key}">Cancel</button>
-          <button class="btn primary" data-save-cost="${key}">Add cost</button>
-        </div>
-      </div>
-      <div style="padding: 0 16px 16px;">
-        <button class="add-btn" data-add-cost="${key}">
-          <span class="add-btn-icon">+</span><span>Add custom cost</span>
-        </button>
-      </div>
-    `;
-  });
-
-  // Wire up cost checkboxes
-  document.querySelectorAll('.cost-checkbox input').forEach(input => {
-    input.addEventListener('change', (e) => {
-      const id = e.target.dataset.costId;
-      const cost = findCost(id);
-      if (!cost) return;
-
-      if (e.target.checked) {
-        const { balance } = calculatePool();
-        const fromPool = !cost.preTicked;
-        if (fromPool && balance - cost.amount < 0) {
-          e.target.checked = false;
-          alert(`Can't mark "${cost.name}" as paid — it would drop the pool below zero.\n\nCurrent pool: $${balance.toFixed(2)}\nCost: $${cost.amount.toFixed(2)}\n\nAllocate more income on the Cash Flow tab first, or defer this cost.`);
-          return;
+        if (response.ok) {
+          form.style.display = 'none';
+          successMessage.classList.add('active');
+        } else {
+          throw new Error('Submission failed');
         }
-        state.paidCosts[id] = { paid: true, fromPool };
-      } else {
-        delete state.paidCosts[id];
+      } catch (error) {
+        errorMessage.classList.add('active');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Request Early Access →';
       }
-      saveState();
-      renderCosts();
-      renderPoolBanners();
-      renderProgress();
     });
-  });
-
-  // Wire up Add Cost buttons (open form)
-  document.querySelectorAll('[data-add-cost]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const key = btn.dataset.addCost;
-      const form = document.getElementById(`add-cost-form-${key}`);
-      form.classList.add('open');
-      btn.style.display = 'none';
-      document.getElementById(`newcost-name-${key}`).focus();
-    });
-  });
-
-  // Wire up Cancel buttons
-  document.querySelectorAll('[data-cancel-cost]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const key = btn.dataset.cancelCost;
-      document.getElementById(`add-cost-form-${key}`).classList.remove('open');
-      const addBtn = document.querySelector(`[data-add-cost="${key}"]`);
-      if (addBtn) addBtn.style.display = '';
-    });
-  });
-
-  // Wire up Save Cost buttons
-  document.querySelectorAll('[data-save-cost]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const key = btn.dataset.saveCost;
-      const name = document.getElementById(`newcost-name-${key}`).value.trim();
-      const amountVal = parseFloat(document.getElementById(`newcost-amount-${key}`).value);
-      if (!name) { alert('Item name is required.'); return; }
-      if (isNaN(amountVal) || amountVal < 0) { alert('Amount must be a positive number.'); return; }
-      const desc = document.getElementById(`newcost-desc-${key}`).value.trim();
-      const cycle = document.getElementById(`newcost-cycle-${key}`).value;
-      const when = document.getElementById(`newcost-when-${key}`).value.trim() || 'TBD';
-
-      const cycleLabels = { monthly: 'Monthly', annual: 'Annual', oneoff: 'One-off' };
-
-      const newCost = {
-        id: 'custom-cost-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
-        name,
-        desc: desc || '(no description)',
-        amount: amountVal,
-        amountDisplay: '$' + amountVal.toFixed(2),
-        cycle,
-        cycleLabel: cycleLabels[cycle],
-        when,
-        custom: true,
-        // Skip section items don't track pool spend
-        noTrack: key === 'skip'
-      };
-
-      if (!state.customCosts[key]) state.customCosts[key] = [];
-      state.customCosts[key].push(newCost);
-      saveState();
-      renderCosts();
-      renderPoolBanners();
-    });
-  });
-
-  // Wire up delete buttons (custom costs only)
-  document.querySelectorAll('[data-delete-cost]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const id = btn.dataset.deleteCost;
-      const section = btn.dataset.deleteSection;
-      if (!confirm('Delete this custom cost? If marked paid, the pool will refund.')) return;
-      state.customCosts[section] = (state.customCosts[section] || []).filter(c => c.id !== id);
-      delete state.paidCosts[id];
-      saveState();
-      renderCosts();
-      renderPoolBanners();
-      renderProgress();
-    });
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// RENDER — CASH FLOW
-// ═══════════════════════════════════════════════════════════════
-
-function renderCashflow() {
-  const container = document.getElementById('cashflow-container');
-  container.innerHTML = CASHFLOW.map(p => {
-    const allocation = state.allocations[p.id] !== undefined ? state.allocations[p.id] : '';
-    const received = !!state.received[p.id];
-    const isLaunch = p.isLaunch;
-
-    return `
-      <div class="paycheck-block ${p.launch ? 'launch' : ''} ${received ? 'received' : ''}">
-        <div class="paycheck-header">
-          <div class="paycheck-name">${p.name} ${p.accent ? '<span class="accent">·</span>' : ''}</div>
-          <div class="paycheck-date">${p.date}</div>
-        </div>
-        <div class="paycheck-body">
-          <div class="paycheck-section">
-            <h4>Planned TRIAL. Spend This Fortnight</h4>
-            <ul class="paycheck-list">
-              ${p.plannedSpend.map(s => `<li><span class="item-name">${s}</span></li>`).join('')}
-            </ul>
-          </div>
-          <div class="paycheck-section">
-            <h4>${isLaunch ? 'Notes' : 'Allocate to TRIAL.'}</h4>
-            ${isLaunch ? `<p style="font-size:13px;color:var(--muted);font-style:italic;">Launch day — no allocation needed.</p>` : `
-              <p style="font-size:12px;color:var(--muted);margin-bottom:6px;">Suggested: <strong style="color:var(--accent);">$${p.suggestedAlloc}</strong></p>
-              <p style="font-size:12px;color:var(--muted);font-style:italic;">Set however much you actually want to put in this fortnight.</p>
-            `}
-          </div>
-        </div>
-        ${!isLaunch ? `
-          <div class="allocation-input-row">
-            <div class="allocation-label">Allocate $</div>
-            <input type="number" class="allocation-input" data-paycheck-id="${p.id}" value="${allocation}" placeholder="0" step="1" min="0" ${received ? 'disabled' : ''}>
-            <label class="received-checkbox">
-              <input type="checkbox" data-paycheck-id="${p.id}" data-action="received" ${received ? 'checked' : ''}>
-              <span class="received-label">Pay received → into pool</span>
-            </label>
-          </div>
-          ${received && allocation ? `<div class="allocation-summary"><span class="pool-add">+$${parseFloat(allocation).toFixed(2)}</span> added to TRIAL. funds.</div>` : ''}
-        ` : ''}
-        <div class="paycheck-note">${p.note}</div>
-      </div>
-    `;
-  }).join('');
-
-  // Wire up allocation inputs
-  document.querySelectorAll('.allocation-input').forEach(input => {
-    input.addEventListener('input', (e) => {
-      const id = e.target.dataset.paycheckId;
-      const val = parseFloat(e.target.value) || 0;
-      state.allocations[id] = val;
-      saveState();
-      renderPoolBanners();
-    });
-  });
-
-  // Wire up received checkboxes
-  document.querySelectorAll('.received-checkbox input').forEach(input => {
-    input.addEventListener('change', (e) => {
-      const id = e.target.dataset.paycheckId;
-      if (e.target.checked) {
-        if (!state.allocations[id] || state.allocations[id] <= 0) {
-          e.target.checked = false;
-          alert('Set an allocation amount first before marking the paycheck received.');
-          return;
-        }
-        state.received[id] = true;
-      } else {
-        // Unticking received — block if it would push pool negative
-        const { balance } = calculatePool();
-        const allocated = parseFloat(state.allocations[id] || 0);
-        if (balance - allocated < 0) {
-          e.target.checked = true;
-          alert(`Can't un-receive this paycheck — it would push the pool below zero.\n\nUntick paid costs first to free up the funds.`);
-          return;
-        }
-        delete state.received[id];
-      }
-      saveState();
-      renderCashflow();
-      renderPoolBanners();
-    });
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// PROGRESS
-// ═══════════════════════════════════════════════════════════════
-
-function renderProgress() {
-  let total = 0;
-  WEEKS.forEach(w => { if (!w.isMilestone) total += w.tasks.length; });
-  const done = Object.keys(state.completed).length;
-  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-  document.getElementById('stat-done').textContent = done;
-  document.getElementById('stat-total').textContent = total;
-  document.getElementById('stat-pct').textContent = pct + '%';
-  document.getElementById('progress-fill').style.width = pct + '%';
-
-  // Days left to 1 July 2026 12:00am AEST
-  const launchDate = new Date('2026-06-30T14:00:00Z').getTime();
-  const days = Math.max(0, Math.floor((launchDate - Date.now()) / 86400000));
-  document.getElementById('stat-days').textContent = days;
-
-  // Spent so far = total amount of all paid costs (including pre-paid)
-  let totalSpent = 0;
-  Object.entries(state.paidCosts).forEach(([id, info]) => {
-    if (info.paid) {
-      const cost = findCost(id);
-      if (cost) totalSpent += cost.amount;
-    }
-  });
-  document.getElementById('stat-spent').textContent = '$' + totalSpent.toFixed(0);
-}
-
-// ═══════════════════════════════════════════════════════════════
-// COUNTDOWN
-// ═══════════════════════════════════════════════════════════════
-
-const launchDate = new Date('2026-06-30T14:00:00Z').getTime();
-
-function updateCountdown() {
-  const now = Date.now();
-  const dist = launchDate - now;
-  if (dist < 0) {
-    ['cd-days','cd-hours','cd-minutes','cd-seconds'].forEach(id => document.getElementById(id).textContent = '00');
-    return;
-  }
-  const days = Math.floor(dist / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((dist % (1000 * 60)) / 1000);
-  document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
-  document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
-  document.getElementById('cd-minutes').textContent = String(minutes).padStart(2, '0');
-  document.getElementById('cd-seconds').textContent = String(seconds).padStart(2, '0');
-}
-
-// ═══════════════════════════════════════════════════════════════
-// TABS + FILTERS
-// ═══════════════════════════════════════════════════════════════
-
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    activeTab = tab.dataset.tab;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.querySelector(`[data-panel="${activeTab}"]`).classList.add('active');
-  });
-});
-
-document.querySelectorAll('.filter-pill').forEach(pill => {
-  pill.addEventListener('click', () => {
-    activeFilter = pill.dataset.filter;
-    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-    pill.classList.add('active');
-    renderTasks();
-  });
-});
-
-// ═══════════════════════════════════════════════════════════════
-// EXPORT / RESET
-// ═══════════════════════════════════════════════════════════════
-
-function exportProgress() {
-  const data = { exportedAt: new Date().toISOString(), state, weeks: WEEKS };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `trial-progress-${new Date().toISOString().split('T')[0]}.json`;
-  a.click();
-}
-
-function resetAll() {
-  if (!confirm('Reset all progress? This wipes ticked tasks, paid costs, allocations, received paychecks, AND any custom items you added. Cannot be undone.')) return;
-  state = { completed: {}, paidCosts: {}, allocations: {}, received: {}, customTasks: {}, customCosts: {} };
-  localStorage.removeItem('trial-launch-checklist-v3-migration-may10');
-  localStorage.removeItem('trial-launch-checklist-v3-migration-v2');
-  localStorage.removeItem('trial-launch-checklist-v3-migration-monday11may');
-  saveState();
-  location.reload();
-}
-
-// ═══════════════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════════════
-
-renderTasks();
-renderCosts();
-renderCashflow();
-renderPoolBanners();
-renderProgress();
-updateCountdown();
-setInterval(updateCountdown, 1000);
-</script>
+  </script>
 </body>
 </html>
