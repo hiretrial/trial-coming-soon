@@ -187,7 +187,7 @@
       font-size: clamp(18px, 1.7vw, 22px);
       font-style: italic;
       font-weight: 500;
-      color: var(--gold);
+      color: var(--accent);
       max-width: 680px;
       line-height: 1.4;
       margin-bottom: 56px;
@@ -852,6 +852,37 @@
 
     updateCountdown();
     setInterval(updateCountdown, 1000);
+// --- Vercel Analytics custom events ---
+
+    // PII-safe wrapper around window.va('event', ...)
+    function trackEvent(name, props) {
+      if (typeof window.va !== 'function') return;
+      var blocked = ['email', 'phone', 'name', 'abn', 'address'];
+      var safe;
+      if (props) {
+        safe = {};
+        Object.keys(props).forEach(function (k) {
+          if (blocked.indexOf(k.toLowerCase()) === -1) safe[k] = props[k];
+        });
+      }
+      window.va('event', { name: name, data: safe });
+    }
+
+    // Fire when someone clicks the "Book a Demo" CTA (intent signal)
+    document.querySelectorAll('a[href="#book-demo"]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        trackEvent('demo_cta_click', { source: 'hero' });
+      });
+    });
+
+    // Fire when Calendly confirms an actual booking (commitment signal)
+    window.addEventListener('message', function (e) {
+      if (e.origin !== 'https://calendly.com') return;
+      if (e.data && e.data.event === 'calendly.event_scheduled') {
+        trackEvent('demo_booking_completed');
+      }
+    });
+    
   </script>
 </body>
 </html>
