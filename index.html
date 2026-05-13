@@ -92,19 +92,21 @@ body::after {
 
 /* ─── Navigation ─── */
 nav {
-  position: fixed;
+  position: fixed !important;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 50;
+  width: 100%;
+  z-index: 1000;
   padding: 22px var(--gutter);
   display: flex;
   align-items: center;
   justify-content: space-between;
   backdrop-filter: blur(20px) saturate(1.2);
   -webkit-backdrop-filter: blur(20px) saturate(1.2);
-  background: rgba(10, 10, 10, 0.65);
+  background: rgba(10, 10, 10, 0.85);
   border-bottom: 1px solid var(--ink-line);
+  will-change: transform;
 }
 
 .wordmark {
@@ -867,11 +869,13 @@ footer .sep {
       <article class="how-step">
         <div class="how-num">01</div>
         <div class="how-content">
-          <h3>Applications arrive on autopilot.</h3>
-          <p>You list a Trial-routed email on your job posts, or auto-forward applicant
-          emails from your inbox. As soon as an application lands, Trial picks up the
-          candidate's name, contact details and the role they're applying for — no
-          forwarding clicks, no spreadsheets, no logins required.</p>
+          <h3>Applications arrive on autopilot — however they come.</h3>
+          <p>List a Trial-routed email on your online job posts, auto-forward applicant
+          emails from your inbox, or display a Trial QR code at your venue for walk-ins.
+          However an application reaches you — Seek, your website, Facebook, a CV at
+          the counter — Trial picks up the candidate's name, contact details, and the
+          role they're applying for. No forwarding clicks, no spreadsheets, no logins
+          required.</p>
         </div>
       </article>
 
@@ -883,7 +887,8 @@ footer .sep {
           they applied for. Front-of-house specific questions tailored to the role —
           beverage staff (bartender, bar back), floor staff (host, server,
           food runner, expediter), café roles (barista, café all-rounder), or
-          management (floor manager, café manager).</p>
+          management (bar supervisor, restaurant supervisor, duty manager, café manager,
+          restaurant manager).</p>
           <p>Not generic personality tests. Ten to fifteen minutes of the candidate's
           time, structured for the way you actually evaluate someone on the floor.</p>
         </div>
@@ -942,18 +947,11 @@ footer .sep {
         their honest read than launch loudly into a thousand venues we can't yet
         meaningfully support.
         <br><br>
-        Founding venues get pricing locked for life, direct input on the product roadmap,
-        and a working line to the founder. In return, we want your operational reality —
-        what's working, what isn't, what's missing.
+        In return for being early, we ask for your operational reality — what's working,
+        what isn't, what's missing.
       </p>
 
       <ul class="program-list">
-        <li>
-          <div>
-            <strong>Founding pricing locked for life</strong>
-            <span>Whatever wave you join determines your monthly rate — locked, regardless of how the platform's pricing evolves later.</span>
-          </div>
-        </li>
         <li>
           <div>
             <strong>Direct founder line</strong>
