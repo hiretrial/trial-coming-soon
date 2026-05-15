@@ -98,7 +98,7 @@ function validateBody(body: any): { ok: boolean; error?: string; data?: any } {
 // Uses Resend (resend.com) which works without DKIM verification on
 // their default sending domain (onboarding@resend.dev).
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-
+console.log('[eoi-debug] RESEND_API_KEY length:', RESEND_API_KEY ? RESEND_API_KEY.length : 'NOT SET', '| SUPABASE_URL length:', process.env.SUPABASE_URL ? process.env.SUPABASE_URL.length : 'NOT SET');
 async function notifyAnders(eoi: any): Promise<void> {
   if (!RESEND_API_KEY) {
     console.log('[eoi] RESEND_API_KEY missing — skipping notification');
