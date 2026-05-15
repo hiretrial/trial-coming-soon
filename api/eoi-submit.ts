@@ -92,17 +92,20 @@ function validateBody(body: any): { ok: boolean; error?: string; data?: any } {
   return { ok: true, data };
 }
 
-// ─── Postmark email stub ──────────────────────────────────────────
-// Sends Anders a notification when an EOI lands. If POSTMARK_SERVER_TOKEN
-// is missing (DKIM not verified yet), this returns silently without crashing.
+// ─── Resend email notification ─────────────────────────────────────
+// Sends Anders a notification email when an EOI lands.
+// Uses Resend (resend.com) which works without DKIM verification on
+// their default sending domain (onboarding@resend.dev).
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+
 async function notifyAnders(eoi: any): Promise<void> {
-  if (!POSTMARK_SERVER_TOKEN) {
-    console.log('[eoi] Postmark token missing — skipping notification email');
+  if (!RESEND_API_KEY) {
+    console.log('[eoi] RESEND_API_KEY missing — skipping notification');
     return;
   }
   try {
     const subject = `🔔 New Trial. EOI — ${eoi.venue_name}`;
-    const lines = [
+    const textBody = [
       `New Founding Venue EOI just landed.`,
       ``,
       `Venue:        ${eoi.venue_name}`,
@@ -118,38 +121,62 @@ async function notifyAnders(eoi: any): Promise<void> {
       `${eoi.frustration || '(not provided)'}`,
       ``,
       `—`,
-      `Reply within 24 hrs per the founding promise. Source of truth: Supabase eoi_submissions table.`,
-    ];
-    const textBody = lines.join('\n');
+      `Reply within 24 hrs per the founding promise.`,
+      `Source of truth: Supabase eoi_submissions table.`,
+    ].join('\n');
 
-    const res = await fetch('https://api.postmarkapp.com/email', {
+    const htmlBody = `
+      <div style="font-family:system-ui,sans-serif;color:#1a1a1a;line-height:1.55;max-width:600px;">
+        <h2 style="font-family:Georgia,serif;font-weight:500;font-size:22px;color:#c8a96e;margin:0 0 16px;">
+          🔔 New Trial. EOI
+        </h2>
+        <p style="margin:0 0 20px;color:#444;">A founding venue just submitted interest.</p>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <tr><td style="padding:8px 0;color:#888;width:140px;">Venue</td><td style="padding:8px 0;font-weight:600;">${eoi.venue_name}</td></tr>
+          <tr><td style="padding:8px 0;color:#888;">Contact</td><td style="padding:8px 0;">${eoi.contact_name}</td></tr>
+          <tr><td style="padding:8px 0;color:#888;">Email</td><td style="padding:8px 0;"><a href="mailto:${eoi.email}" style="color:#c8a96e;">${eoi.email}</a></td></tr>
+          <tr><td style="padding:8px 0;color:#888;">Phone</td><td style="padding:8px 0;">${eoi.phone || '—'}</td></tr>
+          <tr><td style="padding:8px 0;color:#888;">Venue type</td><td style="padding:8px 0;">${eoi.venue_type || '—'}</td></tr>
+          <tr><td style="padding:8px 0;color:#888;">Hires/year</td><td style="padding:8px 0;">${eoi.hires_per_year || '—'}</td></tr>
+          <tr><td style="padding:8px 0;color:#888;">Apps/role</td><td style="padding:8px 0;">${eoi.applications_per_role || '—'}</td></tr>
+          <tr><td style="padding:8px 0;color:#888;">Timing</td><td style="padding:8px 0;"><strong>${eoi.timing || '—'}</strong></td></tr>
+        </table>
+        <div style="margin-top:24px;padding:16px;background:#f7f5ef;border-left:3px solid #c8a96e;">
+          <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Frustration</div>
+          <div style="color:#1a1a1a;">${eoi.frustration || '(not provided)'}</div>
+        </div>
+        <p style="margin-top:24px;font-size:12px;color:#888;">
+          Reply within 24 hrs per the founding promise.<br>
+          Source of truth: Supabase <code>eoi_submissions</code> table.
+        </p>
+      </div>
+    `;
+
+    const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
-        'Accept': 'application/json',
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
         'Content-Type': 'application/json',
-        'X-Postmark-Server-Token': POSTMARK_SERVER_TOKEN,
       },
       body: JSON.stringify({
-        From: POSTMARK_FROM,
-        To: ANDERS_ALERT_EMAIL,
-        Subject: subject,
-        TextBody: textBody,
-        MessageStream: 'outbound',
+        from: 'Trial. Alerts <onboarding@resend.dev>',
+        to: [ANDERS_ALERT_EMAIL],
+        subject,
+        text: textBody,
+        html: htmlBody,
       }),
     });
 
     if (!res.ok) {
       const err = await res.text();
-      console.warn('[eoi] Postmark notification failed:', res.status, err.slice(0, 200));
+      console.warn('[eoi] Resend notification failed:', res.status, err.slice(0, 200));
     } else {
-      console.log('[eoi] Notification email sent to', ANDERS_ALERT_EMAIL);
+      console.log('[eoi] ✅ Notification email sent to', ANDERS_ALERT_EMAIL);
     }
   } catch (e: any) {
-    // Never throw from notification — submission must succeed regardless
     console.warn('[eoi] Notification error (non-fatal):', e?.message);
   }
 }
-
 // ─── Handler ──────────────────────────────────────────────────────
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS — only allow the live site origin in production, * for now during testing
