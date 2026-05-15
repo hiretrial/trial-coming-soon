@@ -1,4 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════
+// Trigger rebuild — Resend env var refresh
 // api/eoi-submit.ts
 //
 // Vercel API route. Receives EOI form POST from hiretrial.com.au,
