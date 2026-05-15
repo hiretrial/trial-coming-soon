@@ -242,7 +242,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log(`[eoi] ✅ ${inserted.venue_name} (${inserted.email}) — id ${inserted.id}`);
 
   // Fire-and-forget notification (don't block response on Postmark)
-  notifyAnders({ ...data }).catch(e => console.warn('[eoi] notifyAnders error:', e?.message));
+  await notifyAnders({ ...data }).catch(e => console.warn('[eoi] notifyAnders error:', e?.message));
 
   return res.status(200).json({
     ok: true,
