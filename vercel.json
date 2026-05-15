@@ -1,0 +1,14 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "dashboard.hiretrial.com.au"
+        }
+      ],
+      "destination": "/dashboard.html"
+    }
+  ]
+}
