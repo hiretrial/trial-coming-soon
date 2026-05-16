@@ -2019,5 +2019,18 @@ function wireResetButton() {
   renderApp();
 })();
 </script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     Supabase client — loaded last so it's available to onFinishClick.
+     Anon key is safe in browsers; RLS protects everything sensitive.
+     ═══════════════════════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://yzbuzzjhbmuuqneahttv.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6YnV6empoYm11dXFuZWFodHR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMDQwMzQsImV4cCI6MjA5Mzg4MDAzNH0.-JmMNM3rCTD94Txpp0zNgGEXv8ajymVgHff75dzZrFE';
+  // Single shared client for both function calls and post-success signIn.
+  window.trialSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+
 </body>
 </html>
