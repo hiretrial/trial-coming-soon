@@ -717,6 +717,27 @@ h1.page-title .italic {
   font-weight: 600;
 }
 
+/* Reset progress button — sits at the end of the dev banner, separated from
+   the flow-start links by margin-left:auto so it can't be mistaken for one.
+   Coral color signals "this is destructive" without being alarming. */
+.dev-banner-reset {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid rgba(217,119,87,0.45);
+  color: var(--danger);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.dev-banner-reset:hover {
+  background: rgba(217,119,87,0.12);
+  border-color: var(--danger);
+}
+
 /* ─── Stripe placeholder ──────────────────────────────────── */
 .stripe-placeholder {
   background: var(--bg3);
@@ -831,6 +852,9 @@ h1.page-title .italic {
       <a href="?token=master_starter&dev=1">Starter (2–3 venues)</a>
       <a href="?token=master_growth&dev=1">Growth (4–5 venues)</a>
     </div>
+    <!-- Reset progress — wipes localStorage for all trial-setup-* keys so you
+         can walk through any scenario fresh. Dev-only; never visible to customers. -->
+    <button class="dev-banner-reset" id="dev-reset-btn" type="button">Reset progress</button>
   </div>
 
   <!-- Sections are dynamically rendered by setMode() based on the token -->
@@ -1675,6 +1699,7 @@ function highlightCurrentScenario() {
       const url = new URL(a.href);
       if (url.searchParams.get('token') === token) a.classList.add('current');
     });
+    wireResetButton();
     return;
   }
   // Venue (delegated) flow: replace the dev banner content to reflect that
@@ -1689,8 +1714,26 @@ function highlightCurrentScenario() {
       <div class="dev-banner-links">
         <a href="?token=master_starter&dev=1">&larr; Back to master setup</a>
       </div>
+      <button class="dev-banner-reset" id="dev-reset-btn" type="button">Reset progress</button>
     `;
+    wireResetButton();
   }
+}
+
+// Wipe all trial-setup-* keys from localStorage so any scenario can be re-walked
+// from scratch. Bound to #dev-reset-btn each time it appears in the DOM (banner
+// gets re-rendered in venue mode, so we rebind after every render).
+function wireResetButton() {
+  const btn = document.getElementById('dev-reset-btn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    if (!confirm('Wipe all setup progress and reload? This clears every test flow on this device.')) return;
+    Object.keys(localStorage)
+      .filter(k => k.startsWith('trial-setup-'))
+      .forEach(k => localStorage.removeItem(k));
+    // Reload to current URL — keeps ?dev=1 + token so you stay in the same scenario, fresh.
+    location.reload();
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════════
