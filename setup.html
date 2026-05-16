@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v3-edge-function-live · 2026-05-16 23:30 AEST · cache-bust -->
+<!-- v4-real-fetch-baked-in · 2026-05-16 23:40 AEST · onFinishClick now async with real Edge Function call -->
 <html lang="en-AU">
 <head>
 <meta charset="UTF-8">
@@ -1908,7 +1908,7 @@ function onRunTestClick() {
   }, 3000);
 }
 
-function onFinishClick() {
+async function onFinishClick() {
   // Validate business email — this is the login address, not the forwarding inbox
   const email = ($('login-email')?.value || '').trim();
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1929,27 +1929,60 @@ function onFinishClick() {
     return;
   }
 
-  // Capture both onto progress so the backend gets them when wired.
-  // Password itself is held in memory only until POST — never persisted to localStorage.
   progress.loginEmail = email;
 
   const btn = $('finish-btn');
   btn.disabled = true;
   btn.textContent = 'Setting up your dashboard…';
-  // PRODUCTION:
-  // await fetch('/api/setup/complete/' + getToken(), {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ email, password: pw1 })
-  // });
-  // Backend creates the Supabase Auth user with `email` + `password`, sets a
-  // session cookie scoped to `.hiretrial.com.au` so the dashboard subdomain
-  // recognises them as logged in. Then we redirect to DASHBOARD_URL.
-  setTimeout(() => {
+
+  try {
+    console.log('[setup-complete] Calling Edge Function…');
+    // Call our Edge Function to create the Auth user + users row + mark venue complete.
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/setup-complete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'apikey': SUPABASE_ANON_KEY
+      },
+      body: JSON.stringify({
+        token: getToken(),
+        email,
+        password: pw1,
+        full_name: session.managerName || session.groupOwnerName || ''
+      })
+    });
+
+    const data = await res.json();
+    console.log('[setup-complete] Response:', res.status, data);
+
+    if (!res.ok || !data.ok) {
+      btn.disabled = false;
+      btn.textContent = 'Set password & open dashboard →';
+      showToast(data.error || "Something went wrong. Please try again.");
+      return;
+    }
+
+    // Auth user exists now — sign them in client-side to mint a session.
+    const { error: signInErr } = await window.trialSupabase.auth.signInWithPassword({
+      email,
+      password: pw1
+    });
+
+    if (signInErr) {
+      console.error('[setup-complete] Post-setup signIn failed:', signInErr);
+    }
+
     progress.passwordSet = true;
     saveProgress();
     setActiveSection();
-  }, 1200);
+
+  } catch (err) {
+    console.error('[setup-complete] Fetch failed:', err);
+    btn.disabled = false;
+    btn.textContent = 'Set password & open dashboard →';
+    showToast("Network error — please try again.");
+  }
 }
 
 function copyInbox(email, btn) {
