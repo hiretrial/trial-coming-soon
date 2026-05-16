@@ -302,6 +302,49 @@ h1.page-title .italic {
   line-height: 1.5;
 }
 
+/* ─── Password show/hide toggle ───────────────────────────────
+   Wrapper sits relative so the eye button can absolute-position over the input
+   right edge. Input gets right-padding so the user's typed password doesn't
+   slide under the icon. Tap zone is 40×40 even though the icon is 18×18 — big
+   thumbs on phones need real estate.
+*/
+.pw-input-wrap {
+  position: relative;
+}
+.pw-input {
+  padding-right: 48px; /* room for the eye button */
+}
+.pw-toggle {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 0;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.pw-toggle:hover {
+  color: var(--accent);
+  background: var(--accent-bg);
+}
+.pw-toggle:focus-visible {
+  outline: none;
+  color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+.pw-toggle.revealed {
+  color: var(--accent);
+}
+
 /* ─── Venue row (for delegation entry) ───────────────────── */
 .venue-rows { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
 .venue-row {
@@ -956,6 +999,13 @@ const VENUE_RANGE = {
   enterprise: '6+ venues'
 };
 
+// SVG eye icons for password show/hide toggle. currentColor lets us style via CSS.
+// Stroke-only (no fills) keeps it light and refined — matches the brand's "thin
+// gold linework" aesthetic. Same outer dimensions so the button doesn't jump
+// when toggling.
+const EYE_SVG_OPEN = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const EYE_SVG_CLOSED = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-10-7-10-7a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 10 7 10 7a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`;
+
 const $ = id => document.getElementById(id);
 
 function showToast(msg, ms = 2400) {
@@ -1246,6 +1296,9 @@ function venueNameBody() {
       </div>
       <button class="btn copy-btn" onclick="copyInbox('${session.venueInbox}', this)">Copy</button>
     </div>
+    <div class="field-hint" style="margin-top:8px">
+      This is your <strong style="color:var(--muted)">forwarding address</strong> — applications land here, we score them, then forward the original to your business email. You don't log in with this one.
+    </div>
     <div class="btn-row">
       <button class="btn btn-primary" id="confirm-name-btn">Looks right — continue &rarr;</button>
     </div>
@@ -1260,9 +1313,12 @@ function pluggingBody({ inbox }) {
     <p class="body-text">
       Wherever job applications currently land in your inbox — SEEK, Indeed, your careers page — change the destination to:
     </p>
-    <div class="inbox-display" style="margin-bottom:18px">
+    <div class="inbox-display" style="margin-bottom:8px">
       <span class="inbox-address" id="plug-inbox">${inbox}</span>
       <button class="btn copy-btn" onclick="copyInbox('${inbox}', this)">Copy</button>
+    </div>
+    <div class="field-hint" style="margin-bottom:18px">
+      This is your <strong style="color:var(--muted)">forwarding address</strong> — applications land here, we score them, then forward the original to your business email. You don't log in with this one.
     </div>
 
     <div class="wt-tabs" role="tablist">
@@ -1337,20 +1393,48 @@ function testBody() {
 }
 
 function passwordBody() {
+  // Pull the pre-filled business email from the token. Venue mode → managerEmail
+  // (what Sarah entered when she dispatched). Master Solo → groupOwnerEmail
+  // (what they used when they paid). Either way it's editable below.
+  const prefillEmail = session.type === 'venue'
+    ? (session.managerEmail || '')
+    : (session.groupOwnerEmail || '');
+
   return `
     <p class="body-text">
-      Choose a password for your dashboard. You'll use this to sign in at <strong>dashboard.hiretrial.com.au</strong>.
+      Your business email is your dashboard login. The Trial. inbox you set up earlier is for receiving applications — <strong>you don't log in with that one</strong>.
     </p>
+
     <div class="field">
+      <label class="field-label">Business email <span style="color:var(--dim);font-weight:400;font-style:italic;text-transform:none;letter-spacing:0;">(this is what you'll log in with)</span></label>
+      <input type="email" class="field-input" id="login-email" value="${escapeAttr(prefillEmail)}" placeholder="you@yourvenue.com.au" autocomplete="email" inputmode="email">
+      <div class="field-hint">We'll forward original applications from your Trial. inbox to this address — exactly the way SEEK used to land in your inbox today.</div>
+    </div>
+
+    <div class="field pw-field">
       <label class="field-label">Password</label>
-      <input type="password" class="field-input" id="pw1" placeholder="At least 8 characters" autocomplete="new-password">
+      <div class="pw-input-wrap">
+        <input type="password" class="field-input pw-input" id="pw1" placeholder="At least 8 characters" autocomplete="new-password" data-pw-target="pw1">
+        <button type="button" class="pw-toggle" data-pw-toggle="pw1" aria-label="Show password" title="Show password">${EYE_SVG_OPEN}</button>
+      </div>
     </div>
-    <div class="field">
+
+    <div class="field pw-field">
       <label class="field-label">Confirm password</label>
-      <input type="password" class="field-input" id="pw2" placeholder="Type it again" autocomplete="new-password">
+      <div class="pw-input-wrap">
+        <input type="password" class="field-input pw-input" id="pw2" placeholder="Type it again" autocomplete="new-password" data-pw-target="pw2">
+        <button type="button" class="pw-toggle" data-pw-toggle="pw2" aria-label="Show password" title="Show password">${EYE_SVG_OPEN}</button>
+      </div>
     </div>
+
     <button class="btn btn-primary btn-block" id="finish-btn">Set password & open dashboard &rarr;</button>
   `;
+}
+
+// Escape attribute values — prevents user-controlled strings from breaking out
+// of the value="..." quote (e.g. if Sarah types a weird email with a quote in it).
+function escapeAttr(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 /* ───────────────────────────────────────────────────────────
@@ -1506,6 +1590,30 @@ function wireBody() {
   // Finish (set password)
   const finishBtn = $('finish-btn');
   if (finishBtn) finishBtn.onclick = onFinishClick;
+
+  // Password show/hide toggles — per-field, stays revealed until tapped again
+  document.querySelectorAll('.pw-toggle').forEach(btn => {
+    btn.onclick = (e) => {
+      e.preventDefault();
+      const targetId = btn.dataset.pwToggle;
+      const input = document.getElementById(targetId);
+      if (!input) return;
+      const revealed = input.type === 'text';
+      if (revealed) {
+        input.type = 'password';
+        btn.innerHTML = EYE_SVG_OPEN;
+        btn.classList.remove('revealed');
+        btn.setAttribute('aria-label', 'Show password');
+        btn.setAttribute('title', 'Show password');
+      } else {
+        input.type = 'text';
+        btn.innerHTML = EYE_SVG_CLOSED;
+        btn.classList.add('revealed');
+        btn.setAttribute('aria-label', 'Hide password');
+        btn.setAttribute('title', 'Hide password');
+      }
+    };
+  });
 }
 
 function wireSectionToggles() {
@@ -1646,6 +1754,15 @@ function onRunTestClick() {
 }
 
 function onFinishClick() {
+  // Validate business email — this is the login address, not the forwarding inbox
+  const email = ($('login-email')?.value || '').trim();
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailRe.test(email)) {
+    showToast("Enter a valid business email — this is what you'll log in with.");
+    $('login-email')?.focus();
+    return;
+  }
+
   const pw1 = $('pw1').value;
   const pw2 = $('pw2').value;
   if (pw1.length < 8) {
@@ -1656,9 +1773,23 @@ function onFinishClick() {
     showToast("Passwords don't match — try again.");
     return;
   }
+
+  // Capture both onto progress so the backend gets them when wired.
+  // Password itself is held in memory only until POST — never persisted to localStorage.
+  progress.loginEmail = email;
+
   const btn = $('finish-btn');
   btn.disabled = true;
   btn.textContent = 'Setting up your dashboard…';
+  // PRODUCTION:
+  // await fetch('/api/setup/complete/' + getToken(), {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({ email, password: pw1 })
+  // });
+  // Backend creates the Supabase Auth user with `email` + `password`, sets a
+  // session cookie scoped to `.hiretrial.com.au` so the dashboard subdomain
+  // recognises them as logged in. Then we redirect to DASHBOARD_URL.
   setTimeout(() => {
     progress.passwordSet = true;
     saveProgress();
