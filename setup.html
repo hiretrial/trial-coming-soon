@@ -389,6 +389,53 @@ h1.page-title .italic {
   .venue-row-grid { grid-template-columns: 1fr; }
 }
 
+/* ─── Live inbox preview inside venue-row ─── */
+.inbox-preview {
+  margin-top: 12px;
+  font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+  font-size: 11.5px;
+  line-height: 1.5;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.inbox-preview-label {
+  color: var(--dim);
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.inbox-preview-value {
+  color: var(--accent);
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+.inbox-preview-value.empty {
+  color: var(--dim);
+  font-style: italic;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 400;
+}
+.inbox-preview-value.conflict {
+  color: var(--danger);
+  text-decoration: line-through;
+  text-decoration-color: rgba(217,119,87,0.5);
+}
+.inbox-preview-warning {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: var(--danger-bg);
+  border-left: 2px solid var(--danger);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--danger);
+  line-height: 1.45;
+}
+
 .inbox-display {
   background: var(--bg);
   border: 1px solid var(--border-2);
@@ -1178,6 +1225,9 @@ function masterConfirmBody() {
 }
 
 function masterDispatchBody() {
+  // Inbox preview is empty initially — auto-fills as the user types the venue
+  // name. Final inbox is generated server-side at dispatch (handles cross-
+  // customer collisions), so we mark this as a *preview* rather than committed.
   const rows = session.venues.map((v, i) => `
     <div class="venue-row" data-venue-idx="${v.idx}">
       <div class="venue-row-head">
@@ -1187,15 +1237,19 @@ function masterDispatchBody() {
       <div class="venue-row-grid">
         <div class="field" style="margin-bottom:0">
           <label class="field-label">Venue name</label>
-          <input type="text" class="field-input venue-name-input" placeholder="e.g. Bistro A" data-venue-idx="${v.idx}">
+          <input type="text" class="field-input venue-name-input" placeholder="e.g. Bistro Ricco" data-venue-idx="${v.idx}" autocomplete="off">
         </div>
         <div class="field" style="margin-bottom:0">
           <label class="field-label">Manager's email</label>
-          <input type="email" class="field-input venue-email-input" placeholder="manager@example.com" data-venue-idx="${v.idx}">
+          <input type="email" class="field-input venue-email-input" placeholder="manager@example.com" data-venue-idx="${v.idx}" autocomplete="off">
         </div>
       </div>
-      <div class="field-hint" style="margin-top:10px;font-family:'SF Mono',monospace;font-size:11.5px;">
-        Their Trial. inbox: <span style="color:var(--accent)">${v.inbox}</span>
+      <div class="inbox-preview" data-inbox-for="${v.idx}">
+        <span class="inbox-preview-label">Their Trial. inbox:</span>
+        <span class="inbox-preview-value empty" data-inbox-value="${v.idx}">— enter venue name above —</span>
+      </div>
+      <div class="inbox-preview-warning" data-inbox-warning="${v.idx}" style="display:none">
+        ⚠ This name conflicts with another venue — make it more specific (e.g. add a suburb).
       </div>
     </div>
   `).join('');
@@ -1208,6 +1262,65 @@ function masterDispatchBody() {
     <button class="btn btn-primary btn-block" id="dispatch-btn">Send setup links to my managers &rarr;</button>
     <p class="field-hint" style="text-align:center;margin-top:14px">Each manager will get an email titled <em>"${session.businessName} signed your venue up for Trial."</em></p>
   `;
+}
+
+// Slug a venue name into a clean email local-part.
+// "Bistro Ricco (Surry Hills)" → "bistroriccosurryhills"
+// "Café 21 — St Kilda" → "cafe21stkilda"
+// Lowercase, strip diacritics, drop anything that isn't a-z0-9, collapse.
+function slugifyVenueName(name) {
+  if (!name) return '';
+  return name
+    .normalize('NFD')              // split accented chars: é → e + ́
+    .replace(/[\u0300-\u036f]/g, '') // drop the diacritic marks
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')     // keep only alphanumerics
+    .slice(0, 40);                 // cap length so weird long names don't make ugly inboxes
+}
+
+// Re-evaluate every venue row's inbox preview + same-form collision warnings.
+// Called on every keystroke in any venue-name field. Idempotent — safe to call
+// as often as you want.
+function refreshInboxPreviews() {
+  const rows = Array.from(document.querySelectorAll('#venue-dispatch-rows .venue-row'));
+  if (!rows.length) return;
+
+  // First pass: compute the slug for each row.
+  const slugs = rows.map(row => {
+    const idx = row.dataset.venueIdx;
+    const name = row.querySelector('.venue-name-input').value.trim();
+    return { idx, name, slug: slugifyVenueName(name) };
+  });
+
+  // Find slugs that collide (appear more than once and are non-empty).
+  const slugCounts = {};
+  slugs.forEach(s => { if (s.slug) slugCounts[s.slug] = (slugCounts[s.slug] || 0) + 1; });
+
+  // Second pass: update the preview value + warning for each row.
+  slugs.forEach(({ idx, name, slug }) => {
+    const valueEl = document.querySelector(`[data-inbox-value="${idx}"]`);
+    const warnEl  = document.querySelector(`[data-inbox-warning="${idx}"]`);
+    if (!valueEl) return;
+
+    if (!slug) {
+      // Empty name → soft placeholder
+      valueEl.textContent = '— enter venue name above —';
+      valueEl.classList.add('empty');
+      valueEl.classList.remove('conflict');
+      warnEl.style.display = 'none';
+    } else if (slugCounts[slug] > 1) {
+      // Collides with another row in this form → warn the user
+      valueEl.textContent = `${slug}@hiretrial.com.au`;
+      valueEl.classList.remove('empty');
+      valueEl.classList.add('conflict');
+      warnEl.style.display = '';
+    } else {
+      // Clean preview
+      valueEl.textContent = `${slug}@hiretrial.com.au`;
+      valueEl.classList.remove('empty', 'conflict');
+      warnEl.style.display = 'none';
+    }
+  });
 }
 
 function masterDoneBody() {
@@ -1575,6 +1688,13 @@ function wireBody() {
   const dispatchBtn = $('dispatch-btn');
   if (dispatchBtn) dispatchBtn.onclick = onDispatchClick;
 
+  // Live inbox preview — every keystroke in any venue-name input recomputes
+  // all previews + collision warnings. Listener attached to each input so
+  // it survives section state transitions.
+  document.querySelectorAll('.venue-name-input').forEach(input => {
+    input.addEventListener('input', refreshInboxPreviews);
+  });
+
   // Venue name confirm (venue mode)
   const confirmNameBtn = $('confirm-name-btn');
   if (confirmNameBtn) confirmNameBtn.onclick = onConfirmNameClick;
@@ -1659,16 +1779,20 @@ function onDispatchClick() {
   const rows = Array.from(document.querySelectorAll('#venue-dispatch-rows .venue-row'));
   const data = [];
   let allValid = true;
+  const slugs = []; // collected so we can detect same-form collisions
+
   rows.forEach(row => {
     const idx = parseInt(row.dataset.venueIdx, 10);
     const name = row.querySelector('.venue-name-input').value.trim();
     const email = row.querySelector('.venue-email-input').value.trim();
+    const slug = slugifyVenueName(name);
     if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       row.style.borderColor = 'var(--danger)';
       allValid = false;
     } else {
       row.style.borderColor = '';
-      data.push({ idx, name, email });
+      data.push({ idx, name, email, previewedInbox: `${slug}@hiretrial.com.au` });
+      slugs.push(slug);
     }
   });
 
@@ -1677,9 +1801,26 @@ function onDispatchClick() {
     return;
   }
 
+  // Block dispatch if any two venues in this form would resolve to the same inbox.
+  // The user has already seen the per-row warning; this is the final gate.
+  const slugSet = new Set(slugs);
+  if (slugSet.size !== slugs.length) {
+    showToast("Two venues have names that conflict — make them more specific before dispatching.");
+    return;
+  }
+
   const btn = $('dispatch-btn');
   btn.disabled = true;
   btn.textContent = 'Sending setup links…';
+  // PRODUCTION:
+  // await fetch('/api/setup/dispatch/' + getToken(), {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({ venues: data })
+  // });
+  // Backend slugifies the name, handles cross-customer collisions (suffix with
+  // business slug if needed), creates the venue rows + setup_tokens, and sends
+  // the manager emails via Resend. Returns the final inboxes so we can confirm.
   setTimeout(() => {
     progress.dispatchedAt = new Date().toISOString();
     progress.dispatchedTo = data;
