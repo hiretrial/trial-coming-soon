@@ -1028,6 +1028,19 @@ const MOCK_TOKENS = {
     managerName: 'Maria',
     phase: 'founding',
     tier: 'starter'
+  },
+  // TEMPORARY — real DB setup_token for the live end-to-end Edge Function test.
+  // Remove this entry once resolveToken() is properly wired to call Supabase.
+  'live-test-f096494c-ac38-4410-bcbe-b6c82b7a8760': {
+    type: 'venue',
+    dispatcherName: 'Anders (test)',
+    businessName: 'TRIAL. Test',
+    venueName: 'Live Setup Test Venue',
+    venueInbox: 'live-setup-test@hiretrial.com.au',
+    managerEmail: 'live-setup-test@hiretrial.com.au',
+    managerName: 'Test Manager',
+    phase: 'founding',
+    tier: 'solo'
   }
 };
 
