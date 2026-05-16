@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Trial. setup — finish setting up your venue's hiring pipeline.">
+<title>Setup — Trial.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+
+  --bg:       #0a0a0a;
+  --bg2:      #111;
+  --bg3:      #161616;
+  --bg4:      #1c1c1c;
+  --card:     #131313;
+  --card-hi:  #181818;
+
+  --white:    #f8f6f0;
+  --muted:    rgba(248,246,240,0.62);
+  --dim:      rgba(248,246,240,0.42);
+  --faint:    rgba(248,246,240,0.22);
+
+  --accent:   #c8a96e;
+  --accent-2: #d4b887;
+  --accent-dim: rgba(200,169,110,0.5);
+  --accent-bg: rgba(200,169,110,0.06);
+  --accent-bg-strong: rgba(200,169,110,0.12);
+  --accent-line: rgba(200,169,110,0.18);
+
+  --border:   rgba(255,255,255,0.06);
+  --border-2: rgba(255,255,255,0.1);
+  --border-strong: rgba(255,255,255,0.18);
+
+  --success:  #6db58a;
+  --success-bg: rgba(109,181,138,0.1);
+  --warning:  #d4a04a;
+  --warning-bg: rgba(212,160,74,0.1);
+  --danger:   #d97757;
+  --danger-bg: rgba(217,119,87,0.1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--white);
+  line-height: 1.6;
+  font-weight: 300;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(200,169,110,0.06), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(200,169,110,0.03), transparent);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.shell {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 56px 32px 80px;
+}
+
+/* ─── Header ──────────────────────────────────────────────── */
+.wordmark {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.6px;
+  display: inline-flex;
+  align-items: baseline;
+}
+.wordmark .dot { color: var(--accent); font-size: 32px; }
+
+.eyebrow {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-top: 32px;
+  margin-bottom: 16px;
+}
+
+h1.page-title {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: clamp(34px, 5.5vw, 52px);
+  line-height: 1.04;
+  letter-spacing: -1.2px;
+  margin-bottom: 12px;
+}
+h1.page-title .italic {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.page-sub {
+  color: var(--muted);
+  font-size: 16px;
+  max-width: 540px;
+  line-height: 1.55;
+  margin-bottom: 40px;
+}
+
+/* ─── Section card ────────────────────────────────────────── */
+.section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.section.locked {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.section.locked .section-body { max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; }
+.section.active {
+  border-color: var(--accent-line);
+  box-shadow: 0 0 0 1px var(--accent-bg-strong), 0 24px 60px -32px rgba(0,0,0,0.4);
+}
+.section.done {
+  opacity: 0.72;
+}
+.section.done .section-body { max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; }
+.section.done .section-header {
+  border-bottom-color: transparent;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 28px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+}
+.section.locked .section-header,
+.section.done .section-header { cursor: default; }
+
+.step-num {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transition: all 0.3s ease;
+}
+.section.active .step-num {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+.section.done .step-num {
+  background: transparent;
+  border-color: var(--success);
+  color: var(--success);
+}
+.section.done .step-num::after {
+  content: '✓';
+  font-family: var(--sans);
+  font-size: 16px;
+}
+.section.done .step-num span { display: none; }
+
+.section-title-wrap { flex: 1; min-width: 0; }
+.section-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+.section-sub {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.section-body {
+  padding: 24px 28px 28px;
+  max-height: 4000px;
+  opacity: 1;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease,
+              padding 0.3s ease;
+  overflow: hidden;
+}
+
+/* ─── Deal summary card (Section 1) ───────────────────────── */
+.deal-card {
+  background: var(--bg3);
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  padding: 22px 24px;
+  margin-bottom: 18px;
+}
+.deal-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.deal-row:last-child { border-bottom: none; padding-bottom: 0; }
+.deal-row:first-child { padding-top: 0; }
+.deal-label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  font-weight: 600;
+}
+.deal-value {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.3px;
+  color: var(--white);
+  text-align: right;
+}
+.deal-value .accent { color: var(--accent); }
+.deal-value .small { font-size: 12px; color: var(--muted); font-family: var(--sans); font-weight: 400; }
+.deal-total {
+  padding-top: 14px;
+  margin-top: 4px;
+  border-top: 1px solid var(--accent-line);
+}
+.deal-total .deal-value {
+  font-size: 22px;
+  color: var(--accent);
+}
+
+.body-text {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+.body-text strong { color: var(--white); font-weight: 500; }
+
+/* ─── Inputs ──────────────────────────────────────────────── */
+.field {
+  margin-bottom: 16px;
+}
+.field-label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dim);
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+.field-input,
+.field-textarea {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  color: var(--white);
+  font-family: var(--sans);
+  font-size: 14.5px;
+  padding: 11px 14px;
+  transition: border-color 0.15s ease;
+}
+.field-input:focus,
+.field-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.field-input::placeholder { color: var(--faint); }
+.field-textarea { resize: vertical; min-height: 80px; }
+
+.field-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* ─── Venue row (for delegation entry) ───────────────────── */
+.venue-rows { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+.venue-row {
+  background: var(--bg3);
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+.venue-row-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.venue-row-num {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-bg-strong);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 12px;
+  font-weight: 700;
+}
+.venue-row-label {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: -0.2px;
+}
+.venue-row-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 540px) {
+  .venue-row-grid { grid-template-columns: 1fr; }
+}
+
+.inbox-display {
+  background: var(--bg);
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+.inbox-address {
+  font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  color: var(--accent);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.copy-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.copy-btn:hover { border-color: var(--accent-dim); color: var(--accent); }
+.copy-btn.copied { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+
+/* ─── Buttons ─────────────────────────────────────────────── */
+.btn {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 13px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--card);
+  color: var(--white);
+}
+.btn:hover:not(:disabled) {
+  background: var(--card-hi);
+  border-color: var(--accent-dim);
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-2);
+  border-color: var(--accent-2);
+}
+.btn-primary:disabled,
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.btn-block { width: 100%; justify-content: center; }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+/* ─── Walkthrough tabs ────────────────────────────────────── */
+.wt-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.wt-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: -1px;
+}
+.wt-tab:hover { color: var(--white); }
+.wt-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.wt-panel { display: none; }
+.wt-panel.active { display: block; animation: fadeIn 0.25s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.wt-steps {
+  list-style: none;
+  counter-reset: walk;
+}
+.wt-steps li {
+  counter-increment: walk;
+  padding: 12px 0 12px 38px;
+  position: relative;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.55;
+  border-bottom: 1px dashed var(--border);
+}
+.wt-steps li:last-child { border-bottom: none; }
+.wt-steps li::before {
+  content: counter(walk);
+  position: absolute;
+  left: 0;
+  top: 13px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1px solid var(--accent-line);
+  color: var(--accent);
+  font-family: var(--serif);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wt-steps li strong { color: var(--white); font-weight: 500; }
+.wt-steps li code {
+  font-family: 'SF Mono', 'Monaco', monospace;
+  font-size: 12.5px;
+  background: var(--bg3);
+  padding: 2px 7px;
+  border-radius: 4px;
+  color: var(--accent);
+  border: 1px solid var(--accent-line);
+}
+
+/* ─── Test submission state ───────────────────────────────── */
+.test-state {
+  background: var(--bg3);
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+  min-height: 86px;
+}
+.test-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 20px;
+  color: var(--muted);
+  transition: all 0.3s ease;
+}
+.test-state.running .test-icon {
+  border-color: var(--accent);
+  color: var(--accent);
+  animation: spin 1.4s linear infinite;
+}
+.test-state.success .test-icon {
+  background: var(--success-bg);
+  border-color: var(--success);
+  color: var(--success);
+}
+.test-state.success .test-icon::before { content: '✓'; }
+.test-state.success .test-icon span { display: none; }
+.test-content { flex: 1; }
+.test-headline {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 4px;
+  letter-spacing: -0.2px;
+}
+.test-detail {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── Dispatch confirmation (master flow) ─────────────────── */
+.dispatch-summary {
+  background: var(--success-bg);
+  border: 1px solid rgba(109,181,138,0.35);
+  border-left: 3px solid var(--success);
+  border-radius: 10px;
+  padding: 22px 24px;
+  margin-bottom: 18px;
+}
+.dispatch-summary-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--success);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.dispatch-summary-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 12px;
+  letter-spacing: -0.3px;
+}
+.dispatch-list {
+  list-style: none;
+  margin-top: 14px;
+}
+.dispatch-list li {
+  padding: 8px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  border-top: 1px dashed var(--border);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.dispatch-list li:first-child { border-top: none; }
+.dispatch-list .name { color: var(--white); font-weight: 500; }
+.dispatch-list .email {
+  font-family: 'SF Mono', 'Monaco', monospace;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+/* ─── Final handoff (venue mode) ──────────────────────────── */
+.handoff {
+  text-align: center;
+  padding: 40px 28px;
+  background: linear-gradient(135deg, var(--accent-bg-strong), var(--accent-bg));
+  border: 1px solid var(--accent-dim);
+  border-radius: 14px;
+  margin-top: 24px;
+}
+.handoff-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.handoff-title {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+.handoff-title .italic { font-style: italic; font-weight: 500; color: var(--accent); }
+.handoff-sub {
+  color: var(--muted);
+  font-size: 15px;
+  margin-bottom: 24px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.55;
+}
+
+/* ─── Mode picker (dev-only — choose which token to test) ─── */
+.dev-banner {
+  background: var(--warning-bg);
+  border: 1px solid rgba(212,160,74,0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 24px;
+  font-size: 12px;
+  color: var(--warning);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* Contextual dev preview — appears post-dispatch inside the master "Sent" card.
+   Same warning palette as .dev-banner so it reads as "test mode plumbing",
+   not production UI. Removed when the dev banner is stripped for production. */
+.dev-followup {
+  margin-top: 28px;
+  padding: 14px 18px;
+  background: var(--warning-bg);
+  border: 1px dashed rgba(212,160,74,0.45);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.dev-followup-label {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--warning);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.dev-followup-text {
+  flex: 1;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.5;
+  min-width: 200px;
+}
+.dev-followup-cta {
+  background: transparent;
+  border: 1px solid rgba(212,160,74,0.4);
+  color: var(--warning);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.dev-followup-cta:hover {
+  background: rgba(212,160,74,0.15);
+  border-color: var(--warning);
+}
+.dev-banner-label {
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+.dev-banner-links { display: flex; gap: 8px; flex-wrap: wrap; }
+.dev-banner-links a {
+  background: transparent;
+  border: 1px solid rgba(212,160,74,0.4);
+  color: var(--warning);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.dev-banner-links a:hover {
+  background: rgba(212,160,74,0.15);
+}
+.dev-banner-links a.current {
+  background: var(--warning);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+/* ─── Stripe placeholder ──────────────────────────────────── */
+.stripe-placeholder {
+  background: var(--bg3);
+  border: 1px dashed var(--border-strong);
+  border-radius: 10px;
+  padding: 24px;
+  text-align: center;
+  margin-bottom: 18px;
+}
+.stripe-placeholder-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--dim);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.stripe-placeholder-title {
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--white);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.stripe-placeholder-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+/* ─── Toast ───────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg2);
+  border: 1px solid var(--accent-dim);
+  color: var(--white);
+  padding: 14px 22px;
+  border-radius: 10px;
+  font-size: 13px;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 24px 60px -16px rgba(0,0,0,0.5);
+  max-width: calc(100vw - 32px);
+}
+.toast.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ─── Footer ──────────────────────────────────────────────── */
+.footer {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--dim);
+  text-align: center;
+  line-height: 1.7;
+}
+.footer a { color: var(--muted); text-decoration: none; }
+.footer a:hover { color: var(--accent); }
+
+/* ─── Mobile ──────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .shell { padding: 36px 16px 60px; }
+  h1.page-title { font-size: 32px; letter-spacing: -0.8px; }
+  .page-sub { font-size: 14.5px; margin-bottom: 28px; }
+  .section { border-radius: 12px; }
+  .section-header { padding: 18px 20px; gap: 12px; }
+  .section-body { padding: 20px 20px 22px; }
+  .step-num { width: 28px; height: 28px; font-size: 13px; }
+  .section-title { font-size: 17px; }
+  .section-sub { font-size: 12.5px; }
+  .deal-card { padding: 16px 18px; }
+  .deal-row { flex-wrap: wrap; gap: 6px; }
+  .deal-value { font-size: 15px; }
+  .deal-total .deal-value { font-size: 19px; }
+  .inbox-display { flex-wrap: wrap; padding: 12px 14px; }
+  .inbox-address { font-size: 13px; }
+  .handoff { padding: 32px 20px; }
+  .handoff-title { font-size: 24px; }
+  .field-input, .field-textarea { font-size: 16px; } /* prevents iOS zoom */
+}
+</style>
+</head>
+<body>
+
+<div class="shell" id="app-shell">
+  <!-- Header — branded but quiet -->
+  <div class="wordmark">Trial<span class="dot">.</span></div>
+  <div class="eyebrow" id="page-eyebrow">Finish setup</div>
+  <h1 class="page-title" id="page-title">Loading…</h1>
+  <p class="page-sub" id="page-sub"></p>
+
+  <!--
+    Dev-mode banner — hidden by default in production. Revealed only when the URL
+    has ?dev=1 (toggled by isDevMode() in script). This lets Anders preview the
+    test flows on the live site without exposing them to real users.
+    To test as Anders: hiretrial.com.au/setup?dev=1
+  -->
+  <div class="dev-banner" id="dev-banner" style="display:none">
+    <span class="dev-banner-label">Dev preview</span>
+    <span style="color:var(--muted);font-size:11.5px;">Start a setup flow —</span>
+    <div class="dev-banner-links">
+      <a href="?token=master_solo&dev=1">Solo (1 venue)</a>
+      <a href="?token=master_starter&dev=1">Starter (2–3 venues)</a>
+      <a href="?token=master_growth&dev=1">Growth (4–5 venues)</a>
+    </div>
+  </div>
+
+  <!-- Sections are dynamically rendered by setMode() based on the token -->
+  <div id="sections"></div>
+
+  <div class="footer">
+    Trial. · <a href="mailto:hello@hiretrial.com.au">hello@hiretrial.com.au</a> · ABN 71 441 417 792
+  </div>
+</div>
+
+<div class="toast" id="toast">—</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   Token resolver — in production this fetches /api/setup/{token}.
+   For the dev build, we resolve against a hardcoded map so all three
+   modes are testable from the same file.
+   ═══════════════════════════════════════════════════════════════ */
+const MOCK_TOKENS = {
+  master_solo: {
+    type: 'master',
+    groupOwnerName: 'Anders Berggren',
+    groupOwnerEmail: 'anders@hotelsweeneys.com.au',
+    businessName: 'Hotel Sweeneys',
+    phase: 'founding',
+    tier: 'solo',
+    venueCount: 1,
+    billingCycle: 'monthly',
+    monthly: 99.99,
+    perHire: 99,
+    annualYearly: null,
+    venues: [
+      { idx: 1, inbox: 'hotelsweeneys@hiretrial.com.au' }
+    ]
+  },
+  master_starter: {
+    type: 'master',
+    groupOwnerName: 'Sarah Mitchell',
+    groupOwnerEmail: 'sarah@sweeneysgroup.com.au',
+    businessName: 'Sweeneys Group',
+    phase: 'founding',
+    tier: 'starter',
+    venueCount: 3,
+    billingCycle: 'monthly',
+    monthly: 199,
+    perHire: 89,
+    annualYearly: null,
+    venues: [
+      { idx: 1, inbox: 'sweeneys-1@hiretrial.com.au' },
+      { idx: 2, inbox: 'sweeneys-2@hiretrial.com.au' },
+      { idx: 3, inbox: 'sweeneys-3@hiretrial.com.au' }
+    ]
+  },
+  master_growth: {
+    type: 'master',
+    groupOwnerName: 'Daniel Park',
+    groupOwnerEmail: 'daniel@parkhospo.com.au',
+    businessName: 'Park Hospitality',
+    phase: 'founding',
+    tier: 'growth',
+    venueCount: 5,
+    billingCycle: 'monthly',
+    monthly: 349,
+    perHire: 79,
+    annualYearly: null,
+    venues: [
+      { idx: 1, inbox: 'park-1@hiretrial.com.au' },
+      { idx: 2, inbox: 'park-2@hiretrial.com.au' },
+      { idx: 3, inbox: 'park-3@hiretrial.com.au' },
+      { idx: 4, inbox: 'park-4@hiretrial.com.au' },
+      { idx: 5, inbox: 'park-5@hiretrial.com.au' }
+    ]
+  },
+  venue_bistro_a: {
+    type: 'venue',
+    dispatcherName: 'Sarah Mitchell',
+    businessName: 'Sweeneys Group',
+    venueName: 'Bistro A',
+    venueInbox: 'sweeneys-1@hiretrial.com.au',
+    managerEmail: 'maria@bistroa.com.au',
+    managerName: 'Maria',
+    phase: 'founding',
+    tier: 'starter'
+  }
+};
+
+const TIER_LABELS = {
+  solo: 'Solo',
+  starter: 'Starter',
+  growth: 'Growth',
+  enterprise: 'Enterprise',
+  pph: 'Pay-Per-Hire'
+};
+
+const VENUE_RANGE = {
+  solo: '1 venue',
+  starter: '2–3 venues',
+  growth: '4–5 venues',
+  enterprise: '6+ venues'
+};
+
+const $ = id => document.getElementById(id);
+
+function showToast(msg, ms = 2400) {
+  const el = $('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.classList.remove('show'), ms);
+}
+
+function getToken() {
+  const params = new URLSearchParams(location.search);
+  const token = params.get('token');
+  if (token) return token;
+  // No token in URL. In dev mode, default to master_solo so Anders can land on
+  // /setup?dev=1 and start clicking. In production (no ?dev=1), return null —
+  // which triggers the renderInvalidToken() flow ("this link isn't working").
+  return isDevMode() ? 'master_solo' : null;
+}
+
+// Dev mode — true when ?dev=1 is in the URL. Used to gate test-only surfaces:
+// the top dev banner and the post-dispatch "preview a manager's link" affordance.
+// In production these are hidden from real users; in dev (Anders testing on the
+// live site) they're revealed so the whole chain can be walked through.
+function isDevMode() {
+  return new URLSearchParams(location.search).get('dev') === '1';
+}
+
+async function resolveToken(token) {
+  // PRODUCTION: const r = await fetch('/api/setup/' + token); return r.json();
+  return MOCK_TOKENS[token] || null;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATE — completion progress within the page session.
+   Stored in localStorage so refresh doesn't lose progress (token
+   acts as the key so different scenarios don't collide).
+   ═══════════════════════════════════════════════════════════════ */
+let session = null; // resolved token data
+let progress = null; // { confirmedDeal, paid, namedVenues, plugged, tested, passwordSet, dispatchedAt }
+
+function loadProgress(token) {
+  try {
+    const raw = localStorage.getItem('trial-setup-' + token);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) { return {}; }
+}
+function saveProgress() {
+  try { localStorage.setItem('trial-setup-' + getToken(), JSON.stringify(progress)); } catch (e) {}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION RENDERING — master vs venue mode
+   ═══════════════════════════════════════════════════════════════ */
+function renderApp() {
+  if (!session) { renderInvalidToken(); return; }
+  if (session.type === 'master') renderMasterMode();
+  else if (session.type === 'venue') renderVenueMode();
+}
+
+function renderInvalidToken() {
+  $('page-eyebrow').textContent = 'Setup link';
+  $('page-title').innerHTML = `Hmm — this link <span class="italic">isn't working</span>.`;
+  $('page-sub').textContent = "The setup link may have expired or wasn't formed correctly. Email hello@hiretrial.com.au and we'll send you a fresh one.";
+  $('sections').innerHTML = '';
+}
+
+/* ───────────────────────────────────────────────────────────
+   MASTER MODE — group owner pays + dispatches links
+   ─────────────────────────────────────────────────────────── */
+function renderMasterMode() {
+  const isMultiVenue = session.venueCount > 1;
+  $('page-eyebrow').textContent = isMultiVenue ? 'Group setup' : 'Finish setup';
+  $('page-title').innerHTML = isMultiVenue
+    ? `Welcome, <span class="italic">${session.businessName}</span>.`
+    : `Welcome to <span class="italic">Trial.</span>`;
+  $('page-sub').textContent = isMultiVenue
+    ? `Three quick things and your group is up and running. We'll send each of your venue managers their own setup link once you've finished.`
+    : `Three quick things and you're ready to take applications.`;
+
+  const sectionsEl = $('sections');
+  sectionsEl.innerHTML = `
+    ${renderSection({
+      n: 1, key: 'confirm',
+      title: 'Confirm your subscription',
+      sub: 'Review what you agreed to on the demo — then pay.',
+      bodyHtml: masterConfirmBody()
+    })}
+    ${isMultiVenue ? renderSection({
+      n: 2, key: 'dispatch',
+      title: 'Send setup links to your venue managers',
+      sub: 'One email per venue — each manager finishes their own setup.',
+      bodyHtml: masterDispatchBody()
+    }) : renderSection({
+      n: 2, key: 'plug',
+      title: 'Plug your Trial. inbox into SEEK',
+      sub: 'Replace your existing application email with the one we generated.',
+      bodyHtml: pluggingBody({ inbox: session.venues[0].inbox })
+    })}
+    ${!isMultiVenue ? renderSection({
+      n: 3, key: 'test',
+      title: 'Send a test application',
+      sub: "We'll fake one for you to confirm the chain works.",
+      bodyHtml: testBody()
+    }) : ''}
+    ${!isMultiVenue ? renderSection({
+      n: 4, key: 'password',
+      title: 'Set your password & open the dashboard',
+      sub: 'Last step — choose a password and you\'re in.',
+      bodyHtml: passwordBody()
+    }) : ''}
+    ${isMultiVenue ? renderSection({
+      n: 3, key: 'done',
+      title: 'All set',
+      sub: "Each manager will finish their own setup from the link you've just sent.",
+      bodyHtml: masterDoneBody()
+    }) : ''}
+  `;
+
+  wireSectionToggles();
+  setActiveSection();
+}
+
+function masterConfirmBody() {
+  // Annual isn't a signup option — it unlocks at month 6 in the dashboard.
+  // So this body always renders the monthly view, regardless of mock data.
+  return `
+    <p class="body-text">
+      Here's what you agreed to on the demo. If anything looks off, <a href="mailto:hello@hiretrial.com.au" style="color:var(--accent)">email us</a> before paying.
+    </p>
+    <div class="deal-card">
+      <div class="deal-row">
+        <span class="deal-label">Business</span>
+        <span class="deal-value">${session.businessName}</span>
+      </div>
+      <div class="deal-row">
+        <span class="deal-label">Plan</span>
+        <span class="deal-value">
+          ${session.phase === 'founding' ? 'Founding Partner · ' : ''}<span class="accent">${TIER_LABELS[session.tier]}</span>
+        </span>
+      </div>
+      <div class="deal-row">
+        <span class="deal-label">Venues</span>
+        <span class="deal-value">${session.venueCount} <span class="small">(${VENUE_RANGE[session.tier]})</span></span>
+      </div>
+      <div class="deal-row">
+        <span class="deal-label">Per-hire fee</span>
+        <span class="deal-value">$${session.perHire} <span class="small">+ GST · at 90-day retention</span></span>
+      </div>
+      <div class="deal-row deal-total">
+        <span class="deal-label">Monthly total</span>
+        <span class="deal-value">$${session.monthly.toFixed(2)} <span class="small">+ GST / mo</span></span>
+      </div>
+    </div>
+    ${session.phase === 'founding' ? `
+      <p class="body-text" style="font-style:italic;font-family:var(--serif);font-size:14px;color:var(--muted)">
+        As a Founding Partner, this rate is locked in for life. Even when later venues join at the Standard rate, yours doesn't change.
+      </p>` : ''}
+
+    <div class="stripe-placeholder">
+      <div class="stripe-placeholder-eyebrow">Payment</div>
+      <div class="stripe-placeholder-title">Pay via Stripe</div>
+      <div class="stripe-placeholder-sub">Cards · Link · Apple Pay · Google Pay</div>
+      <button class="btn btn-primary btn-block" id="pay-btn">Pay $${session.monthly.toFixed(2)} + GST &rarr;</button>
+    </div>
+    <p style="font-size:12px;color:var(--dim);text-align:center;font-style:italic;font-family:var(--serif)">
+      You'll be redirected to Stripe to complete payment securely. We never see your card details.
+    </p>
+  `;
+}
+
+function masterDispatchBody() {
+  const rows = session.venues.map((v, i) => `
+    <div class="venue-row" data-venue-idx="${v.idx}">
+      <div class="venue-row-head">
+        <span class="venue-row-num">${v.idx}</span>
+        <span class="venue-row-label">Venue ${v.idx}</span>
+      </div>
+      <div class="venue-row-grid">
+        <div class="field" style="margin-bottom:0">
+          <label class="field-label">Venue name</label>
+          <input type="text" class="field-input venue-name-input" placeholder="e.g. Bistro A" data-venue-idx="${v.idx}">
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label class="field-label">Manager's email</label>
+          <input type="email" class="field-input venue-email-input" placeholder="manager@example.com" data-venue-idx="${v.idx}">
+        </div>
+      </div>
+      <div class="field-hint" style="margin-top:10px;font-family:'SF Mono',monospace;font-size:11.5px;">
+        Their Trial. inbox: <span style="color:var(--accent)">${v.inbox}</span>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <p class="body-text">
+      For each of your ${session.venueCount} venues, give it a name and the email of whoever runs it day-to-day. We'll send each manager their own setup link — they'll plug Trial. into SEEK themselves, set their password, and end up in their own dashboard. <strong>You won't need to log in — you just get the bill.</strong>
+    </p>
+    <div class="venue-rows" id="venue-dispatch-rows">${rows}</div>
+    <button class="btn btn-primary btn-block" id="dispatch-btn">Send setup links to my managers &rarr;</button>
+    <p class="field-hint" style="text-align:center;margin-top:14px">Each manager will get an email titled <em>"${session.businessName} signed your venue up for Trial."</em></p>
+  `;
+}
+
+function masterDoneBody() {
+  // Dev-only follow-up — only rendered when ?dev=1 in the URL. Real customers
+  // never see this; the manager clicks their own email link, not Sarah's screen.
+  const devFollowup = isDevMode() ? `
+    <div class="dev-followup">
+      <div class="dev-followup-label">Dev preview</div>
+      <div class="dev-followup-text">
+        Want to see what one of your venue managers sees when they click their setup link?
+      </div>
+      <a href="?token=venue_bistro_a&dev=1" class="dev-followup-cta">Preview a manager's link &rarr;</a>
+    </div>` : '';
+
+  return `
+    <div class="dispatch-summary">
+      <div class="dispatch-summary-eyebrow">Sent</div>
+      <div class="dispatch-summary-title">Your venue managers are on it</div>
+      <p style="color:var(--muted);font-size:13.5px;line-height:1.55;margin-bottom:6px">
+        Each one received an email with their own Trial. inbox address, a walkthrough for SEEK/Indeed, and instructions to set their dashboard password.
+      </p>
+      <ul class="dispatch-list" id="dispatch-list"></ul>
+    </div>
+    <p class="body-text" style="margin-top:8px">
+      You don't need to do anything else. We'll email you a confirmation once all venues are fully set up. If a manager doesn't respond within 48 hours, we'll let you know.
+    </p>
+    <a href="mailto:hello@hiretrial.com.au" class="btn">Email us if anything's off</a>
+    ${devFollowup}
+  `;
+}
+
+/* ───────────────────────────────────────────────────────────
+   VENUE MODE — delegated manager finishes one venue's setup
+   ─────────────────────────────────────────────────────────── */
+function renderVenueMode() {
+  $('page-eyebrow').textContent = `${session.businessName} · ${session.venueName}`;
+  $('page-title').innerHTML = `Hi ${session.managerName || 'there'} — let's get <span class="italic">${session.venueName}</span> live.`;
+  $('page-sub').textContent = `${session.dispatcherName} from ${session.businessName} signed your venue up for Trial. Three quick things and you're taking applications.`;
+
+  const sectionsEl = $('sections');
+  sectionsEl.innerHTML = `
+    ${renderSection({
+      n: 1, key: 'name',
+      title: 'Confirm your venue details',
+      sub: 'Make sure the name is right — this shows up in candidate emails.',
+      bodyHtml: venueNameBody()
+    })}
+    ${renderSection({
+      n: 2, key: 'plug',
+      title: 'Plug your Trial. inbox into SEEK',
+      sub: 'Replace your existing application email with the one we generated.',
+      bodyHtml: pluggingBody({ inbox: session.venueInbox })
+    })}
+    ${renderSection({
+      n: 3, key: 'test',
+      title: 'Send a test application',
+      sub: "We'll fake one for you to confirm the chain works.",
+      bodyHtml: testBody()
+    })}
+    ${renderSection({
+      n: 4, key: 'password',
+      title: 'Set your password & open the dashboard',
+      sub: 'Last step — choose a password and you\'re in.',
+      bodyHtml: passwordBody()
+    })}
+  `;
+
+  wireSectionToggles();
+  setActiveSection();
+}
+
+function venueNameBody() {
+  return `
+    <p class="body-text">
+      Quick sanity check — your venue name as ${session.dispatcherName} entered it:
+    </p>
+    <div class="field">
+      <label class="field-label">Venue name</label>
+      <input type="text" class="field-input" id="venue-name-input" value="${session.venueName}">
+      <div class="field-hint">This shows up on assessment emails sent to candidates — make sure it reads how you want them to see it.</div>
+    </div>
+    <div class="inbox-display">
+      <div>
+        <div class="field-label" style="margin-bottom:4px">Your Trial. inbox</div>
+        <span class="inbox-address" id="inbox-display">${session.venueInbox}</span>
+      </div>
+      <button class="btn copy-btn" onclick="copyInbox('${session.venueInbox}', this)">Copy</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="confirm-name-btn">Looks right — continue &rarr;</button>
+    </div>
+  `;
+}
+
+/* ───────────────────────────────────────────────────────────
+   Shared section bodies (used by both master Solo + venue modes)
+   ─────────────────────────────────────────────────────────── */
+function pluggingBody({ inbox }) {
+  return `
+    <p class="body-text">
+      Wherever job applications currently land in your inbox — SEEK, Indeed, your careers page — change the destination to:
+    </p>
+    <div class="inbox-display" style="margin-bottom:18px">
+      <span class="inbox-address" id="plug-inbox">${inbox}</span>
+      <button class="btn copy-btn" onclick="copyInbox('${inbox}', this)">Copy</button>
+    </div>
+
+    <div class="wt-tabs" role="tablist">
+      <button class="wt-tab active" data-wt="seek">SEEK</button>
+      <button class="wt-tab" data-wt="indeed">Indeed</button>
+      <button class="wt-tab" data-wt="careers">Careers page</button>
+      <button class="wt-tab" data-wt="other">Other</button>
+    </div>
+
+    <div class="wt-panel active" data-wt-panel="seek">
+      <ol class="wt-steps">
+        <li>Go to <strong>seek.com.au</strong>, sign in, click <strong>Manage jobs</strong> in the top menu.</li>
+        <li>Open one of your active listings, click <strong>Edit</strong>.</li>
+        <li>Scroll to the <strong>"Application questions and instructions"</strong> section.</li>
+        <li>Find the field labelled <strong>"Email address for applications"</strong> and replace whatever's there with: <code>${inbox}</code></li>
+        <li>Save the listing. Repeat for every active job posting at this venue.</li>
+        <li><strong>That's it.</strong> Your next applicant will land in Trial. — and we'll forward you the original CV exactly like SEEK used to.</li>
+      </ol>
+    </div>
+
+    <div class="wt-panel" data-wt-panel="indeed">
+      <ol class="wt-steps">
+        <li>Sign in at <strong>au.indeed.com/hire</strong>.</li>
+        <li>Click <strong>Jobs</strong> in the top nav, then pick the listing you want to update.</li>
+        <li>Click <strong>Edit job</strong> at the top of the listing.</li>
+        <li>Scroll to <strong>"How do you want to receive applications?"</strong> and switch to <strong>"By email"</strong>.</li>
+        <li>Paste in: <code>${inbox}</code></li>
+        <li>Save the listing. Repeat for every active Indeed posting at this venue.</li>
+      </ol>
+    </div>
+
+    <div class="wt-panel" data-wt-panel="careers">
+      <ol class="wt-steps">
+        <li>If your website has a careers form (Formspree, Squarespace, Typeform, custom), open its settings.</li>
+        <li>Find the field labelled something like <strong>"Send submissions to"</strong> or <strong>"Notification email"</strong>.</li>
+        <li>Change it to: <code>${inbox}</code></li>
+        <li>Save. Optionally, add a CC to your old inbox while you test for the first week.</li>
+        <li>If you're not sure how to update your careers page, <a href="mailto:hello@hiretrial.com.au" style="color:var(--accent)">email us</a> — we'll help.</li>
+      </ol>
+    </div>
+
+    <div class="wt-panel" data-wt-panel="other">
+      <ol class="wt-steps">
+        <li>Wherever job applications currently come into your inbox, the recipient email needs to change to <code>${inbox}</code>.</li>
+        <li>Common spots: job listing sites (Hospoworld, Jora, Sidekicker), your venue's social channels, your website's contact form.</li>
+        <li>If you're not sure where applications are coming from, <a href="mailto:hello@hiretrial.com.au" style="color:var(--accent)">drop us an email</a> and we'll figure it out together.</li>
+      </ol>
+    </div>
+
+    <div class="btn-row" style="margin-top:24px">
+      <button class="btn btn-primary" id="plug-done-btn">Done — applications are routed &rarr;</button>
+    </div>
+  `;
+}
+
+function testBody() {
+  return `
+    <p class="body-text">
+      Now let's prove the chain works. Click below — we'll fake a job application landing at your Trial. inbox, parse it, and confirm everything's flowing.
+    </p>
+    <div class="test-state" id="test-state">
+      <div class="test-icon"><span>⤓</span></div>
+      <div class="test-content">
+        <div class="test-headline" id="test-headline">Ready when you are</div>
+        <div class="test-detail" id="test-detail">A test application takes about 3 seconds to flow through.</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="run-test-btn">Send test application &rarr;</button>
+    </div>
+  `;
+}
+
+function passwordBody() {
+  return `
+    <p class="body-text">
+      Choose a password for your dashboard. You'll use this to sign in at <strong>dashboard.hiretrial.com.au</strong>.
+    </p>
+    <div class="field">
+      <label class="field-label">Password</label>
+      <input type="password" class="field-input" id="pw1" placeholder="At least 8 characters" autocomplete="new-password">
+    </div>
+    <div class="field">
+      <label class="field-label">Confirm password</label>
+      <input type="password" class="field-input" id="pw2" placeholder="Type it again" autocomplete="new-password">
+    </div>
+    <button class="btn btn-primary btn-block" id="finish-btn">Set password & open dashboard &rarr;</button>
+  `;
+}
+
+/* ───────────────────────────────────────────────────────────
+   Render helpers
+   ─────────────────────────────────────────────────────────── */
+function renderSection({ n, key, title, sub, bodyHtml }) {
+  return `
+    <div class="section locked" data-section="${key}">
+      <div class="section-header">
+        <div class="step-num"><span>${n}</span></div>
+        <div class="section-title-wrap">
+          <div class="section-title">${title}</div>
+          <div class="section-sub">${sub}</div>
+        </div>
+      </div>
+      <div class="section-body">${bodyHtml}</div>
+    </div>
+  `;
+}
+
+/* ───────────────────────────────────────────────────────────
+   Section state machine — which section is active, which are done
+   ─────────────────────────────────────────────────────────── */
+function setActiveSection() {
+  const sections = Array.from(document.querySelectorAll('.section'));
+  if (!sections.length) return;
+
+  const completedKeys = getCompletedKeys();
+  sections.forEach(s => {
+    s.classList.remove('locked', 'active', 'done');
+    if (completedKeys.includes(s.dataset.section)) {
+      s.classList.add('done');
+    }
+  });
+
+  // First non-done section becomes active
+  const firstUndone = sections.find(s => !s.classList.contains('done'));
+  if (firstUndone) firstUndone.classList.add('active');
+  else {
+    // All sections done — for venue mode, redirect; for master mode, show summary
+    handleAllDone();
+  }
+
+  // Lock everything after the active one
+  let pastActive = false;
+  sections.forEach(s => {
+    if (pastActive) s.classList.add('locked');
+    if (s.classList.contains('active')) pastActive = true;
+  });
+
+  wireBody();
+  // Re-render dispatch list if we're in master mode and dispatch is done
+  if (session.type === 'master' && progress.dispatchedAt) {
+    renderDispatchList();
+  }
+}
+
+function getCompletedKeys() {
+  if (!session) return [];
+  const done = [];
+  if (session.type === 'master') {
+    if (progress.paid) done.push('confirm');
+    if (session.venueCount > 1) {
+      if (progress.dispatchedAt) done.push('dispatch');
+    } else {
+      if (progress.plugged) done.push('plug');
+      if (progress.tested) done.push('test');
+      if (progress.passwordSet) done.push('password');
+    }
+  } else if (session.type === 'venue') {
+    if (progress.namedVenue) done.push('name');
+    if (progress.plugged) done.push('plug');
+    if (progress.tested) done.push('test');
+    if (progress.passwordSet) done.push('password');
+  }
+  return done;
+}
+
+// Real dashboard URL — where "Open my dashboard →" sends the user after setup.
+// In production this points at the live login page. Change this one line if the
+// dashboard ever moves to a different subdomain.
+const DASHBOARD_URL = 'https://dashboard.hiretrial.com.au';
+
+function handleAllDone() {
+  // Both modes converge here once everything's done.
+  if (session.type === 'venue') {
+    // PRODUCTION: once Supabase Auth is wired, the password-set step issues a
+    // session cookie, and this transition becomes an automatic redirect.
+    // For now (Option A preview), the user clicks the button to navigate.
+    showToast("All set — your dashboard is ready.");
+    setTimeout(() => {
+      const sectionsEl = $('sections');
+      sectionsEl.innerHTML = `
+        <div class="handoff">
+          <div class="handoff-eyebrow">All done</div>
+          <h2 class="handoff-title">${session.venueName} is <span class="italic">live</span>.</h2>
+          <p class="handoff-sub">Your candidates will flow into your dashboard from now on. We've sent a confirmation email — and let ${session.dispatcherName} know your venue is set up.</p>
+          <a href="${DASHBOARD_URL}" class="btn btn-primary">Open my dashboard &rarr;</a>
+        </div>`;
+    }, 1500);
+  } else if (session.type === 'master' && session.venueCount === 1) {
+    // Solo master = same as venue mode endpoint
+    showToast("All set — your dashboard is ready.");
+    setTimeout(() => {
+      const sectionsEl = $('sections');
+      sectionsEl.innerHTML = `
+        <div class="handoff">
+          <div class="handoff-eyebrow">All done</div>
+          <h2 class="handoff-title">${session.businessName} is <span class="italic">live</span>.</h2>
+          <p class="handoff-sub">Your candidates will flow into your dashboard from now on. We've sent a confirmation email.</p>
+          <a href="${DASHBOARD_URL}" class="btn btn-primary">Open my dashboard &rarr;</a>
+        </div>`;
+    }, 1500);
+  }
+}
+
+/* ───────────────────────────────────────────────────────────
+   Wire body — attach event handlers to whatever's currently rendered.
+   Called after each render + state transition.
+   ─────────────────────────────────────────────────────────── */
+function wireBody() {
+  // Walkthrough tabs (Plug section)
+  document.querySelectorAll('.wt-tab').forEach(t => {
+    t.onclick = () => {
+      const key = t.dataset.wt;
+      t.parentElement.querySelectorAll('.wt-tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      const card = t.closest('.section-body');
+      card.querySelectorAll('.wt-panel').forEach(p => p.classList.toggle('active', p.dataset.wtPanel === key));
+    };
+  });
+
+  // Pay button (master mode)
+  const payBtn = $('pay-btn');
+  if (payBtn) payBtn.onclick = onPayClick;
+
+  // Dispatch button (master multi-venue)
+  const dispatchBtn = $('dispatch-btn');
+  if (dispatchBtn) dispatchBtn.onclick = onDispatchClick;
+
+  // Venue name confirm (venue mode)
+  const confirmNameBtn = $('confirm-name-btn');
+  if (confirmNameBtn) confirmNameBtn.onclick = onConfirmNameClick;
+
+  // Plug done button
+  const plugDoneBtn = $('plug-done-btn');
+  if (plugDoneBtn) plugDoneBtn.onclick = onPlugDoneClick;
+
+  // Run test button
+  const runTestBtn = $('run-test-btn');
+  if (runTestBtn) runTestBtn.onclick = onRunTestClick;
+
+  // Finish (set password)
+  const finishBtn = $('finish-btn');
+  if (finishBtn) finishBtn.onclick = onFinishClick;
+}
+
+function wireSectionToggles() {
+  // Section headers — clicking a done section lets you peek at it but not edit.
+  // Active and locked sections don't toggle.
+  document.querySelectorAll('.section.done .section-header').forEach(h => {
+    h.onclick = () => {
+      const section = h.closest('.section');
+      section.classList.toggle('expand-peek');
+      const body = section.querySelector('.section-body');
+      if (section.classList.contains('expand-peek')) {
+        body.style.maxHeight = '4000px';
+        body.style.opacity = '0.6';
+        body.style.padding = '24px 28px 28px';
+      } else {
+        body.style.maxHeight = '0';
+        body.style.opacity = '0';
+        body.style.padding = '0 28px';
+      }
+    };
+  });
+}
+
+/* ───────────────────────────────────────────────────────────
+   Handlers
+   ─────────────────────────────────────────────────────────── */
+function onPayClick() {
+  // PRODUCTION: redirect to Stripe Checkout for this token's price.
+  // For dev: simulate payment success after a delay.
+  const btn = $('pay-btn');
+  btn.disabled = true;
+  btn.textContent = 'Redirecting to Stripe…';
+  setTimeout(() => {
+    progress.paid = true;
+    saveProgress();
+    showToast(`Payment confirmed — $${session.monthly.toFixed(2)} + GST. Receipt sent to ${session.groupOwnerEmail}.`, 3200);
+    setActiveSection();
+  }, 1200);
+}
+
+function onDispatchClick() {
+  // Validate every venue has a name + email
+  const rows = Array.from(document.querySelectorAll('#venue-dispatch-rows .venue-row'));
+  const data = [];
+  let allValid = true;
+  rows.forEach(row => {
+    const idx = parseInt(row.dataset.venueIdx, 10);
+    const name = row.querySelector('.venue-name-input').value.trim();
+    const email = row.querySelector('.venue-email-input').value.trim();
+    if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      row.style.borderColor = 'var(--danger)';
+      allValid = false;
+    } else {
+      row.style.borderColor = '';
+      data.push({ idx, name, email });
+    }
+  });
+
+  if (!allValid) {
+    showToast("Please name every venue and give a valid manager email.");
+    return;
+  }
+
+  const btn = $('dispatch-btn');
+  btn.disabled = true;
+  btn.textContent = 'Sending setup links…';
+  setTimeout(() => {
+    progress.dispatchedAt = new Date().toISOString();
+    progress.dispatchedTo = data;
+    saveProgress();
+    showToast(`Sent ${data.length} setup links. Check ${session.groupOwnerEmail} for a copy.`, 3500);
+    setActiveSection();
+  }, 1600);
+}
+
+function renderDispatchList() {
+  const list = $('dispatch-list');
+  if (!list) return;
+  const items = (progress.dispatchedTo || []).map(d => `
+    <li>
+      <span><span class="name">${escapeHtml(d.name)}</span> · venue ${d.idx}</span>
+      <span class="email">${escapeHtml(d.email)}</span>
+    </li>`).join('');
+  list.innerHTML = items;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function onConfirmNameClick() {
+  const name = $('venue-name-input').value.trim();
+  if (!name) {
+    showToast("Give your venue a name first.");
+    return;
+  }
+  session.venueName = name;
+  progress.namedVenue = name;
+  saveProgress();
+  setActiveSection();
+}
+
+function onPlugDoneClick() {
+  progress.plugged = true;
+  saveProgress();
+  setActiveSection();
+}
+
+function onRunTestClick() {
+  const btn = $('run-test-btn');
+  btn.disabled = true;
+  btn.textContent = 'Running test…';
+  const state = $('test-state');
+  const headline = $('test-headline');
+  const detail = $('test-detail');
+  state.classList.add('running');
+  state.classList.remove('success');
+  state.querySelector('.test-icon span').textContent = '◷';
+  headline.textContent = 'Submitting test application…';
+  detail.textContent = 'Faking a SEEK-style application at your inbox.';
+
+  setTimeout(() => {
+    headline.textContent = 'Parsing the application…';
+    detail.textContent = 'Reading the candidate details and forwarding the original to your normal inbox.';
+  }, 1200);
+
+  setTimeout(() => {
+    state.classList.remove('running');
+    state.classList.add('success');
+    headline.textContent = 'Chain works — got it.';
+    detail.textContent = "Test passed. When real candidates apply, they'll land in your dashboard with an AI score.";
+    progress.tested = true;
+    saveProgress();
+    btn.disabled = false;
+    btn.textContent = 'Continue &rarr;';
+    btn.onclick = () => { setActiveSection(); };
+  }, 3000);
+}
+
+function onFinishClick() {
+  const pw1 = $('pw1').value;
+  const pw2 = $('pw2').value;
+  if (pw1.length < 8) {
+    showToast("Password needs to be at least 8 characters.");
+    return;
+  }
+  if (pw1 !== pw2) {
+    showToast("Passwords don't match — try again.");
+    return;
+  }
+  const btn = $('finish-btn');
+  btn.disabled = true;
+  btn.textContent = 'Setting up your dashboard…';
+  setTimeout(() => {
+    progress.passwordSet = true;
+    saveProgress();
+    setActiveSection();
+  }, 1200);
+}
+
+function copyInbox(email, btn) {
+  navigator.clipboard.writeText(email).then(() => {
+    btn.textContent = 'Copied';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 1500);
+  }).catch(() => {
+    showToast("Couldn't copy — try selecting it manually.");
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Dev banner state — only revealed when ?dev=1 is in the URL.
+   Highlights the current scenario, OR shows a "← Back to master
+   setup" pivot when previewing a delegated link.
+   ═══════════════════════════════════════════════════════════════ */
+function highlightCurrentScenario() {
+  // In production (no ?dev=1), the dev banner stays hidden. Real users never see it.
+  if (!isDevMode()) return;
+
+  const banner = document.getElementById('dev-banner');
+  if (!banner) return;
+  banner.style.display = ''; // reveal — default flex from CSS
+
+  const token = getToken();
+  // Master flows: just highlight which one is current
+  if (session && session.type === 'master') {
+    banner.querySelectorAll('a').forEach(a => {
+      const url = new URL(a.href);
+      if (url.searchParams.get('token') === token) a.classList.add('current');
+    });
+    return;
+  }
+  // Venue (delegated) flow: replace the dev banner content to reflect that
+  // we're now seeing what the manager sees, with a way back to master flow.
+  // Preserve ?dev=1 in the back link so we stay in dev mode after the pivot.
+  if (session && session.type === 'venue') {
+    banner.innerHTML = `
+      <span class="dev-banner-label">Dev preview</span>
+      <span style="color:var(--muted);font-size:11.5px;flex:1;">
+        You're previewing what a venue manager sees after their group owner dispatched setup links.
+      </span>
+      <div class="dev-banner-links">
+        <a href="?token=master_starter&dev=1">&larr; Back to master setup</a>
+      </div>
+    `;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════════ */
+(async () => {
+  const token = getToken();
+  session = await resolveToken(token);
+  progress = loadProgress(token);
+  highlightCurrentScenario();
+  renderApp();
+})();
+</script>
+</body>
+</html>
