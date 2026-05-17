@@ -2077,6 +2077,14 @@ function wireResetButton() {
   const token = getToken();
   session = await resolveToken(token);
   progress = loadProgress(token);
+
+  // If the resolver says this token is already paid (Stripe redirect flow),
+  // auto-mark Step 1 as done so the customer lands on Step 2.
+  if (session && session.paid && !progress.paid) {
+    progress.paid = true;
+    saveProgress();
+  }
+
   highlightCurrentScenario();
   renderApp();
 })();
