@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v4-real-fetch-baked-in · 2026-05-16 23:40 AEST · onFinishClick now async with real Edge Function call -->
+<!-- v5-real-resolver-wired · 2026-05-17 21:30 AEST · resolveToken now calls /api/setup/[token], MOCK_TOKENS retained for ?dev=1 flows -->
 <html lang="en-AU">
 <head>
 <meta charset="UTF-8">
@@ -960,9 +960,9 @@ h1.page-title .italic {
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   Token resolver — in production this fetches /api/setup/{token}.
-   For the dev build, we resolve against a hardcoded map so all three
-   modes are testable from the same file.
+   Token resolver — production tokens (UUIDs from /api/post-payment)
+   fetch from the resolver endpoint. Dev tokens stay in MOCK_TOKENS
+   so the ?dev=1 banner flows still work without a Supabase round-trip.
    ═══════════════════════════════════════════════════════════════ */
 const MOCK_TOKENS = {
   master_solo: {
@@ -1096,8 +1096,23 @@ function isDevMode() {
 }
 
 async function resolveToken(token) {
-  // PRODUCTION: const r = await fetch('/api/setup/' + token); return r.json();
-  return MOCK_TOKENS[token] || null;
+  // Dev tokens (master_solo, master_starter, master_growth, venue_bistro_a)
+  // resolve from MOCK_TOKENS so the ?dev=1 banner flows still work without
+  // hitting Supabase. Real tokens (UUIDs from /api/post-payment) fall through
+  // to the resolver endpoint.
+  if (MOCK_TOKENS[token]) return MOCK_TOKENS[token];
+
+  try {
+    const r = await fetch('/api/setup/' + encodeURIComponent(token));
+    if (!r.ok) {
+      console.error('[resolveToken] Fetch failed:', r.status);
+      return null;
+    }
+    return await r.json();
+  } catch (err) {
+    console.error('[resolveToken] Network error:', err);
+    return null;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
