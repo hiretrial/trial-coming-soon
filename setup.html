@@ -978,7 +978,7 @@ const MOCK_TOKENS = {
     perHire: 99,
     annualYearly: null,
     venues: [
-      { idx: 1, inbox: 'hotelsweeneys@hiretrial.com.au' }
+      { idx: 1, inbox: 'hotelsweeneys@inbound.hiretrial.com.au' }
     ]
   },
   master_starter: {
@@ -994,9 +994,9 @@ const MOCK_TOKENS = {
     perHire: 89,
     annualYearly: null,
     venues: [
-      { idx: 1, inbox: 'sweeneys-1@hiretrial.com.au' },
-      { idx: 2, inbox: 'sweeneys-2@hiretrial.com.au' },
-      { idx: 3, inbox: 'sweeneys-3@hiretrial.com.au' }
+      { idx: 1, inbox: 'sweeneys-1@inbound.hiretrial.com.au' },
+      { idx: 2, inbox: 'sweeneys-2@inbound.hiretrial.com.au' },
+      { idx: 3, inbox: 'sweeneys-3@inbound.hiretrial.com.au' }
     ]
   },
   master_growth: {
@@ -1012,11 +1012,11 @@ const MOCK_TOKENS = {
     perHire: 79,
     annualYearly: null,
     venues: [
-      { idx: 1, inbox: 'park-1@hiretrial.com.au' },
-      { idx: 2, inbox: 'park-2@hiretrial.com.au' },
-      { idx: 3, inbox: 'park-3@hiretrial.com.au' },
-      { idx: 4, inbox: 'park-4@hiretrial.com.au' },
-      { idx: 5, inbox: 'park-5@hiretrial.com.au' }
+      { idx: 1, inbox: 'park-1@inbound.hiretrial.com.au' },
+      { idx: 2, inbox: 'park-2@inbound.hiretrial.com.au' },
+      { idx: 3, inbox: 'park-3@inbound.hiretrial.com.au' },
+      { idx: 4, inbox: 'park-4@inbound.hiretrial.com.au' },
+      { idx: 5, inbox: 'park-5@inbound.hiretrial.com.au' }
     ]
   },
   venue_bistro_a: {
@@ -1024,7 +1024,7 @@ const MOCK_TOKENS = {
     dispatcherName: 'Sarah Mitchell',
     businessName: 'Sweeneys Group',
     venueName: 'Bistro A',
-    venueInbox: 'sweeneys-1@hiretrial.com.au',
+    venueInbox: 'sweeneys-1@inbound.hiretrial.com.au',
     managerEmail: 'maria@bistroa.com.au',
     managerName: 'Maria',
     phase: 'founding',
@@ -1037,7 +1037,7 @@ const MOCK_TOKENS = {
     dispatcherName: 'Anders (test)',
     businessName: 'TRIAL. Test',
     venueName: 'Round 3 Test Venue',
-    venueInbox: 'round-3-test@hiretrial.com.au',
+    venueInbox: 'round-3-test@inbound.hiretrial.com.au',
     managerEmail: 'round-3-test@hiretrial.com.au',
     managerName: 'Test Manager',
     phase: 'founding',
@@ -1324,13 +1324,13 @@ function refreshInboxPreviews() {
       warnEl.style.display = 'none';
     } else if (slugCounts[slug] > 1) {
       // Collides with another row in this form → warn the user
-      valueEl.textContent = `${slug}@hiretrial.com.au`;
+      valueEl.textContent = `${slug}@inbound.hiretrial.com.au`;
       valueEl.classList.remove('empty');
       valueEl.classList.add('conflict');
       warnEl.style.display = '';
     } else {
       // Clean preview
-      valueEl.textContent = `${slug}@hiretrial.com.au`;
+      valueEl.textContent = `${slug}@inbound.hiretrial.com.au`;
       valueEl.classList.remove('empty', 'conflict');
       warnEl.style.display = 'none';
     }
@@ -1805,7 +1805,7 @@ function onDispatchClick() {
       allValid = false;
     } else {
       row.style.borderColor = '';
-      data.push({ idx, name, email, previewedInbox: `${slug}@hiretrial.com.au` });
+      data.push({ idx, name, email, previewedInbox: `${slug}@inbound.hiretrial.com.au` });
       slugs.push(slug);
     }
   });
