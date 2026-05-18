@@ -1,12 +1,9 @@
 // api/inbound-email.js
-//
-// Resend Inbound webhook handler — entry point for every candidate application.
 
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import crypto from 'crypto';
 
-// ─── Role keyword map (Layer 2) — ORDER MATTERS, specificity first ─────────
 const ROLE_KEYWORDS = [
   { role: 'restaurant-manager', patterns: ['restaurant manager', 'venue manager', 'general manager'] },
   { role: 'cafe-manager',       patterns: ['cafe manager', 'café manager'] },
@@ -25,30 +22,17 @@ const ROLE_KEYWORDS = [
 ];
 
 const ROLE_LABELS = {
-  'bartender': 'Bartender',
-  'bar-back': 'Bar Back',
-  'bar-manager': 'Bar Manager',
-  'barista': 'Barista',
-  'cafe-allrounder': 'Café All-Rounder',
-  'cafe-kitchen-hand': 'Kitchen Hand',
-  'cafe-manager': 'Café Manager',
-  'duty-manager': 'Duty Manager',
-  'expediter': 'Expediter',
-  'floor-staff': 'Floor Staff',
-  'food-runner': 'Food Runner',
-  'host': 'Host',
-  'restaurant-manager': 'Restaurant Manager',
-  'supervisor': 'Supervisor'
+  'bartender': 'Bartender', 'bar-back': 'Bar Back', 'bar-manager': 'Bar Manager',
+  'barista': 'Barista', 'cafe-allrounder': 'Café All-Rounder',
+  'cafe-kitchen-hand': 'Kitchen Hand', 'cafe-manager': 'Café Manager',
+  'duty-manager': 'Duty Manager', 'expediter': 'Expediter',
+  'floor-staff': 'Floor Staff', 'food-runner': 'Food Runner',
+  'host': 'Host', 'restaurant-manager': 'Restaurant Manager', 'supervisor': 'Supervisor'
 };
 
 const roleLabel = (r) => ROLE_LABELS[r] || r;
 
-// ─── Vercel config — need raw body for signature verification ──────────────
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};
+export const config = { api: { bodyParser: false } };
 
 async function readRawBody(req) {
   return new Promise((resolve, reject) => {
@@ -59,38 +43,22 @@ async function readRawBody(req) {
   });
 }
 
-// Verify Resend (Svix) webhook signature.
 function verifyResendSignature(rawBody, headers, secret) {
   if (!secret) return false;
-
   const svixId = headers['svix-id'] || headers['webhook-id'];
   const svixTimestamp = headers['svix-timestamp'] || headers['webhook-timestamp'];
   const svixSignature = headers['svix-signature'] || headers['webhook-signature'];
-
-  if (!svixId || !svixTimestamp || !svixSignature) {
-    console.error('[verifyResendSignature] Missing svix headers');
-    return false;
-  }
-
+  if (!svixId || !svixTimestamp || !svixSignature) return false;
   try {
     const secretBytes = Buffer.from(secret.replace(/^whsec_/, ''), 'base64');
     const signedContent = `${svixId}.${svixTimestamp}.${rawBody.toString('utf8')}`;
-    const expected = crypto
-      .createHmac('sha256', secretBytes)
-      .update(signedContent)
-      .digest('base64');
-
+    const expected = crypto.createHmac('sha256', secretBytes).update(signedContent).digest('base64');
     const candidates = svixSignature.split(' ')
-      .map(s => {
-        const parts = s.split(',');
-        return parts.length === 2 ? parts[1] : null;
-      })
+      .map(s => { const p = s.split(','); return p.length === 2 ? p[1] : null; })
       .filter(Boolean);
-
     return candidates.some(sig => {
-      try {
-        return crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
-      } catch { return false; }
+      try { return crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected)); }
+      catch { return false; }
     });
   } catch (err) {
     console.error('[verifyResendSignature] Error:', err);
@@ -119,12 +87,167 @@ function capitalise(s) {
   return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 }
 
-// Extract candidate name with 3 levels of fallback.
-// Level 1: Header display name → "Jane Smith <jane@gmail.com>"
-// Level 2: Body signature/intro scan ("Cheers, Jane Smith")
+// ─── NEW: Download a CV attachment from Resend ─────────────────────────────
+async function fetchAttachmentBuffer(resend, emailId, attachmentMetadata) {
+  try {
+    // Resend Attachments API: list all attachments for this email, find ours
+    const { data: attachments } = await resend.emails.receiving.attachments.list({
+      emailId: emailId
+    });
+    if (!attachments || attachments.length === 0) return null;
+
+    const match = attachments.find(a => a.id === attachmentMetadata.id) || attachments[0];
+    if (!match || !match.download_url) return null;
+
+    const resp = await fetch(match.download_url);
+    if (!resp.ok) {
+      console.error('[fetchAttachmentBuffer] Download failed:', resp.status);
+      return null;
+    }
+    const buffer = Buffer.from(await resp.arrayBuffer());
+    return { buffer, filename: match.filename, content_type: match.content_type };
+  } catch (err) {
+    console.error('[fetchAttachmentBuffer] Error:', err);
+    return null;
+  }
+}
+
+// ─── NEW: Send CV to Claude, ask for the candidate's name ──────────────────
+async function extractNameFromCV(cvBuffer, contentType, filename) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    console.error('[extractNameFromCV] No ANTHROPIC_API_KEY');
+    return null;
+  }
+
+  const isPDF = contentType?.includes('pdf') || filename?.toLowerCase().endsWith('.pdf');
+  const isDOCX = contentType?.includes('wordprocessingml') || filename?.toLowerCase().endsWith('.docx');
+
+  if (!isPDF && !isDOCX) {
+    console.warn('[extractNameFromCV] Unsupported file type:', contentType, filename);
+    return null;
+  }
+
+  try {
+    let documentBlock;
+
+    if (isPDF) {
+      // PDFs: base64 inline
+      documentBlock = {
+        type: 'document',
+        source: {
+          type: 'base64',
+          media_type: 'application/pdf',
+          data: cvBuffer.toString('base64')
+        }
+      };
+    } else {
+      // DOCX: upload to Files API first
+      const formData = new FormData();
+      formData.append('file', new Blob([cvBuffer], { 
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+      }), filename);
+
+      const uploadResp = await fetch('https://api.anthropic.com/v1/files', {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-beta': 'files-api-2025-04-14'
+        },
+        body: formData
+      });
+
+      if (!uploadResp.ok) {
+        const err = await uploadResp.text();
+        console.error('[extractNameFromCV] DOCX upload failed:', uploadResp.status, err);
+        return null;
+      }
+
+      const uploaded = await uploadResp.json();
+      documentBlock = {
+        type: 'document',
+        source: { type: 'file', file_id: uploaded.id }
+      };
+    }
+
+    const messagesResp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'files-api-2025-04-14'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 200,
+        messages: [{
+          role: 'user',
+          content: [
+            documentBlock,
+            {
+              type: 'text',
+              text: 'What is the candidate\'s full name in this CV? Respond with ONLY a JSON object: {"first_name": "X", "last_name": "Y"}. No other text, no markdown. If unsure, use empty strings.'
+            }
+          ]
+        }]
+      })
+    });
+
+    if (!messagesResp.ok) {
+      const err = await messagesResp.text();
+      console.error('[extractNameFromCV] Claude API error:', messagesResp.status, err);
+      return null;
+    }
+
+    const data = await messagesResp.json();
+    const responseText = data.content?.[0]?.text || '';
+    const cleaned = responseText.trim()
+      .replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '');
+
+    const parsed = JSON.parse(cleaned);
+    if (!parsed.first_name) return null;
+
+    return {
+      first_name: capitalise(parsed.first_name.trim()),
+      last_name: parsed.last_name ? capitalise(parsed.last_name.trim()) : ''
+    };
+
+  } catch (err) {
+    console.error('[extractNameFromCV] Error:', err);
+    return null;
+  }
+}
+
+// Extract candidate name with 4 levels of fallback.
+// Level 0: CV → Claude (most authoritative)
+// Level 1: Header display name
+// Level 2: Body signature/intro scan
 // Level 3: Pretty-format email username
-function extractCandidateName(fromString, bodyText, candidateEmail) {
-  // Strip HTML if body is HTML-formatted (Gmail-style emails often only send HTML)
+async function extractCandidateName(resend, emailId, attachments, fromString, bodyText, candidateEmail) {
+  // Level 0 — try CV first (the source of truth)
+  if (attachments && attachments.length > 0) {
+    const cv = attachments.find(a => {
+      const ct = a.content_type || '';
+      const fn = (a.filename || '').toLowerCase();
+      return ct.includes('pdf') || ct.includes('wordprocessingml') || fn.endsWith('.pdf') || fn.endsWith('.docx');
+    });
+
+    if (cv) {
+      console.log('[extractCandidateName] Trying Level 0 (CV):', cv.filename);
+      const fetched = await fetchAttachmentBuffer(resend, emailId, cv);
+      if (fetched) {
+        const cvName = await extractNameFromCV(fetched.buffer, fetched.content_type, fetched.filename);
+        if (cvName && cvName.first_name) {
+          console.log('[extractCandidateName] Level 0 success:', cvName);
+          return { ...cvName, source: 'cv_claude' };
+        }
+      }
+    }
+  }
+
+  // Strip HTML for body scan
   const cleanBody = bodyText
     ? bodyText
         .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
@@ -132,15 +255,12 @@ function extractCandidateName(fromString, bodyText, candidateEmail) {
         .replace(/<br\s*\/?>/gi, '\n')
         .replace(/<\/p>/gi, '\n')
         .replace(/<[^>]+>/g, '')
-        .replace(/&nbsp;/g, ' ')
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
+        .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
     : '';
 
-  // Level 1 — proper display name in From header
+  // Level 1 — header display name
   if (fromString) {
     const match = fromString.match(/^([^<]+)<.*>$/);
     if (match) {
@@ -158,10 +278,10 @@ function extractCandidateName(fromString, bodyText, candidateEmail) {
     }
   }
 
-  // Level 2 — body signature scan
+  // Level 2 — body signature/intro
   if (cleanBody) {
-    const signatureRegex = /(?:cheers|thanks|regards|sincerely|kind regards|best regards|best|yours|warmly|—|--)[,.\s]+\s*([a-zà-ÿ'-]+(?:\s+[a-zà-ÿ'-]+)?)\b/i;
-    const sigMatch = cleanBody.match(signatureRegex);
+    const sigRegex = /(?:cheers|thanks|regards|sincerely|kind regards|best regards|best|yours|warmly|—|--)[,.\s]+\s*([a-zà-ÿ'-]+(?:\s+[a-zà-ÿ'-]+)?)\b/i;
+    const sigMatch = cleanBody.match(sigRegex);
     if (sigMatch && sigMatch[1]) {
       const parts = sigMatch[1].trim().split(/\s+/).filter(Boolean);
       if (parts.length >= 1) {
@@ -187,27 +307,20 @@ function extractCandidateName(fromString, bodyText, candidateEmail) {
     }
   }
 
-  // Level 3 — pretty-format the email username
+  // Level 3 — email username
   if (candidateEmail) {
     const username = candidateEmail.split('@')[0];
-    const parts = username
-      .split(/[._\-+]+/)
+    const parts = username.split(/[._\-+]+/)
       .filter(p => p && /^[a-zA-Z]+$/.test(p))
       .map(capitalise);
-    
     if (parts.length >= 1) {
-      return {
-        first_name: parts[0],
-        last_name: parts.slice(1).join(' '),
-        source: 'email_username'
-      };
+      return { first_name: parts[0], last_name: parts.slice(1).join(' '), source: 'email_username' };
     }
   }
 
   return { first_name: '', last_name: '', source: 'none' };
 }
 
-// Pick stratified questions: 3 easy + 5 medium + 2 hard = 10 total
 async function pickQuestions(supabase, role) {
   const { data: pool, error } = await supabase
     .from('questions')
@@ -242,9 +355,7 @@ async function pickQuestions(supabase, role) {
   return {
     picked: picks.map(q => q.id),
     audit: {
-      role,
-      pool_size: pool.length,
-      picked_count: picks.length,
+      role, pool_size: pool.length, picked_count: picks.length,
       by_difficulty: {
         easy: picks.filter(q => q.difficulty === 'easy').length,
         medium: picks.filter(q => q.difficulty === 'medium').length,
@@ -256,7 +367,6 @@ async function pickQuestions(supabase, role) {
   };
 }
 
-// ─── Main handler ──────────────────────────────────────────────────────────
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).send('Method Not Allowed');
@@ -267,18 +377,16 @@ export default async function handler(req, res) {
     const secret = process.env.RESEND_WEBHOOK_SECRET;
 
     if (!verifyResendSignature(rawBody, req.headers, secret)) {
-      console.error('[inbound-email] Invalid signature');
       return res.status(401).send('Invalid signature');
     }
 
     const event = JSON.parse(rawBody.toString('utf8'));
-
     if (event.type !== 'email.received') {
-      console.log('[inbound-email] Ignoring event type:', event.type);
       return res.status(200).json({ ignored: true });
     }
 
     const emailData = event.data;
+    const emailId = emailData.email_id;
     const toAddress = (emailData.to?.[0] || '').toLowerCase().trim();
     const fromString = emailData.from || '';
     const subject = emailData.subject || '';
@@ -287,10 +395,8 @@ export default async function handler(req, res) {
 
     console.log('[inbound-email] Received:', { to: toAddress, from: fromString, subject, attachmentCount: attachments.length });
 
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
+    const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     const { data: venue, error: venueErr } = await supabase
       .from('venues')
@@ -299,7 +405,7 @@ export default async function handler(req, res) {
       .maybeSingle();
 
     if (venueErr || !venue) {
-      console.warn('[inbound-email] Unknown venue inbox:', toAddress);
+      console.warn('[inbound-email] Unknown venue:', toAddress);
       return res.status(200).json({ ignored: 'unknown_venue' });
     }
 
@@ -311,59 +417,50 @@ export default async function handler(req, res) {
       detectedRole = allowedRoles[0];
       detectionMethod = 'layer_1_single_role';
     }
-
     if (!detectedRole) {
-      detectedRole = detectRoleFromText(subject, allowedRoles)
-                  || detectRoleFromText(bodyText, allowedRoles);
+      detectedRole = detectRoleFromText(subject, allowedRoles) || detectRoleFromText(bodyText, allowedRoles);
       if (detectedRole) detectionMethod = 'layer_2_keyword';
     }
-
     if (!detectedRole && venue.default_role) {
       detectedRole = venue.default_role;
       detectionMethod = 'fallback_default_role';
     }
-
     if (!detectedRole) {
-      console.warn('[inbound-email] Role detection failed for venue:', venue.slug);
       return res.status(200).json({ ignored: 'role_detection_failed', venue: venue.slug });
     }
 
     const candidateEmail = parseFromEmail(fromString);
-    const { first_name, last_name, source: nameSource } = extractCandidateName(fromString, bodyText, candidateEmail);
+    const { first_name, last_name, source: nameSource } = await extractCandidateName(
+      resend, emailId, attachments, fromString, bodyText, candidateEmail
+    );
     console.log('[inbound-email] Name extracted via:', nameSource, '→', first_name, last_name);
-    console.log('[inbound-email] Attachments raw:', JSON.stringify(attachments));
 
     if (!candidateEmail) {
-      console.error('[inbound-email] No candidate email in:', fromString);
       return res.status(200).json({ ignored: 'no_candidate_email' });
     }
 
     const { data: existingCandidate } = await supabase
-      .from('candidates')
-      .select('id')
-      .eq('email', candidateEmail)
-      .maybeSingle();
+      .from('candidates').select('id').eq('email', candidateEmail).maybeSingle();
 
     let candidateId;
     if (existingCandidate) {
       candidateId = existingCandidate.id;
-      await supabase
-        .from('candidates')
-        .update({ last_active_at: new Date().toISOString() })
-        .eq('id', candidateId);
+      // If we now have a better name than before, update the candidate row
+      if (first_name) {
+        await supabase.from('candidates')
+          .update({ first_name, last_name, last_active_at: new Date().toISOString() })
+          .eq('id', candidateId);
+      } else {
+        await supabase.from('candidates')
+          .update({ last_active_at: new Date().toISOString() })
+          .eq('id', candidateId);
+      }
     } else {
       const { data: newCandidate, error: insertErr } = await supabase
-        .from('candidates')
-        .insert({
-          first_name,
-          last_name,
-          email: candidateEmail,
-          first_seen_at: new Date().toISOString(),
-          last_active_at: new Date().toISOString()
-        })
-        .select('id')
-        .single();
-
+        .from('candidates').insert({
+          first_name, last_name, email: candidateEmail,
+          first_seen_at: new Date().toISOString(), last_active_at: new Date().toISOString()
+        }).select('id').single();
       if (insertErr) {
         console.error('[inbound-email] Candidate insert failed:', insertErr);
         return res.status(500).send('Database error');
@@ -372,9 +469,7 @@ export default async function handler(req, res) {
     }
 
     const { picked, audit } = await pickQuestions(supabase, detectedRole);
-
     if (picked.length === 0) {
-      console.error('[inbound-email] No questions picked for role:', detectedRole);
       return res.status(500).send('No questions available');
     }
 
@@ -382,47 +477,30 @@ export default async function handler(req, res) {
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
     const { data: assessment, error: assessErr } = await supabase
-      .from('assessments')
-      .insert({
-        candidate_id: candidateId,
-        venue_id: venue.id,
-        role: detectedRole,
-        status: 'in_progress',
-        token,
-        picked_question_ids: picked,
+      .from('assessments').insert({
+        candidate_id: candidateId, venue_id: venue.id, role: detectedRole,
+        status: 'in_progress', token, picked_question_ids: picked,
         picker_audit: { ...audit, detection_method: detectionMethod, name_source: nameSource },
         expires_at: expiresAt,
-        candidate_profile: {
-          first_name,
-          last_name,
-          email: candidateEmail,
-          source_subject: subject,
-          source_from: fromString
-        }
-      })
-      .select('id, token')
-      .single();
+        candidate_profile: { first_name, last_name, email: candidateEmail, source_subject: subject, source_from: fromString }
+      }).select('id, token').single();
 
     if (assessErr) {
       console.error('[inbound-email] Assessment insert failed:', assessErr);
       return res.status(500).send('Failed to create assessment');
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
     const assessmentUrl = `https://hiretrial.com.au/assess.html?token=${token}`;
     const displayName = first_name || 'there';
 
     try {
       await resend.emails.send({
         from: `${venue.name} via Trial. <hello@hiretrial.com.au>`,
-        to: candidateEmail,
-        reply_to: 'hello@hiretrial.com.au',
+        to: candidateEmail, reply_to: 'hello@hiretrial.com.au',
         subject: `Complete your trial for ${venue.name} — ${roleLabel(detectedRole)}`,
         html: candidateEmailHtml({
-          firstName: displayName,
-          venueName: venue.name,
-          roleLabel: roleLabel(detectedRole),
-          assessmentUrl
+          firstName: displayName, venueName: venue.name,
+          roleLabel: roleLabel(detectedRole), assessmentUrl
         })
       });
     } catch (err) {
@@ -432,16 +510,14 @@ export default async function handler(req, res) {
     if (venue.manager_email) {
       try {
         const attachmentPayloads = [];
-        for (const att of attachments) {
+        const { data: resendAttachments } = await resend.emails.receiving.attachments.list({ emailId });
+        for (const att of (resendAttachments || [])) {
           if (att.download_url) {
             try {
               const resp = await fetch(att.download_url);
               const buf = Buffer.from(await resp.arrayBuffer());
-              attachmentPayloads.push({
-                filename: att.filename || 'attachment',
-                content: buf
-              });
-            } catch (attErr) {
+              attachmentPayloads.push({ filename: att.filename || 'attachment', content: buf });
+            } catch (e) {
               console.warn('[inbound-email] Attachment fetch failed:', att.filename);
             }
           }
@@ -449,16 +525,13 @@ export default async function handler(req, res) {
 
         await resend.emails.send({
           from: `Trial. <hello@hiretrial.com.au>`,
-          to: venue.manager_email,
-          reply_to: candidateEmail,
+          to: venue.manager_email, reply_to: candidateEmail,
           subject: `[Trial. — ${roleLabel(detectedRole)}] ${subject}`,
           html: forwardEmailHtml({
             venueName: venue.name,
             candidateName: `${first_name} ${last_name}`.trim() || candidateEmail,
-            candidateEmail,
-            roleLabel: roleLabel(detectedRole),
-            originalSubject: subject,
-            originalBody: bodyText
+            candidateEmail, roleLabel: roleLabel(detectedRole),
+            originalSubject: subject, originalBody: bodyText
           }),
           attachments: attachmentPayloads
         });
@@ -467,20 +540,8 @@ export default async function handler(req, res) {
       }
     }
 
-    console.log('[inbound-email] Success:', {
-      venue: venue.slug,
-      role: detectedRole,
-      detectionMethod,
-      nameSource,
-      assessmentId: assessment.id
-    });
-
-    return res.status(200).json({
-      ok: true,
-      assessment_id: assessment.id,
-      role: detectedRole,
-      detection_method: detectionMethod
-    });
+    console.log('[inbound-email] Success:', { venue: venue.slug, role: detectedRole, nameSource, assessmentId: assessment.id });
+    return res.status(200).json({ ok: true, assessment_id: assessment.id });
 
   } catch (err) {
     console.error('[inbound-email] Unexpected error:', err);
@@ -488,74 +549,46 @@ export default async function handler(req, res) {
   }
 }
 
-// ─── Branded email templates ───────────────────────────────────────────────
-
 function candidateEmailHtml({ firstName, venueName, roleLabel, assessmentUrl }) {
   return `<!DOCTYPE html>
-<html lang="en-AU">
-<head>
-<meta charset="UTF-8">
-<title>Your Trial. assessment</title>
-</head>
+<html lang="en-AU"><head><meta charset="UTF-8"><title>Your Trial. assessment</title></head>
 <body style="margin:0;padding:0;background:#0a0a0a;font-family:Georgia,'Times New Roman',serif;color:#f8f6f0;">
 <table cellpadding="0" cellspacing="0" width="100%" style="max-width:560px;margin:0 auto;background:#0a0a0a;padding:48px 32px;">
   <tr><td>
-    <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:900;letter-spacing:-0.6px;color:#f8f6f0;margin-bottom:48px;">
-      Trial<span style="color:#c8a96e;">.</span>
-    </div>
-    <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:16px;font-family:Arial,sans-serif;">
-      Your assessment
-    </div>
+    <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:900;letter-spacing:-0.6px;color:#f8f6f0;margin-bottom:48px;">Trial<span style="color:#c8a96e;">.</span></div>
+    <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:16px;font-family:Arial,sans-serif;">Your assessment</div>
     <h1 style="font-family:'Playfair Display',Georgia,serif;font-weight:800;font-size:36px;line-height:1.1;letter-spacing:-1px;margin:0 0 16px 0;color:#f8f6f0;">
       Hi ${firstName} —<br><span style="font-style:italic;font-weight:500;color:#c8a96e;">${venueName}</span> wants to know how you'd handle their floor.
     </h1>
     <p style="font-size:15px;line-height:1.6;color:rgba(248,246,240,0.62);margin:24px 0;font-family:Arial,sans-serif;">
       Thanks for applying for the <strong style="color:#f8f6f0;font-weight:500;">${roleLabel}</strong> role at ${venueName}. Before they bring you in, they've asked for a quick trial — ten scenario questions that take <strong style="color:#f8f6f0;font-weight:500;">about twelve to fifteen minutes</strong>. There are no right or wrong answers in the abstract — they want to see how <em>you</em> think.
     </p>
-    <table cellpadding="0" cellspacing="0" style="margin:32px 0;">
-      <tr><td style="background:#c8a96e;border-radius:8px;">
-        <a href="${assessmentUrl}" style="display:inline-block;padding:14px 28px;color:#0a0a0a;text-decoration:none;font-family:Arial,sans-serif;font-weight:600;font-size:15px;letter-spacing:0.02em;">
-          Begin your assessment &rarr;
-        </a>
-      </td></tr>
-    </table>
+    <table cellpadding="0" cellspacing="0" style="margin:32px 0;"><tr><td style="background:#c8a96e;border-radius:8px;">
+      <a href="${assessmentUrl}" style="display:inline-block;padding:14px 28px;color:#0a0a0a;text-decoration:none;font-family:Arial,sans-serif;font-weight:600;font-size:15px;letter-spacing:0.02em;">Begin your assessment &rarr;</a>
+    </td></tr></table>
     <p style="font-size:13px;line-height:1.6;color:rgba(248,246,240,0.42);margin:24px 0 0 0;font-family:Arial,sans-serif;">
-      Your link expires in 7 days. If the button doesn't work, paste this into your browser: <br>
+      Your link expires in 7 days. If the button doesn't work, paste this into your browser:<br>
       <span style="color:#c8a96e;word-break:break-all;">${assessmentUrl}</span>
     </p>
-    <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.06);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.42);text-align:center;font-family:Arial,sans-serif;">
-      Trial. · hello@hiretrial.com.au · ABN 71 441 417 792
-    </div>
-  </td></tr>
-</table>
-</body>
-</html>`;
+    <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.06);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.42);text-align:center;font-family:Arial,sans-serif;">Trial. · hello@hiretrial.com.au · ABN 71 441 417 792</div>
+  </td></tr></table>
+</body></html>`;
 }
 
 function forwardEmailHtml({ venueName, candidateName, candidateEmail, roleLabel, originalSubject, originalBody }) {
   return `<!DOCTYPE html>
-<html lang="en-AU">
-<head>
-<meta charset="UTF-8">
-<title>New application via Trial.</title>
-</head>
+<html lang="en-AU"><head><meta charset="UTF-8"><title>New application via Trial.</title></head>
 <body style="margin:0;padding:0;background:#0a0a0a;font-family:Georgia,'Times New Roman',serif;color:#f8f6f0;">
 <table cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#0a0a0a;padding:48px 32px;">
   <tr><td>
-    <div style="font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:900;letter-spacing:-0.5px;color:#f8f6f0;margin-bottom:40px;">
-      Trial<span style="color:#c8a96e;">.</span>
-    </div>
-    <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:14px;font-family:Arial,sans-serif;">
-      New application &middot; ${roleLabel}
-    </div>
-    <h1 style="font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:30px;line-height:1.15;letter-spacing:-0.6px;margin:0 0 6px 0;color:#f8f6f0;">
-      ${candidateName}
-    </h1>
+    <div style="font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:900;letter-spacing:-0.5px;color:#f8f6f0;margin-bottom:40px;">Trial<span style="color:#c8a96e;">.</span></div>
+    <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:14px;font-family:Arial,sans-serif;">New application &middot; ${roleLabel}</div>
+    <h1 style="font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:30px;line-height:1.15;letter-spacing:-0.6px;margin:0 0 6px 0;color:#f8f6f0;">${candidateName}</h1>
     <div style="font-size:14px;color:rgba(248,246,240,0.52);margin-bottom:32px;font-family:Arial,sans-serif;">
       <a href="mailto:${candidateEmail}" style="color:#c8a96e;text-decoration:none;">${candidateEmail}</a>
     </div>
     <p style="font-size:14.5px;line-height:1.65;color:rgba(248,246,240,0.72);margin:0 0 28px 0;font-family:Arial,sans-serif;">
-      This is the original application as it landed in your Trial<span style="color:#c8a96e;">.</span> inbox for <strong style="color:#f8f6f0;font-weight:500;">${venueName}</strong>. The candidate's CV is attached. We've sent them their trial assessment — once they complete it, you'll see their score and summary in <a href="https://dashboard.hiretrial.com.au" style="color:#c8a96e;text-decoration:none;font-weight:500;">your dashboard</a>.
+      Original application as it landed in your Trial<span style="color:#c8a96e;">.</span> inbox for <strong style="color:#f8f6f0;font-weight:500;">${venueName}</strong>. CV attached. We've sent the candidate their assessment — score lands in <a href="https://dashboard.hiretrial.com.au" style="color:#c8a96e;text-decoration:none;font-weight:500;">your dashboard</a> shortly.
     </p>
     <div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:24px;margin:24px 0;">
       <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:10px;font-family:Arial,sans-serif;">Original subject</div>
@@ -563,20 +596,12 @@ function forwardEmailHtml({ venueName, candidateName, candidateEmail, roleLabel,
       <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:10px;font-family:Arial,sans-serif;">Original message</div>
       <div style="font-size:13.5px;color:rgba(248,246,240,0.72);line-height:1.65;white-space:pre-wrap;font-family:Arial,sans-serif;">${escapeHtml(originalBody)}</div>
     </div>
-    <div style="font-size:13px;color:rgba(248,246,240,0.42);margin:32px 0 0 0;font-family:Arial,sans-serif;line-height:1.5;">
-      Reply to this email to respond directly to <strong style="color:rgba(248,246,240,0.62);font-weight:500;">${candidateName}</strong>. Your reply goes to them, not to Trial<span style="color:#c8a96e;">.</span>
-    </div>
-    <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.06);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.42);text-align:center;font-family:Arial,sans-serif;">
-      Trial<span style="color:#c8a96e;">.</span> &middot; hello@hiretrial.com.au &middot; ABN 71 441 417 792
-    </div>
-  </td></tr>
-</table>
-</body>
-</html>`;
+    <div style="font-size:13px;color:rgba(248,246,240,0.42);margin:32px 0 0 0;font-family:Arial,sans-serif;line-height:1.5;">Reply to this email to respond directly to <strong style="color:rgba(248,246,240,0.62);font-weight:500;">${candidateName}</strong>.</div>
+    <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.06);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.42);text-align:center;font-family:Arial,sans-serif;">Trial<span style="color:#c8a96e;">.</span> &middot; hello@hiretrial.com.au &middot; ABN 71 441 417 792</div>
+  </td></tr></table>
+</body></html>`;
 }
 
 function escapeHtml(s) {
-  return String(s || '').replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
+  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
