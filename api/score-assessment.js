@@ -10,7 +10,7 @@
 //   - Webhook-triggered scoring from external systems
 
 import { createClient } from '@supabase/supabase-js';
-import { scoreAssessment } from './_lib/score-assessment-core.js';
+import { scoreAssessment } from './score-assessment-core.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
