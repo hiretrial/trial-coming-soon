@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Your Trial. assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,800;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --black:#0a0a0a;
+  --surface:#111;
+  --surface2:#1a1a1a;
+  --off-white:#f8f6f0;
+  --gold:#c8a96e;
+  --gold-soft:rgba(200,169,110,0.12);
+  --gold-glow:rgba(200,169,110,0.32);
+  --muted:rgba(248,246,240,0.62);
+  --dim:rgba(248,246,240,0.42);
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.14);
+  --success:#1d9e75;
+  --danger:#e24b4a;
+  --warn:#d4860a;
+}
+
+html,body{
+  background:var(--black);
+  color:var(--off-white);
+  font-family:'DM Sans',system-ui,-apple-system,sans-serif;
+  font-weight:300;
+  line-height:1.6;
+  font-size:15px;
+  min-height:100vh;
+  overscroll-behavior-y:none;
+}
+
+.serif{font-family:'Playfair Display',Georgia,serif}
+
+/* ─── Layout shell ─── */
+.app{
+  max-width:680px;
+  margin:0 auto;
+  padding:32px 24px 80px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+.brand-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:48px;
+}
+
+.brand-logo{
+  font-family:'Playfair Display',Georgia,serif;
+  font-weight:800;
+  font-size:24px;
+  letter-spacing:-0.4px;
+  color:var(--off-white);
+}
+.brand-logo .dot{color:var(--gold)}
+
+.brand-divider{
+  flex:1;
+  height:1px;
+  background:var(--border);
+}
+
+.venue-tag{
+  font-size:11px;
+  letter-spacing:0.24em;
+  text-transform:uppercase;
+  color:var(--gold);
+  font-weight:500;
+}
+
+/* ─── Loading state ─── */
+.loading{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:1;
+  flex-direction:column;
+  gap:20px;
+  padding:64px 0;
+}
+.loading-spinner{
+  width:32px;height:32px;
+  border:2px solid var(--border);
+  border-top-color:var(--gold);
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{
+  font-size:13px;
+  color:var(--dim);
+  letter-spacing:0.04em;
+}
+
+/* ─── Screens ─── */
+.screen{
+  flex:1;
+  display:none;
+  flex-direction:column;
+  animation:fadeIn 0.4s ease;
+}
+.screen.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── Intro screen ─── */
+.intro-label{
+  font-size:11px;
+  letter-spacing:0.28em;
+  text-transform:uppercase;
+  color:var(--gold);
+  font-weight:600;
+  margin-bottom:20px;
+}
+
+.intro-title{
+  font-family:'Playfair Display',Georgia,serif;
+  font-weight:800;
+  font-size:clamp(34px,7vw,52px);
+  line-height:1.05;
+  letter-spacing:-1.5px;
+  color:var(--off-white);
+  margin-bottom:24px;
+}
+.intro-title em{font-style:italic;color:var(--gold);font-weight:500}
+
+.intro-lead{
+  font-size:16px;
+  line-height:1.65;
+  color:var(--muted);
+  margin-bottom:32px;
+  max-width:580px;
+}
+.intro-lead strong{color:var(--off-white);font-weight:500}
+
+.facts{
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:24px;
+  margin-bottom:32px;
+}
+.facts-row{
+  display:flex;
+  justify-content:space-between;
+  padding:12px 0;
+  border-bottom:1px solid var(--border);
+}
+.facts-row:last-child{border-bottom:none}
+.facts-label{font-size:13px;color:var(--dim);letter-spacing:0.02em}
+.facts-value{font-size:14px;color:var(--off-white);font-weight:500}
+
+.consent-box{
+  background:var(--gold-soft);
+  border:1px solid rgba(200,169,110,0.2);
+  border-radius:12px;
+  padding:20px 22px;
+  margin-bottom:24px;
+  cursor:pointer;
+  transition:background 0.2s ease, border-color 0.2s ease;
+}
+.consent-box:hover{background:rgba(200,169,110,0.16);border-color:rgba(200,169,110,0.32)}
+.consent-box.checked{
+  background:rgba(200,169,110,0.2);
+  border-color:var(--gold);
+}
+.consent-label{
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  cursor:pointer;
+}
+.consent-checkbox{
+  width:20px;height:20px;
+  border:1.5px solid var(--gold);
+  border-radius:5px;
+  flex-shrink:0;
+  margin-top:2px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:background 0.2s ease;
+}
+.consent-box.checked .consent-checkbox{background:var(--gold)}
+.consent-checkbox svg{opacity:0;transition:opacity 0.15s ease}
+.consent-box.checked .consent-checkbox svg{opacity:1}
+.consent-text{
+  font-size:13.5px;
+  line-height:1.55;
+  color:var(--off-white);
+  font-weight:400;
+}
+.consent-text strong{font-weight:600}
+
+/* ─── Buttons ─── */
+.btn-primary{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  background:var(--gold);
+  color:var(--black);
+  border:none;
+  border-radius:10px;
+  padding:16px 28px;
+  font-family:'DM Sans',sans-serif;
+  font-weight:600;
+  font-size:15px;
+  letter-spacing:0.02em;
+  cursor:pointer;
+  transition:background 0.15s ease, transform 0.1s ease;
+  width:100%;
+  max-width:320px;
+}
+.btn-primary:hover:not(:disabled){background:#d4b88a;transform:translateY(-1px)}
+.btn-primary:active:not(:disabled){transform:translateY(0)}
+.btn-primary:disabled{
+  background:rgba(200,169,110,0.18);
+  color:rgba(248,246,240,0.32);
+  cursor:not-allowed;
+}
+
+.btn-secondary{
+  background:transparent;
+  color:var(--off-white);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:14px 24px;
+  font-family:'DM Sans',sans-serif;
+  font-weight:500;
+  font-size:14px;
+  cursor:pointer;
+  transition:border-color 0.15s ease;
+}
+.btn-secondary:hover{border-color:var(--gold)}
+.btn-secondary:disabled{opacity:0.4;cursor:not-allowed}
+
+/* ─── Question screen ─── */
+.q-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:24px;
+  font-size:12px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--dim);
+}
+.q-counter{color:var(--gold);font-weight:600}
+
+.progress-track{
+  width:100%;
+  height:3px;
+  background:var(--border);
+  border-radius:2px;
+  overflow:hidden;
+  margin-bottom:40px;
+}
+.progress-fill{
+  height:100%;
+  background:var(--gold);
+  border-radius:2px;
+  transition:width 0.4s ease;
+}
+
+.q-text{
+  font-family:'Playfair Display',Georgia,serif;
+  font-weight:500;
+  font-size:clamp(22px,4.5vw,30px);
+  line-height:1.35;
+  color:var(--off-white);
+  margin-bottom:32px;
+  letter-spacing:-0.4px;
+}
+
+.q-textarea{
+  width:100%;
+  min-height:200px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px 20px;
+  color:var(--off-white);
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  resize:vertical;
+  transition:border-color 0.2s ease, background 0.2s ease;
+}
+.q-textarea:focus{
+  outline:none;
+  border-color:var(--gold);
+  background:rgba(255,255,255,0.04);
+}
+.q-textarea::placeholder{color:var(--dim);font-style:italic}
+
+.q-meta{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:14px;
+  font-size:12px;
+  color:var(--dim);
+}
+.q-char-count{font-variant-numeric:tabular-nums}
+.q-char-count.warning{color:var(--warn)}
+.q-char-count.ok{color:var(--success)}
+
+.q-nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:40px;
+  gap:12px;
+}
+
+/* ─── Final / submit screen ─── */
+.final-grid{
+  display:grid;
+  gap:12px;
+  margin-bottom:32px;
+}
+.final-row{
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:13.5px;
+}
+.final-row-label{color:var(--dim);letter-spacing:0.02em}
+.final-row-value{color:var(--off-white);font-weight:500}
+
+/* ─── Success screen ─── */
+.success-icon{
+  width:64px;height:64px;
+  border:2px solid var(--gold);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:32px 0 24px;
+}
+
+/* ─── Error states ─── */
+.error-box{
+  background:rgba(226,75,74,0.08);
+  border:1px solid rgba(226,75,74,0.3);
+  border-radius:12px;
+  padding:20px 24px;
+  margin-bottom:24px;
+  color:var(--off-white);
+  font-size:14px;
+  line-height:1.6;
+}
+.error-box strong{color:#e24b4a;font-weight:600}
+
+/* ─── Footer ─── */
+.footer{
+  margin-top:64px;
+  padding-top:24px;
+  border-top:1px solid var(--border);
+  font-size:11px;
+  color:var(--dim);
+  text-align:center;
+  letter-spacing:0.02em;
+}
+.footer .dot{color:var(--gold)}
+
+/* ─── Mobile ─── */
+@media (max-width:520px){
+  .app{padding:24px 18px 60px}
+  .brand-row{margin-bottom:36px}
+  .brand-logo{font-size:21px}
+  .intro-title{font-size:34px;letter-spacing:-1px}
+  .intro-lead{font-size:15px}
+  .facts{padding:18px}
+  .consent-box{padding:18px}
+  .q-text{font-size:22px}
+  .q-textarea{min-height:180px;padding:16px}
+  .q-nav{flex-direction:column;align-items:stretch}
+  .btn-primary,.btn-secondary{width:100%;max-width:none}
+}
+
+/* ─── Hide on small if needed ─── */
+.desktop-only{display:inline}
+@media (max-width:520px){.desktop-only{display:none}}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ═══ HEADER (shown across all screens) ═══ -->
+  <div class="brand-row">
+    <div class="brand-logo">Trial<span class="dot">.</span></div>
+    <div class="brand-divider"></div>
+    <div class="venue-tag" id="venue-tag-header">Loading...</div>
+  </div>
+
+  <!-- ═══ LOADING SCREEN ═══ -->
+  <div class="screen active" id="screen-loading">
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading your assessment...</div>
+    </div>
+  </div>
+
+  <!-- ═══ ERROR SCREEN ═══ -->
+  <div class="screen" id="screen-error">
+    <div class="intro-label">Something went wrong</div>
+    <h1 class="intro-title serif">This link <em>isn't working.</em></h1>
+    <div class="error-box" id="error-message">
+      <!-- filled in dynamically -->
+    </div>
+    <p class="intro-lead">
+      If you believe this is a mistake, please contact the venue you applied to directly, or email <strong>hello@hiretrial.com.au</strong> for help.
+    </p>
+  </div>
+
+  <!-- ═══ ALREADY SUBMITTED SCREEN ═══ -->
+  <div class="screen" id="screen-already-submitted">
+    <div class="intro-label">All done</div>
+    <h1 class="intro-title serif">Your assessment is <em>already in.</em></h1>
+    <p class="intro-lead">
+      Thanks — we've passed your responses to the venue. They'll be in touch directly if they'd like to take things further.
+    </p>
+  </div>
+
+  <!-- ═══ INTRO SCREEN ═══ -->
+  <div class="screen" id="screen-intro">
+    <div class="intro-label">Your trial</div>
+    <h1 class="intro-title serif">
+      Hi <span id="intro-firstname">there</span> — <em id="intro-venue">the venue</em> wants to see how you think.
+    </h1>
+    <p class="intro-lead">
+      Thanks for applying for the <strong id="intro-role">role</strong>. Before they bring you in, they've asked for a quick trial — <strong>six scenario questions</strong> that take <strong>about ten to twelve minutes</strong>. There are no right or wrong answers — they want to see your judgement.
+    </p>
+
+    <div class="facts">
+      <div class="facts-row">
+        <div class="facts-label">Venue</div>
+        <div class="facts-value" id="facts-venue">—</div>
+      </div>
+      <div class="facts-row">
+        <div class="facts-label">Role</div>
+        <div class="facts-value" id="facts-role">—</div>
+      </div>
+      <div class="facts-row">
+        <div class="facts-label">Questions</div>
+        <div class="facts-value" id="facts-count">—</div>
+      </div>
+      <div class="facts-row">
+        <div class="facts-label">Time</div>
+        <div class="facts-value">~10–12 min</div>
+      </div>
+    </div>
+
+    <div class="consent-box" id="tier1-consent" onclick="toggleConsent('tier1')">
+      <div class="consent-label">
+        <div class="consent-checkbox">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2 6L5 9L10 3" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="consent-text">
+          <strong>I consent to my answers being AI-scored.</strong><br>
+          My responses will be reviewed by an AI scoring system and shared with the venue. A human at Trial. can also review on request. <a href="https://hiretrial.com.au/privacy" style="color:var(--gold);text-decoration:underline">Privacy policy</a>.
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="begin-btn" onclick="startAssessment()" disabled>
+      Begin your assessment &rarr;
+    </button>
+  </div>
+
+  <!-- ═══ QUESTION SCREEN ═══ -->
+  <div class="screen" id="screen-question">
+    <div class="q-header">
+      <div>Question <span class="q-counter" id="q-counter">1 / 6</span></div>
+      <div class="desktop-only" id="q-category">—</div>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="q-text serif" id="q-text">Loading question...</div>
+    <textarea 
+      class="q-textarea" 
+      id="q-textarea" 
+      placeholder="Take your time. Think about it the way you actually would. Type your response here..."
+      oninput="onAnswerInput()"
+    ></textarea>
+    <div class="q-meta">
+      <div id="q-hint">Aim for a few sentences — what you'd actually do, in your own words.</div>
+      <div class="q-char-count" id="q-char-count">0 chars</div>
+    </div>
+    <div class="q-nav">
+      <button class="btn-secondary" id="q-back-btn" onclick="prevQuestion()">&larr; Back</button>
+      <button class="btn-primary" id="q-next-btn" onclick="nextQuestion()" disabled>Continue &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ═══ FINAL / TIER 2 CONSENT SCREEN ═══ -->
+  <div class="screen" id="screen-final">
+    <div class="intro-label">One last thing</div>
+    <h1 class="intro-title serif">Ready to <em>submit?</em></h1>
+    <p class="intro-lead">
+      You've finished all six questions. Before we send your responses to <strong id="final-venue">the venue</strong>, just one more thing.
+    </p>
+
+    <div class="final-grid">
+      <div class="final-row">
+        <div class="final-row-label">Questions answered</div>
+        <div class="final-row-value" id="final-count">6 of 6</div>
+      </div>
+      <div class="final-row">
+        <div class="final-row-label">Time taken</div>
+        <div class="final-row-value" id="final-time">—</div>
+      </div>
+    </div>
+
+    <div class="consent-box" id="tier2-consent" onclick="toggleConsent('tier2')">
+      <div class="consent-label">
+        <div class="consent-checkbox">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2 6L5 9L10 3" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="consent-text">
+          <strong>I consent to my assessment being part of the Trial. network.</strong><br>
+          Other venues I apply to in the future may see my assessment score and summary — saving me from re-doing this every time. I can opt out at any time.
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="submit-btn" onclick="submitAssessment()" disabled>
+      Submit your assessment
+    </button>
+    <p style="font-size:12px;color:var(--dim);margin-top:14px;text-align:left;">
+      Once submitted, you can't change your answers.
+    </p>
+  </div>
+
+  <!-- ═══ SUBMITTING SCREEN ═══ -->
+  <div class="screen" id="screen-submitting">
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Submitting your assessment...</div>
+    </div>
+  </div>
+
+  <!-- ═══ SUCCESS SCREEN ═══ -->
+  <div class="screen" id="screen-success">
+    <div class="intro-label">All done</div>
+    <h1 class="intro-title serif">Thanks, <em id="success-firstname">there</em>.</h1>
+    <p class="intro-lead">
+      Your responses are in. <strong id="success-venue">The venue</strong> will review your assessment and be in touch directly if they'd like to take things further.
+    </p>
+    <p class="intro-lead" style="font-size:14px;color:var(--dim);">
+      You don't need to do anything else from here.
+    </p>
+  </div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <div class="footer">
+    Trial<span class="dot">.</span> &middot; hello@hiretrial.com.au &middot; ABN 71 441 417 792
+  </div>
+
+</div>
+
+<script>
+// ─── State ───
+let state = {
+  token: null,
+  assessment: null,
+  venue: null,
+  questions: [],
+  answers: {},           // questionId → text
+  currentIdx: 0,
+  consents: { tier1: false, tier2: false },
+  // Integrity signals
+  pasteCount: 0,
+  pastedQuestionIndices: [],
+  tabSwitchCount: 0,
+  questionTimings: {},   // questionId → {started, totalMs}
+  questionStartedAt: null,
+  startedAt: null,
+};
+
+// ─── URL token extraction ───
+function getToken() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('token');
+}
+
+// ─── Screen management ───
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showError(message) {
+  document.getElementById('error-message').innerHTML = `<strong>Error:</strong> ${escapeHtml(message)}`;
+  showScreen('screen-error');
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+// ─── localStorage save/restore (resilience) ───
+function saveProgress() {
+  if (!state.token) return;
+  const data = {
+    answers: state.answers,
+    currentIdx: state.currentIdx,
+    consents: state.consents,
+    pasteCount: state.pasteCount,
+    pastedQuestionIndices: state.pastedQuestionIndices,
+    tabSwitchCount: state.tabSwitchCount,
+    questionTimings: state.questionTimings,
+    startedAt: state.startedAt,
+    savedAt: Date.now()
+  };
+  try { localStorage.setItem(`trial_assess_${state.token}`, JSON.stringify(data)); } catch(e) {}
+}
+
+function loadProgress() {
+  if (!state.token) return;
+  try {
+    const raw = localStorage.getItem(`trial_assess_${state.token}`);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    state.answers = data.answers || {};
+    state.currentIdx = data.currentIdx || 0;
+    state.consents = data.consents || { tier1: false, tier2: false };
+    state.pasteCount = data.pasteCount || 0;
+    state.pastedQuestionIndices = data.pastedQuestionIndices || [];
+    state.tabSwitchCount = data.tabSwitchCount || 0;
+    state.questionTimings = data.questionTimings || {};
+    state.startedAt = data.startedAt || null;
+  } catch(e) {}
+}
+
+// ─── Integrity signal capture ───
+function setupIntegrityListeners() {
+  // Tab switching
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      state.tabSwitchCount += 1;
+      saveProgress();
+    }
+  });
+
+  // Paste detection — attached to textarea on render
+}
+
+// ─── Tier 1 / Tier 2 consent toggle ───
+function toggleConsent(tier) {
+  state.consents[tier] = !state.consents[tier];
+  const box = document.getElementById(tier === 'tier1' ? 'tier1-consent' : 'tier2-consent');
+  box.classList.toggle('checked', state.consents[tier]);
+
+  if (tier === 'tier1') {
+    document.getElementById('begin-btn').disabled = !state.consents.tier1;
+  } else {
+    updateSubmitButton();
+  }
+  saveProgress();
+}
+
+function updateSubmitButton() {
+  // Submit needs tier 2 + all answers filled
+  const allAnswered = state.questions.every(q => (state.answers[q.id] || '').trim().length >= 20);
+  document.getElementById('submit-btn').disabled = !(state.consents.tier2 && allAnswered);
+}
+
+// ─── Begin assessment ───
+function startAssessment() {
+  if (!state.consents.tier1) return;
+  if (!state.startedAt) state.startedAt = Date.now();
+
+  // Tier 1 consent timestamp logged when this fires (server will note from submit payload)
+  showScreen('screen-question');
+  renderQuestion();
+  saveProgress();
+}
+
+// ─── Render current question ───
+function renderQuestion() {
+  const q = state.questions[state.currentIdx];
+  if (!q) return;
+
+  document.getElementById('q-counter').textContent = `${state.currentIdx + 1} / ${state.questions.length}`;
+  document.getElementById('q-category').textContent = q.category.replace(/_/g, ' ');
+  document.getElementById('q-text').textContent = q.text;
+
+  const progressPct = ((state.currentIdx) / state.questions.length) * 100;
+  document.getElementById('progress-fill').style.width = `${progressPct}%`;
+
+  const ta = document.getElementById('q-textarea');
+  ta.value = state.answers[q.id] || '';
+  updateCharCount();
+
+  // Back button visibility
+  document.getElementById('q-back-btn').style.display = state.currentIdx === 0 ? 'none' : 'inline-flex';
+  updateNextButton();
+
+  // Start timing this question
+  state.questionStartedAt = Date.now();
+  if (!state.questionTimings[q.id]) {
+    state.questionTimings[q.id] = { started: Date.now(), totalMs: 0 };
+  }
+
+  // Attach paste listener
+  ta.onpaste = (e) => {
+    state.pasteCount += 1;
+    if (!state.pastedQuestionIndices.includes(state.currentIdx)) {
+      state.pastedQuestionIndices.push(state.currentIdx);
+    }
+    saveProgress();
+  };
+
+  ta.focus();
+}
+
+// ─── Char count + next button state ───
+function onAnswerInput() {
+  const q = state.questions[state.currentIdx];
+  if (!q) return;
+  const ta = document.getElementById('q-textarea');
+  state.answers[q.id] = ta.value;
+  updateCharCount();
+  updateNextButton();
+  saveProgress();
+}
+
+function updateCharCount() {
+  const ta = document.getElementById('q-textarea');
+  const len = ta.value.trim().length;
+  const cc = document.getElementById('q-char-count');
+  cc.textContent = `${len} chars`;
+  cc.className = 'q-char-count';
+  if (len >= 80) cc.classList.add('ok');
+  else if (len >= 20) cc.classList.add('warning');
+}
+
+function updateNextButton() {
+  const ta = document.getElementById('q-textarea');
+  const ok = ta.value.trim().length >= 20;
+  document.getElementById('q-next-btn').disabled = !ok;
+}
+
+// ─── Navigate questions ───
+function nextQuestion() {
+  // Accrue timing for this question
+  if (state.questionStartedAt) {
+    const q = state.questions[state.currentIdx];
+    if (q && state.questionTimings[q.id]) {
+      state.questionTimings[q.id].totalMs += Date.now() - state.questionStartedAt;
+    }
+  }
+
+  if (state.currentIdx < state.questions.length - 1) {
+    state.currentIdx += 1;
+    renderQuestion();
+    saveProgress();
+  } else {
+    // Final question — go to submit screen
+    document.getElementById('progress-fill').style.width = '100%';
+    showFinalScreen();
+  }
+}
+
+function prevQuestion() {
+  if (state.currentIdx > 0) {
+    if (state.questionStartedAt) {
+      const q = state.questions[state.currentIdx];
+      if (q && state.questionTimings[q.id]) {
+        state.questionTimings[q.id].totalMs += Date.now() - state.questionStartedAt;
+      }
+    }
+    state.currentIdx -= 1;
+    renderQuestion();
+    saveProgress();
+  }
+}
+
+// ─── Final screen ───
+function showFinalScreen() {
+  document.getElementById('final-venue').textContent = state.venue.name;
+  document.getElementById('final-count').textContent = `${state.questions.length} of ${state.questions.length}`;
+
+  const totalMs = state.startedAt ? (Date.now() - state.startedAt) : 0;
+  const min = Math.floor(totalMs / 60000);
+  const sec = Math.floor((totalMs % 60000) / 1000);
+  document.getElementById('final-time').textContent = `${min}m ${sec}s`;
+
+  document.getElementById('tier2-consent').classList.toggle('checked', state.consents.tier2);
+  updateSubmitButton();
+  showScreen('screen-final');
+}
+
+// ─── Submit ───
+async function submitAssessment() {
+  if (!state.consents.tier2) return;
+  showScreen('screen-submitting');
+
+  const totalMs = state.startedAt ? (Date.now() - state.startedAt) : 0;
+  const answerMsList = Object.values(state.questionTimings).map(t => t.totalMs).filter(Boolean);
+  const avgResponseSeconds = answerMsList.length 
+    ? (answerMsList.reduce((a,b)=>a+b,0) / answerMsList.length / 1000) 
+    : 0;
+
+  const payload = {
+    token: state.token,
+    answers: state.answers,
+    integrity: {
+      pasteCount: state.pasteCount,
+      pastedQuestionIndices: state.pastedQuestionIndices,
+      tabSwitchCount: state.tabSwitchCount,
+      avgResponseTimeSeconds: avgResponseSeconds,
+      totalDurationMs: totalMs,
+    },
+    consents: {
+      tier1At: new Date(state.startedAt).toISOString(),
+      tier2At: new Date().toISOString()
+    }
+  };
+
+  try {
+    const resp = await fetch('/api/submit-assessment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error || `Submit failed (${resp.status})`);
+    }
+
+    // Success — clear localStorage
+    try { localStorage.removeItem(`trial_assess_${state.token}`); } catch(e) {}
+    showSuccess();
+
+  } catch (err) {
+    console.error('[submit] failed', err);
+    showError(`Couldn't submit your assessment. Please try again. If this keeps happening, email hello@hiretrial.com.au — ${err.message}`);
+  }
+}
+
+function showSuccess() {
+  const profile = state.assessment.candidateProfile || {};
+  document.getElementById('success-firstname').textContent = profile.first_name || 'there';
+  document.getElementById('success-venue').textContent = state.venue.name;
+  showScreen('screen-success');
+}
+
+// ─── Render intro screen ───
+function renderIntro() {
+  const profile = state.assessment.candidateProfile || {};
+  document.getElementById('intro-firstname').textContent = profile.first_name || 'there';
+  document.getElementById('intro-venue').textContent = state.venue.name;
+  document.getElementById('intro-role').textContent = state.assessment.roleLabel;
+  document.getElementById('facts-venue').textContent = state.venue.name;
+  document.getElementById('facts-role').textContent = state.assessment.roleLabel;
+  document.getElementById('facts-count').textContent = `${state.questions.length}`;
+  document.getElementById('venue-tag-header').textContent = state.venue.name;
+  document.getElementById('tier1-consent').classList.toggle('checked', state.consents.tier1);
+  document.getElementById('begin-btn').disabled = !state.consents.tier1;
+
+  // If they had progress saved (already in the middle of the assessment), skip intro
+  if (state.consents.tier1 && state.currentIdx > 0 && Object.keys(state.answers).length > 0) {
+    showScreen('screen-question');
+    renderQuestion();
+  } else if (state.consents.tier1 && Object.keys(state.answers).length > 0) {
+    showScreen('screen-question');
+    renderQuestion();
+  } else {
+    showScreen('screen-intro');
+  }
+}
+
+// ─── Init ───
+(async function init() {
+  state.token = getToken();
+  if (!state.token) {
+    showError('No assessment token in the URL. Please use the link from your email.');
+    return;
+  }
+
+  setupIntegrityListeners();
+  loadProgress();
+
+  try {
+    const resp = await fetch(`/api/assess/${state.token}`);
+    if (!resp.ok) {
+      if (resp.status === 410) {
+        const data = await resp.json();
+        showError(data.message || 'This assessment link has expired.');
+        return;
+      }
+      if (resp.status === 404) {
+        showError('We couldn\'t find this assessment. Please use the link from your email.');
+        return;
+      }
+      throw new Error(`Server error (${resp.status})`);
+    }
+
+    const data = await resp.json();
+
+    if (data.status === 'already_submitted') {
+      showScreen('screen-already-submitted');
+      return;
+    }
+
+    state.assessment = data.assessment;
+    state.venue = data.venue;
+    state.questions = data.questions;
+
+    // Apply venue brand colour if set
+    if (state.venue.brandPrimaryColor && state.venue.brandPrimaryColor !== '#c8a96e') {
+      document.documentElement.style.setProperty('--gold', state.venue.brandPrimaryColor);
+    }
+
+    renderIntro();
+
+  } catch (err) {
+    console.error('[init] failed', err);
+    showError(`Couldn't load your assessment: ${err.message}`);
+  }
+})();
+</script>
+</body>
+</html>
