@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrialHQ — Founder Dashboard</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TrialHQ — Founder admin dashboard
+   Brand: Tiffany blue (#0ABAB5) on near-black/cream
+   Light mode supported via body.light
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --bg:           #0a0a0a;
+  --bg2:          #111;
+  --bg3:          #161616;
+  --card:         #131313;
+  --border:       rgba(255,255,255,0.08);
+  --border2:      rgba(255,255,255,0.14);
+
+  --white:        #f8f6f0;
+  --muted:        rgba(248,246,240,0.62);
+  --dim:          rgba(248,246,240,0.38);
+  --faint:        rgba(248,246,240,0.22);
+
+  --accent:       #0ABAB5;
+  --accent-soft:  rgba(10,186,181,0.15);
+  --accent-glow:  rgba(10,186,181,0.4);
+
+  --success:      #6db58a;
+  --warning:      #d4a04a;
+  --danger:       #d97757;
+}
+
+body.light {
+  --bg:           #fafaf7;
+  --bg2:          #fff;
+  --bg3:          #f3f2ee;
+  --card:         #fff;
+  --border:       rgba(0,0,0,0.08);
+  --border2:      rgba(0,0,0,0.14);
+
+  --white:        #0a0a0a;
+  --muted:        rgba(10,10,10,0.62);
+  --dim:          rgba(10,10,10,0.45);
+  --faint:        rgba(10,10,10,0.28);
+
+  --accent:       #067A77;
+  --accent-soft:  rgba(10,186,181,0.10);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  font-weight: 300;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  transition: background 0.2s, color 0.2s;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent); opacity: 0.85; }
+
+/* ─── Buttons ─── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 11px 20px; border: 1px solid transparent; border-radius: 7px;
+  font-family: inherit; font-size: 13px; font-weight: 500; letter-spacing: 0.02em;
+  cursor: pointer; transition: all 0.18s ease; text-decoration: none;
+}
+.btn-primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+body.light .btn-primary { color: #fff; }
+.btn-primary:hover { background: #08a09c; box-shadow: 0 0 0 3px var(--accent-soft); transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-outline { background: transparent; color: var(--white); border-color: var(--border2); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+.btn-ghost { background: transparent; color: var(--muted); border: none; }
+.btn-ghost:hover { color: var(--accent); }
+.btn-sm { padding: 7px 14px; font-size: 12px; }
+.btn-danger { color: var(--danger); border-color: rgba(217,119,87,0.3); background: transparent; }
+.btn-danger:hover { background: rgba(217,119,87,0.08); border-color: var(--danger); }
+
+/* ═══════════════════════════════════════════════════════════════
+   LOGIN SCREEN
+   ═══════════════════════════════════════════════════════════════ */
+.login-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.login-card {
+  width: 100%; max-width: 420px; padding: 44px 40px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: 0 24px 56px rgba(0,0,0,0.4);
+}
+.login-eyebrow {
+  font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--accent); font-weight: 600; margin-bottom: 14px; text-align: center;
+}
+.login-title {
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  font-size: 32px; letter-spacing: -0.6px; line-height: 1.1;
+  text-align: center; margin-bottom: 6px;
+}
+.login-sub {
+  font-size: 13px; color: var(--dim); text-align: center; margin-bottom: 30px;
+}
+.login-field { margin-bottom: 16px; }
+.login-field label {
+  display: block; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--dim); font-weight: 600; margin-bottom: 7px;
+}
+.login-input {
+  width: 100%; padding: 11px 14px;
+  background: var(--bg3); border: 1px solid var(--border2); border-radius: 6px;
+  color: var(--white); font-family: inherit; font-size: 14px;
+  outline: none; transition: border-color 0.15s ease;
+}
+.login-input:focus { border-color: var(--accent); }
+.login-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; font-size: 12px; color: var(--dim);
+}
+.login-row label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.login-row input[type="checkbox"] { accent-color: var(--accent); }
+.login-row a { font-size: 12px; cursor: pointer; }
+.login-error {
+  margin-top: 14px; padding: 11px 14px;
+  background: rgba(217,119,87,0.1); border: 1px solid rgba(217,119,87,0.3);
+  border-radius: 6px; color: var(--danger); font-size: 12.5px; display: none;
+}
+.login-error.show { display: block; }
+.login-footer {
+  margin-top: 24px; text-align: center; font-size: 11px; color: var(--dim);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD SHELL
+   ═══════════════════════════════════════════════════════════════ */
+.app { display: none; }
+.app.shown { display: block; }
+
+.topnav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 32px; border-bottom: 1px solid var(--border); background: var(--bg);
+  position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px);
+}
+.topnav-logo {
+  font-family: 'Playfair Display', serif; font-weight: 800;
+  font-size: 22px; letter-spacing: -0.4px;
+}
+.topnav-logo span { color: var(--accent); }
+.topnav-right {
+  display: flex; align-items: center; gap: 14px;
+}
+.topnav-user {
+  font-size: 12px; color: var(--muted);
+}
+.theme-btn {
+  background: transparent; border: 1px solid var(--border2); color: var(--muted);
+  border-radius: 6px; padding: 7px 12px; font-size: 12px; font-family: inherit;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  transition: all 0.18s ease;
+}
+.theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.tabs {
+  display: flex; gap: 4px; padding: 0 28px; border-bottom: 1px solid var(--border);
+  background: var(--bg); overflow-x: auto;
+}
+.tab {
+  padding: 14px 18px; font-size: 13px; color: var(--dim); cursor: pointer;
+  border-bottom: 2px solid transparent; transition: all 0.18s; white-space: nowrap; font-weight: 400;
+}
+.tab:hover { color: var(--muted); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+.tab-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; padding: 0 6px; background: var(--accent-soft);
+  border-radius: 9px; font-size: 10px; color: var(--accent); margin-left: 6px; font-weight: 600;
+}
+
+.body {
+  padding: 40px 32px 80px; max-width: 1280px;
+}
+
+.section { margin-bottom: 44px; }
+.section-eyebrow {
+  font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--accent); font-weight: 600; margin-bottom: 10px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  font-size: 30px; letter-spacing: -0.5px; margin-bottom: 6px; line-height: 1.1;
+}
+.section-sub {
+  font-size: 13.5px; color: var(--muted); margin-bottom: 22px; font-weight: 300;
+}
+
+/* ─── Metric grid ─── */
+.metrics {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px;
+}
+@media (max-width: 900px) { .metrics { grid-template-columns: repeat(2, 1fr); } }
+.metric {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 18px 20px; transition: border-color 0.2s;
+}
+.metric:hover { border-color: var(--accent-soft); }
+.metric-label {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--dim); font-weight: 500; margin-bottom: 10px;
+}
+.metric-value {
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  font-size: 32px; line-height: 1; letter-spacing: -0.5px; margin-bottom: 6px;
+}
+.metric-value.accent { color: var(--accent); }
+.metric-sub {
+  font-size: 11.5px; color: var(--faint); letter-spacing: 0.02em;
+}
+
+/* ─── Table card ─── */
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden;
+}
+.card-header {
+  padding: 18px 22px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.card-header-left { flex: 1; min-width: 200px; }
+.card-title {
+  font-family: 'Playfair Display', serif; font-weight: 600;
+  font-size: 17px; letter-spacing: -0.2px;
+}
+.card-sub { font-size: 12px; color: var(--dim); margin-top: 2px; }
+
+.filters { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+.filter {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 12px; font-size: 11.5px; border-radius: 16px;
+  border: 1px solid var(--border2); background: transparent;
+  cursor: pointer; transition: all 0.18s; font-family: inherit; color: var(--muted);
+}
+.filter:hover { border-color: var(--accent); color: var(--accent); }
+.filter.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+.filter-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+  background: var(--border2); font-size: 10px; font-weight: 600; color: var(--dim);
+}
+.filter.active .filter-count { background: var(--accent); color: #000; }
+body.light .filter.active .filter-count { color: #fff; }
+
+table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+thead th {
+  text-align: left; padding: 12px 22px;
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--dim); font-weight: 600;
+  border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.15);
+}
+body.light thead th { background: rgba(0,0,0,0.03); }
+tbody td { padding: 14px 22px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr.clickable { cursor: pointer; transition: background 0.15s; }
+tbody tr.clickable:hover { background: rgba(255,255,255,0.02); }
+body.light tbody tr.clickable:hover { background: rgba(0,0,0,0.02); }
+tbody tr.expanded { background: var(--accent-soft); }
+tbody tr.expanded:hover { background: var(--accent-soft); }
+
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent-soft); display: inline-flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-weight: 700; font-size: 12px;
+  color: var(--accent); border: 1px solid var(--accent-soft);
+}
+.cell-name { display: flex; align-items: center; gap: 12px; }
+.cell-name-text { display: flex; flex-direction: column; }
+.cell-name-primary { font-weight: 500; color: var(--white); }
+.cell-name-secondary { font-size: 11.5px; color: var(--dim); margin-top: 2px; }
+
+.stage {
+  display: inline-block; padding: 3px 9px; font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase; border-radius: 3px;
+  font-weight: 600; border: 1px solid;
+}
+.stage-new { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+.stage-contacted { color: var(--warning); border-color: rgba(212,160,74,0.4); }
+.stage-qualified { color: var(--success); border-color: rgba(109,181,138,0.4); }
+.stage-converted { color: var(--success); background: rgba(109,181,138,0.1); border-color: rgba(109,181,138,0.4); }
+.stage-declined { color: var(--danger); border-color: rgba(217,119,87,0.4); }
+.stage-active { color: var(--success); background: rgba(109,181,138,0.1); border-color: rgba(109,181,138,0.4); }
+.stage-paused { color: var(--warning); border-color: rgba(212,160,74,0.4); }
+.stage-pending { color: var(--dim); border-color: var(--border2); }
+
+.timing-pill {
+  display: inline-block; padding: 2px 8px; font-size: 10.5px;
+  border-radius: 10px; background: var(--bg3); color: var(--muted); font-weight: 500;
+}
+.timing-urgent { background: rgba(217,119,87,0.12); color: var(--danger); }
+
+/* ─── Expanded row detail ─── */
+.detail-row td { padding: 0; background: var(--bg3); border-bottom: 1px solid var(--border); }
+body.light .detail-row td { background: var(--bg3); }
+.detail-wrap { padding: 28px 22px; }
+.detail-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 32px; margin-bottom: 24px;
+}
+@media (max-width: 720px) { .detail-grid { grid-template-columns: 1fr; } }
+.detail-row-item .detail-label {
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--dim); font-weight: 600; margin-bottom: 5px;
+}
+.detail-row-item .detail-val { font-size: 13.5px; color: var(--white); line-height: 1.5; }
+.detail-row-item .detail-val a { color: var(--accent); }
+.detail-frustration {
+  margin-top: 8px; padding: 16px 18px;
+  background: rgba(255,255,255,0.03); border-left: 2px solid var(--accent);
+  border-radius: 4px; font-size: 13.5px; color: var(--muted);
+  line-height: 1.6; font-style: italic;
+}
+body.light .detail-frustration { background: rgba(0,0,0,0.03); }
+.detail-actions {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px;
+  padding-top: 20px; border-top: 1px solid var(--border);
+}
+
+/* ─── Empty state ─── */
+.empty {
+  padding: 60px 24px; text-align: center; color: var(--dim);
+}
+.empty-title {
+  font-family: 'Playfair Display', serif; font-size: 20px;
+  font-weight: 600; color: var(--white); margin-bottom: 8px;
+}
+.empty-sub { font-size: 13px; max-width: 440px; margin: 0 auto; }
+
+.loader {
+  padding: 60px 24px; text-align: center; color: var(--dim);
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+}
+
+/* ─── Toast ─── */
+.toast {
+  position: fixed; bottom: 22px; right: 22px; z-index: 200;
+  padding: 13px 18px; min-width: 220px; max-width: 380px;
+  background: var(--card); border: 1px solid var(--border2); border-left: 3px solid var(--accent);
+  border-radius: 6px; color: var(--white); font-size: 13px;
+  opacity: 0; transform: translateY(8px); transition: all 0.2s; pointer-events: none;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error { border-left-color: var(--danger); }
+.toast.success { border-left-color: var(--success); }
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <div class="login-eyebrow">TrialHQ &middot; Founder Access</div>
+    <h1 class="login-title">Sign in.</h1>
+    <p class="login-sub">Operator credentials only.</p>
+
+    <div class="login-field">
+      <label>Email</label>
+      <input type="email" id="login-email" class="login-input" placeholder="you@hiretrial.com.au" autocomplete="email">
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="login-password" class="login-input" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <div class="login-row">
+      <label><input type="checkbox" id="remember" checked> Stay signed in</label>
+    </div>
+    <button class="btn btn-primary" style="width:100%" id="login-btn">Sign in &rarr;</button>
+    <div class="login-error" id="login-error"></div>
+    <div class="login-footer">Restricted area &middot; activity is logged</div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="app" id="app">
+
+  <div class="topnav">
+    <div class="topnav-logo">TRIAL<span>.</span> HQ</div>
+    <div class="topnav-right">
+      <button class="theme-btn" id="theme-btn"><span id="theme-icon">☽</span> <span id="theme-label">Light</span></button>
+      <span class="topnav-user" id="topnav-user">—</span>
+      <button class="btn btn-outline btn-sm" id="logout-btn">Sign out</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="overview">Overview</div>
+    <div class="tab" data-tab="eois">
+      EOIs <span class="tab-badge" id="eois-badge">0</span>
+    </div>
+    <div class="tab" data-tab="venues">
+      Venues <span class="tab-badge" id="venues-badge">0</span>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- ═══ OVERVIEW TAB ═══ -->
+    <div id="tab-overview">
+      <div class="section">
+        <p class="section-eyebrow">Founder dashboard</p>
+        <h2 class="section-title" id="welcome-title">Welcome back.</h2>
+        <p class="section-sub">Snapshot of where Trial. is right now.</p>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-label">New EOIs</div>
+            <div class="metric-value accent" id="m-new-eois">—</div>
+            <div class="metric-sub">Awaiting your decision</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Total EOIs</div>
+            <div class="metric-value" id="m-total-eois">—</div>
+            <div class="metric-sub">All-time submissions</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Active venues</div>
+            <div class="metric-value" id="m-active-venues">—</div>
+            <div class="metric-sub">Paying customers</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Pending setup</div>
+            <div class="metric-value" id="m-pending-venues">—</div>
+            <div class="metric-sub">Approved, not yet paid</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="section-eyebrow">Latest activity</p>
+        <h2 class="section-title" style="font-size:22px">Recent EOIs</h2>
+        <p class="section-sub">Your three most recent submissions. Full list in the EOIs tab.</p>
+        <div class="card">
+          <div id="recent-eois-wrap"><div class="loader">Loading…</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ EOIs TAB ═══ -->
+    <div id="tab-eois" style="display:none">
+      <div class="section">
+        <p class="section-eyebrow">Pipeline</p>
+        <h2 class="section-title">Expressions of interest</h2>
+        <p class="section-sub">Inbound EOIs from the landing page. Click any row for the full submission. Approve to create the venue and dispatch a setup link.</p>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-title">All EOIs</div>
+              <div class="card-sub">Sorted by most recent first</div>
+            </div>
+            <div class="filters" id="eoi-filters">
+              <div class="filter active" data-filter="all">All <span class="filter-count" id="f-all">0</span></div>
+              <div class="filter" data-filter="new">New <span class="filter-count" id="f-new">0</span></div>
+              <div class="filter" data-filter="contacted">Contacted <span class="filter-count" id="f-contacted">0</span></div>
+              <div class="filter" data-filter="qualified">Qualified <span class="filter-count" id="f-qualified">0</span></div>
+              <div class="filter" data-filter="converted">Converted <span class="filter-count" id="f-converted">0</span></div>
+              <div class="filter" data-filter="declined">Declined <span class="filter-count" id="f-declined">0</span></div>
+            </div>
+          </div>
+          <div id="eois-table-wrap"><div class="loader">Loading EOIs…</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ VENUES TAB ═══ -->
+    <div id="tab-venues" style="display:none">
+      <div class="section">
+        <p class="section-eyebrow">Customers</p>
+        <h2 class="section-title">All venues</h2>
+        <p class="section-sub">Every venue on the platform — approved, paying, or active.</p>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-title">Venues</div>
+              <div class="card-sub">Click any row to inspect</div>
+            </div>
+          </div>
+          <div id="venues-table-wrap"><div class="loader">Loading venues…</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     APP LOGIC
+     ═══════════════════════════════════════════════════════════════ -->
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+// ─── Config ───
+const SUPABASE_URL = 'https://yzbuzzjhbmuuqneahttv.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6YnV6empoYm11dXFuZWFodHR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMDQwMzQsImV4cCI6MjA5Mzg4MDAzNH0.-JmMNM3rCTD94Txpp0zNgGEXv8ajymVgHff75dzZrFE';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true }
+});
+
+// ─── State ───
+let CURRENT_USER = null;
+let EOIS = [];
+let VENUES = [];
+let EOI_FILTER = 'all';
+let EXPANDED_EOI_ID = null;
+
+// ─── Helpers ───
+const $ = id => document.getElementById(id);
+const escapeHtml = s => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const showToast = (msg, kind = '') => {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + kind;
+  setTimeout(() => t.classList.remove('show'), 3200);
+};
+
+const showLoginError = msg => {
+  const el = $('login-error');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 6000);
+};
+
+const fmtDate = iso => {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+};
+const fmtRelative = iso => {
+  if (!iso) return '—';
+  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+  if (diff < 604800) return `${Math.floor(diff/86400)}d ago`;
+  return fmtDate(iso);
+};
+const initials = name => {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '?';
+};
+
+const venueTypeLabel = t => ({
+  cafe: 'Café', restaurant: 'Restaurant', bar: 'Bar / pub',
+  nightclub: 'Nightclub', function: 'Functions venue',
+  'multi-venue': 'Multi-venue group', other: 'Other'
+}[t] || t || '—');
+
+const timingLabel = t => ({
+  urgent: 'Urgent — hiring now',
+  '1-2-months': 'Next 1–2 months',
+  'before-summer': 'Before summer',
+  exploring: 'Just exploring'
+}[t] || t || '—');
+
+// ═══ AUTH ═══
+async function trySignIn() {
+  const email = $('login-email').value.trim();
+  const password = $('login-password').value;
+  if (!email || !password) { showLoginError('Email and password required'); return; }
+
+  $('login-btn').disabled = true;
+  $('login-btn').textContent = 'Signing in…';
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  $('login-btn').disabled = false;
+  $('login-btn').textContent = 'Sign in →';
+
+  if (error) {
+    showLoginError(error.message || 'Sign in failed');
+    return;
+  }
+  await onAuthSuccess();
+}
+
+async function onAuthSuccess() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) { showLoginError('Auth user missing'); return; }
+
+  // Check is_trial_operator flag — guard the whole panel
+  const { data: userRow, error: uErr } = await supabase
+    .from('users')
+    .select('id, full_name, email, is_trial_operator')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (uErr || !userRow) {
+    showLoginError('User record not found');
+    await supabase.auth.signOut();
+    return;
+  }
+  if (!userRow.is_trial_operator) {
+    showLoginError('Not authorised for TrialHQ');
+    await supabase.auth.signOut();
+    return;
+  }
+
+  CURRENT_USER = userRow;
+  $('topnav-user').textContent = `${userRow.full_name || userRow.email} · Operator`;
+  $('welcome-title').textContent = `Welcome back, ${(userRow.full_name || userRow.email).split(' ')[0]}.`;
+
+  $('login-screen').style.display = 'none';
+  $('app').classList.add('shown');
+
+  await loadAll();
+}
+
+async function signOut() {
+  await supabase.auth.signOut();
+  CURRENT_USER = null;
+  EOIS = []; VENUES = [];
+  $('app').classList.remove('shown');
+  $('login-screen').style.display = 'flex';
+  $('login-email').value = '';
+  $('login-password').value = '';
+}
+
+// ═══ DATA LOAD ═══
+async function loadAll() {
+  await Promise.all([loadEOIs(), loadVenues()]);
+  renderOverview();
+  renderEOIsTable();
+  renderVenuesTable();
+}
+
+async function loadEOIs() {
+  const { data, error } = await supabase
+    .from('eoi_submissions')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) { console.error('EOI load failed:', error); EOIS = []; return; }
+  EOIS = data || [];
+}
+
+async function loadVenues() {
+  const { data, error } = await supabase
+    .from('venues')
+    .select('id, name, slug, inbound_address, status, tier, is_founding_partner, manager_email, manager_name, contact_email, contact_phone, setup_completed_at, created_at')
+    .order('created_at', { ascending: false });
+  if (error) { console.error('Venues load failed:', error); VENUES = []; return; }
+  VENUES = data || [];
+}
+
+// ═══ OVERVIEW RENDER ═══
+function renderOverview() {
+  const newCount = EOIS.filter(e => e.status === 'new').length;
+  const activeVenues = VENUES.filter(v => v.status === 'active').length;
+  const pendingVenues = VENUES.filter(v => v.status === 'pending' || v.status === 'pending_setup').length;
+
+  $('m-new-eois').textContent = newCount;
+  $('m-total-eois').textContent = EOIS.length;
+  $('m-active-venues').textContent = activeVenues;
+  $('m-pending-venues').textContent = pendingVenues;
+
+  $('eois-badge').textContent = newCount;
+  $('venues-badge').textContent = VENUES.length;
+
+  // Recent 3 EOIs
+  const wrap = $('recent-eois-wrap');
+  const recent = EOIS.slice(0, 3);
+  if (!recent.length) {
+    wrap.innerHTML = `
+      <div class="empty">
+        <div class="empty-title">No EOIs yet</div>
+        <div class="empty-sub">When venues submit the landing-page form, they'll appear here.</div>
+      </div>`;
+    return;
+  }
+  wrap.innerHTML = `
+    <table>
+      <thead><tr><th>Venue</th><th>Timing</th><th>Status</th><th>Submitted</th></tr></thead>
+      <tbody>
+        ${recent.map(e => `
+          <tr class="clickable" data-eoi-id="${e.id}" data-jump="eois">
+            <td><div class="cell-name">
+              <div class="avatar">${initials(e.contact_name)}</div>
+              <div class="cell-name-text">
+                <div class="cell-name-primary">${escapeHtml(e.venue_name || '—')}</div>
+                <div class="cell-name-secondary">${escapeHtml(e.contact_name || '')} · ${escapeHtml(e.email || '')}</div>
+              </div>
+            </div></td>
+            <td><span class="timing-pill ${e.timing === 'urgent' ? 'timing-urgent' : ''}">${timingLabel(e.timing)}</span></td>
+            <td><span class="stage stage-${e.status}">${e.status}</span></td>
+            <td style="color:var(--muted);font-size:12px">${fmtRelative(e.created_at)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>`;
+
+  wrap.querySelectorAll('tr.clickable').forEach(tr => {
+    tr.addEventListener('click', () => {
+      EXPANDED_EOI_ID = tr.dataset.eoiId;
+      switchTab('eois');
+    });
+  });
+}
+
+// ═══ EOIS TABLE ═══
+function renderEOIsTable() {
+  // Filter counts
+  const counts = { all: EOIS.length, new: 0, contacted: 0, qualified: 0, converted: 0, declined: 0 };
+  EOIS.forEach(e => { if (counts[e.status] !== undefined) counts[e.status]++; });
+  Object.keys(counts).forEach(k => { const el = $(`f-${k}`); if (el) el.textContent = counts[k]; });
+
+  const filtered = EOI_FILTER === 'all' ? EOIS : EOIS.filter(e => e.status === EOI_FILTER);
+  const wrap = $('eois-table-wrap');
+
+  if (!filtered.length) {
+    wrap.innerHTML = `
+      <div class="empty">
+        <div class="empty-title">No EOIs in this view</div>
+        <div class="empty-sub">${EOI_FILTER === 'all' ? "When venues submit the EOI form, they'll appear here." : 'Try a different filter.'}</div>
+      </div>`;
+    return;
+  }
+
+  wrap.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Venue</th>
+        <th>Type</th>
+        <th>Volume</th>
+        <th>Timing</th>
+        <th>Status</th>
+        <th>Submitted</th>
+      </tr></thead>
+      <tbody>
+        ${filtered.map(e => renderEOIRow(e)).join('')}
+      </tbody>
+    </table>`;
+
+  // Wire row clicks
+  wrap.querySelectorAll('tr.clickable').forEach(tr => {
+    tr.addEventListener('click', () => {
+      const id = tr.dataset.eoiId;
+      EXPANDED_EOI_ID = EXPANDED_EOI_ID === id ? null : id;
+      renderEOIsTable();
+    });
+  });
+
+  // Wire action buttons
+  wrap.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const action = btn.dataset.action;
+      const id = btn.dataset.eoiId;
+      handleEOIAction(action, id);
+    });
+  });
+}
+
+function renderEOIRow(e) {
+  const isExpanded = EXPANDED_EOI_ID === e.id;
+  const row = `
+    <tr class="clickable ${isExpanded ? 'expanded' : ''}" data-eoi-id="${e.id}">
+      <td><div class="cell-name">
+        <div class="avatar">${initials(e.contact_name)}</div>
+        <div class="cell-name-text">
+          <div class="cell-name-primary">${escapeHtml(e.venue_name || '—')}</div>
+          <div class="cell-name-secondary">${escapeHtml(e.contact_name || '')}</div>
+        </div>
+      </div></td>
+      <td style="color:var(--muted);font-size:12.5px">${venueTypeLabel(e.venue_type)}</td>
+      <td style="color:var(--muted);font-size:12.5px">${escapeHtml(e.hires_per_year || '—')} hires/yr</td>
+      <td><span class="timing-pill ${e.timing === 'urgent' ? 'timing-urgent' : ''}">${timingLabel(e.timing)}</span></td>
+      <td><span class="stage stage-${e.status}">${e.status}</span></td>
+      <td style="color:var(--muted);font-size:12px">${fmtRelative(e.created_at)}</td>
+    </tr>
+  `;
+  if (!isExpanded) return row;
+
+  // Expanded detail row
+  return row + `
+    <tr class="detail-row"><td colspan="6">
+      <div class="detail-wrap">
+        <div class="detail-grid">
+          <div class="detail-row-item"><div class="detail-label">Email</div><div class="detail-val"><a href="mailto:${escapeHtml(e.email)}">${escapeHtml(e.email || '—')}</a></div></div>
+          <div class="detail-row-item"><div class="detail-label">Phone</div><div class="detail-val">${escapeHtml(e.phone || '—')}</div></div>
+          <div class="detail-row-item"><div class="detail-label">Venue type</div><div class="detail-val">${venueTypeLabel(e.venue_type)}</div></div>
+          <div class="detail-row-item"><div class="detail-label">Hires per year</div><div class="detail-val">${escapeHtml(e.hires_per_year || '—')}</div></div>
+          <div class="detail-row-item"><div class="detail-label">Applications per role</div><div class="detail-val">${escapeHtml(e.applications_per_role || '—')}</div></div>
+          <div class="detail-row-item"><div class="detail-label">Timing</div><div class="detail-val">${timingLabel(e.timing)}</div></div>
+          <div class="detail-row-item"><div class="detail-label">Source</div><div class="detail-val">${escapeHtml(e.source || 'eoi_form')}</div></div>
+          <div class="detail-row-item"><div class="detail-label">Submitted</div><div class="detail-val">${fmtDate(e.created_at)} · ${fmtRelative(e.created_at)}</div></div>
+        </div>
+        ${e.frustration ? `
+          <div class="detail-row-item"><div class="detail-label">Biggest frustration</div></div>
+          <div class="detail-frustration">${escapeHtml(e.frustration)}</div>
+        ` : ''}
+        <div class="detail-actions">
+          ${e.status === 'new' || e.status === 'contacted' ? `
+            <button class="btn btn-primary btn-sm" data-action="approve" data-eoi-id="${e.id}">Approve &amp; dispatch setup link</button>
+            <button class="btn btn-outline btn-sm" data-action="mark-contacted" data-eoi-id="${e.id}">Mark contacted</button>
+            <button class="btn btn-outline btn-sm" data-action="mark-qualified" data-eoi-id="${e.id}">Mark qualified</button>
+            <button class="btn btn-danger btn-sm" data-action="decline" data-eoi-id="${e.id}">Decline</button>
+          ` : ''}
+          ${e.status === 'qualified' ? `
+            <button class="btn btn-primary btn-sm" data-action="approve" data-eoi-id="${e.id}">Approve &amp; dispatch setup link</button>
+            <button class="btn btn-danger btn-sm" data-action="decline" data-eoi-id="${e.id}">Decline</button>
+          ` : ''}
+          ${e.status === 'converted' && e.venue_id ? `
+            <span style="font-size:12px;color:var(--success)">✓ Converted to venue · setup link dispatched</span>
+          ` : ''}
+          ${e.status === 'declined' ? `
+            <span style="font-size:12px;color:var(--danger)">✕ Declined ${e.declined_at ? '· ' + fmtRelative(e.declined_at) : ''}</span>
+          ` : ''}
+        </div>
+      </div>
+    </td></tr>`;
+}
+
+// ═══ EOI ACTIONS ═══
+async function handleEOIAction(action, id) {
+  const eoi = EOIS.find(e => e.id === id);
+  if (!eoi) return;
+
+  if (action === 'mark-contacted') {
+    return updateEOI(id, { status: 'contacted', contacted_at: new Date().toISOString() }, 'Marked contacted');
+  }
+  if (action === 'mark-qualified') {
+    return updateEOI(id, { status: 'qualified', qualified_at: new Date().toISOString() }, 'Marked qualified');
+  }
+  if (action === 'decline') {
+    if (!confirm(`Decline ${eoi.venue_name}? This signals they're not a fit. Reversible.`)) return;
+    return updateEOI(id, { status: 'declined', declined_at: new Date().toISOString() }, 'Declined');
+  }
+  if (action === 'approve') {
+    if (!confirm(`Approve ${eoi.venue_name}? This will create a venue record and dispatch a branded setup link to ${eoi.email}.`)) return;
+    await approveEOI(id);
+  }
+}
+
+async function updateEOI(id, patch, successMsg) {
+  const { error } = await supabase.from('eoi_submissions').update({ ...patch, updated_at: new Date().toISOString() }).eq('id', id);
+  if (error) { showToast('Update failed: ' + error.message, 'error'); return; }
+  showToast(successMsg, 'success');
+  await loadEOIs();
+  renderOverview();
+  renderEOIsTable();
+}
+
+async function approveEOI(id) {
+  // Call the /api/approve-eoi backend that handles:
+  //  1. Create venues row
+  //  2. Generate setup_token + per-customer Stripe Checkout Session
+  //  3. Send branded setup email via Resend
+  //  4. Update eoi_submissions.status = 'converted', set venue_id + converted_at
+  showToast('Approving and dispatching…');
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const resp = await fetch('/api/approve-eoi', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token || ''}`
+      },
+      body: JSON.stringify({ eoi_id: id })
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.ok) {
+      throw new Error(data.error || `Approve failed (${resp.status})`);
+    }
+    showToast('Setup link dispatched to ' + data.email_sent_to, 'success');
+    await Promise.all([loadEOIs(), loadVenues()]);
+    renderOverview();
+    renderEOIsTable();
+    renderVenuesTable();
+  } catch (err) {
+    showToast('Approve failed: ' + err.message, 'error');
+  }
+}
+
+// ═══ VENUES TABLE ═══
+function renderVenuesTable() {
+  const wrap = $('venues-table-wrap');
+
+  if (!VENUES.length) {
+    wrap.innerHTML = `
+      <div class="empty">
+        <div class="empty-title">No venues yet</div>
+        <div class="empty-sub">When you approve an EOI, the venue lands here with its setup status.</div>
+      </div>`;
+    return;
+  }
+
+  wrap.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Venue</th>
+        <th>Tier</th>
+        <th>Forwarding inbox</th>
+        <th>Status</th>
+        <th>Setup</th>
+        <th>Created</th>
+      </tr></thead>
+      <tbody>
+        ${VENUES.map(v => `
+          <tr>
+            <td><div class="cell-name">
+              <div class="avatar">${initials(v.name)}</div>
+              <div class="cell-name-text">
+                <div class="cell-name-primary">${escapeHtml(v.name || '—')}</div>
+                <div class="cell-name-secondary">${escapeHtml(v.manager_name || v.contact_email || '')}</div>
+              </div>
+            </div></td>
+            <td style="color:var(--muted);font-size:12.5px">${v.tier ? v.tier.toUpperCase() : '—'}${v.is_founding_partner ? ' <span style="color:var(--accent);font-size:10px">· FP</span>' : ''}</td>
+            <td style="color:var(--accent);font-size:12px;font-family:Playfair Display,serif;font-style:italic">${escapeHtml(v.inbound_address || '—')}</td>
+            <td><span class="stage stage-${v.status === 'active' ? 'active' : v.status === 'paused' ? 'paused' : 'pending'}">${escapeHtml(v.status || 'pending')}</span></td>
+            <td style="color:var(--muted);font-size:12px">${v.setup_completed_at ? '✓ ' + fmtDate(v.setup_completed_at) : 'pending'}</td>
+            <td style="color:var(--muted);font-size:12px">${fmtRelative(v.created_at)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ═══ TAB SWITCHING ═══
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  ['overview', 'eois', 'venues'].forEach(n => {
+    const el = $(`tab-${n}`);
+    if (el) el.style.display = n === name ? 'block' : 'none';
+  });
+  if (name === 'eois' && EXPANDED_EOI_ID) renderEOIsTable();
+}
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => switchTab(t.dataset.tab));
+});
+
+// ═══ FILTERS ═══
+document.querySelectorAll('#eoi-filters .filter').forEach(f => {
+  f.addEventListener('click', () => {
+    document.querySelectorAll('#eoi-filters .filter').forEach(x => x.classList.remove('active'));
+    f.classList.add('active');
+    EOI_FILTER = f.dataset.filter;
+    renderEOIsTable();
+  });
+});
+
+// ═══ THEME TOGGLE ═══
+function applyTheme(mode) {
+  document.body.classList.toggle('light', mode === 'light');
+  $('theme-icon').textContent = mode === 'light' ? '☀' : '☽';
+  $('theme-label').textContent = mode === 'light' ? 'Dark' : 'Light';
+  try { localStorage.setItem('trialhq-theme', mode); } catch {}
+}
+$('theme-btn').addEventListener('click', () => {
+  const next = document.body.classList.contains('light') ? 'dark' : 'light';
+  applyTheme(next);
+});
+try {
+  const saved = localStorage.getItem('trialhq-theme');
+  if (saved) applyTheme(saved);
+} catch {}
+
+// ═══ WIRE LOGIN ═══
+$('login-btn').addEventListener('click', trySignIn);
+$('login-password').addEventListener('keypress', e => { if (e.key === 'Enter') trySignIn(); });
+$('login-email').addEventListener('keypress', e => { if (e.key === 'Enter') $('login-password').focus(); });
+$('logout-btn').addEventListener('click', signOut);
+
+// ═══ ON LOAD ═══
+(async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.user) await onAuthSuccess();
+})();
+</script>
+
+</body>
+</html>
