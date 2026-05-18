@@ -6,7 +6,7 @@
 // 2. Build a structured prompt with rubric
 // 3. Call Anthropic API
 // 4. Parse JSON response
-// 5. Write scores back to assessments row + status='awaiting_review'
+// 5. Write scores back to assessments row (status stays 'submitted')
 
 import { createClient } from '@supabase/supabase-js';
 
@@ -202,6 +202,8 @@ export default async function handler(req, res) {
     integrityScore = Math.max(0, Math.min(100, integrityScore));
 
     // ─── 6. Write back to assessment ───
+    // Status stays 'submitted'. Scoring outcome lives in overall_score/tier/ai_summary.
+    // Venue marks 'reviewed' from the dashboard when they action it.
     const { error: writeErr } = await supabase
       .from('assessments')
       .update({
@@ -212,8 +214,7 @@ export default async function handler(req, res) {
         ai_concerns: scoring.concerns,
         ai_risk_level: scoring.risk_level,
         integrity_score: integrityScore,
-        scored_at: new Date().toISOString(),
-        status: 'awaiting_review'
+        scored_at: new Date().toISOString()
       })
       .eq('id', assessment.id);
 
@@ -245,11 +246,12 @@ export default async function handler(req, res) {
 }
 
 async function markScoringFailed(supabase, assessmentId, reason) {
+  // Status stays 'submitted' — failure is communicated via ai_summary
+  // so the dashboard can flag it for manual review without breaking the enum.
   await supabase
     .from('assessments')
     .update({ 
-      status: 'scoring_failed',
-      ai_summary: `Scoring failed: ${reason}. Manual review required.`
+      ai_summary: `⚠️ Scoring failed: ${reason}. Manual review required.`
     })
     .eq('id', assessmentId);
 }
