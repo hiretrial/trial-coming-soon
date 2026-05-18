@@ -9,8 +9,8 @@
 // 4. Extract candidate name (3 levels: header → body signature → email username)
 // 5. Find or create candidate
 // 6. Mint assessment token with 10 picked questions
-// 7. Email candidate the assessment link (branded)
-// 8. Forward original email + CV to venue's manager_email (branded)
+// 7. Email candidate the assessment link (branded dark/gold)
+// 8. Forward original email + CV to venue's manager_email (branded dark/gold)
 // 9. Return 200 to Resend
 
 import { createClient } from '@supabase/supabase-js';
@@ -133,9 +133,6 @@ function capitalise(s) {
 }
 
 // Extract candidate name with 3 levels of fallback.
-// Level 1: "Jane Smith <jane@gmail.com>" → "Jane Smith" from header
-// Level 2: Body signature scan ("Cheers, Jane Smith" / "Hi, I'm Jane")
-// Level 3: Pretty-format the email username
 function extractCandidateName(fromString, bodyText, candidateEmail) {
   // Level 1 — proper display name in From header
   if (fromString) {
@@ -157,7 +154,6 @@ function extractCandidateName(fromString, bodyText, candidateEmail) {
 
   // Level 2 — body signature scan
   if (bodyText) {
-    // Sign-off patterns: "Cheers, Jane Smith" / "Regards, Jane" / "Thanks, Jane"
     const signatureRegex = /(?:cheers|thanks|regards|sincerely|kind regards|best regards|best|yours|warmly|—|--)[,.\s]+\s*([A-Z][a-zà-ÿ'-]+(?:\s+[A-Z][a-zà-ÿ'-]+)?)/i;
     const sigMatch = bodyText.match(signatureRegex);
     if (sigMatch && sigMatch[1]) {
@@ -171,7 +167,6 @@ function extractCandidateName(fromString, bodyText, candidateEmail) {
       }
     }
 
-    // Intro patterns: "Hi, I'm Jane Smith" / "My name is Jane"
     const introRegex = /(?:i['']m|my name is|this is)\s+([A-Z][a-zà-ÿ'-]+(?:\s+[A-Z][a-zà-ÿ'-]+)?)/i;
     const introMatch = bodyText.match(introRegex);
     if (introMatch && introMatch[1]) {
@@ -535,29 +530,37 @@ function forwardEmailHtml({ venueName, candidateName, candidateEmail, roleLabel,
 <html lang="en-AU">
 <head>
 <meta charset="UTF-8">
+<title>New application via Trial.</title>
 </head>
-<body style="margin:0;padding:0;background:#f5f4f0;font-family:Arial,sans-serif;color:#0a0a0a;">
-<table cellpadding="0" cellspacing="0" width="100%" style="max-width:640px;margin:0 auto;background:#ffffff;padding:32px;">
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:Georgia,'Times New Roman',serif;color:#f8f6f0;">
+<table cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#0a0a0a;padding:48px 32px;">
   <tr><td>
-    <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:900;letter-spacing:-0.4px;color:#0a0a0a;margin-bottom:24px;">
+    <div style="font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:900;letter-spacing:-0.5px;color:#f8f6f0;margin-bottom:40px;">
       Trial<span style="color:#c8a96e;">.</span>
     </div>
-    <div style="background:rgba(200,169,110,0.08);border-left:3px solid #c8a96e;padding:16px 20px;border-radius:6px;margin-bottom:24px;">
-      <div style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:6px;">New application · ${roleLabel}</div>
-      <div style="font-size:16px;font-weight:600;color:#0a0a0a;margin-bottom:2px;">${candidateName}</div>
-      <div style="font-size:13px;color:rgba(0,0,0,0.6);">${candidateEmail}</div>
+    <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:14px;font-family:Arial,sans-serif;">
+      New application &middot; ${roleLabel}
     </div>
-    <p style="font-size:13.5px;line-height:1.6;color:rgba(0,0,0,0.7);margin:0 0 20px 0;">
-      This is the original application as it landed in your Trial. inbox. The candidate's CV is attached. We've sent them their trial assessment — once they complete it, you'll see their score and summary in <a href="https://dashboard.hiretrial.com.au" style="color:#c8a96e;text-decoration:none;font-weight:500;">your dashboard</a>.
+    <h1 style="font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:30px;line-height:1.15;letter-spacing:-0.6px;margin:0 0 6px 0;color:#f8f6f0;">
+      ${candidateName}
+    </h1>
+    <div style="font-size:14px;color:rgba(248,246,240,0.52);margin-bottom:32px;font-family:Arial,sans-serif;">
+      <a href="mailto:${candidateEmail}" style="color:#c8a96e;text-decoration:none;">${candidateEmail}</a>
+    </div>
+    <p style="font-size:14.5px;line-height:1.65;color:rgba(248,246,240,0.72);margin:0 0 28px 0;font-family:Arial,sans-serif;">
+      This is the original application as it landed in your Trial<span style="color:#c8a96e;">.</span> inbox for <strong style="color:#f8f6f0;font-weight:500;">${venueName}</strong>. The candidate's CV is attached. We've sent them their trial assessment — once they complete it, you'll see their score and summary in <a href="https://dashboard.hiretrial.com.au" style="color:#c8a96e;text-decoration:none;font-weight:500;">your dashboard</a>.
     </p>
-    <div style="background:#f5f4f0;border-radius:6px;padding:20px;margin:20px 0;">
-      <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(0,0,0,0.42);font-weight:600;margin-bottom:8px;">Original subject</div>
-      <div style="font-size:14px;color:#0a0a0a;margin-bottom:16px;">${originalSubject}</div>
-      <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(0,0,0,0.42);font-weight:600;margin-bottom:8px;">Original message</div>
-      <div style="font-size:13px;color:rgba(0,0,0,0.7);line-height:1.6;white-space:pre-wrap;">${escapeHtml(originalBody)}</div>
+    <div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:24px;margin:24px 0;">
+      <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:10px;font-family:Arial,sans-serif;">Original subject</div>
+      <div style="font-size:15px;color:#f8f6f0;margin-bottom:24px;font-family:Arial,sans-serif;font-weight:500;">${escapeHtml(originalSubject)}</div>
+      <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:10px;font-family:Arial,sans-serif;">Original message</div>
+      <div style="font-size:13.5px;color:rgba(248,246,240,0.72);line-height:1.65;white-space:pre-wrap;font-family:Arial,sans-serif;">${escapeHtml(originalBody)}</div>
     </div>
-    <div style="margin-top:32px;padding-top:20px;border-top:1px solid rgba(0,0,0,0.06);font-size:11px;line-height:1.7;color:rgba(0,0,0,0.42);text-align:center;">
-      Trial. · hello@hiretrial.com.au · ABN 71 441 417 792
+    <div style="font-size:13px;color:rgba(248,246,240,0.42);margin:32px 0 0 0;font-family:Arial,sans-serif;line-height:1.5;">
+      Reply to this email to respond directly to <strong style="color:rgba(248,246,240,0.62);font-weight:500;">${candidateName}</strong>. Your reply goes to them, not to Trial<span style="color:#c8a96e;">.</span>
+    </div>
+    <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.06);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.42);text-align:center;font-family:Arial,sans-serif;">
+      Trial<span style="color:#c8a96e;">.</span> &middot; hello@hiretrial.com.au &middot; ABN 71 441 417 792
     </div>
   </td></tr>
 </table>
