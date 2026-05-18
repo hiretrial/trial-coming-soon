@@ -2,13 +2,13 @@
   "rewrites": [
     {
       "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "dashboard.hiretrial.com.au"
-        }
-      ],
+      "has": [{ "type": "host", "value": "dashboard.hiretrial.com.au" }],
       "destination": "/dashboard.html"
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "hq.hiretrial.com.au" }],
+      "destination": "/hq.html"
     },
     {
       "source": "/privacy",
