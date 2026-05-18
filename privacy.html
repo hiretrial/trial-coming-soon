@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Trial.</title>
+<meta name="description" content="Trial. privacy policy. How we handle your personal information at our pre-launch waitlist stage.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:       #0a0a0a;
+  --bg2:      #111;
+  --bg3:      #161616;
+  --card:     #131313;
+
+  --border:        rgba(255,255,255,0.06);
+  --border2:       rgba(255,255,255,0.10);
+  --border-strong: rgba(255,255,255,0.18);
+
+  --white: #f8f6f0;
+  --muted: rgba(248,246,240,0.62);
+  --dim:   rgba(248,246,240,0.38);
+  --faint: rgba(248,246,240,0.22);
+
+  --accent:        #c8a96e;
+  --accent2:       #d4b887;
+  --accent-dim:    rgba(200,169,110,0.5);
+  --accent-bg:     rgba(200,169,110,0.06);
+  --accent-bg-strong: rgba(200,169,110,0.12);
+  --accent-line:   rgba(200,169,110,0.32);
+
+  --warning:      #d4a04a;
+  --warning-bg:   rgba(212,160,74,0.10);
+
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans:  'DM Sans', system-ui, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--white);
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(200,169,110,0.05), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 90%, rgba(200,169,110,0.025), transparent);
+  background-attachment: fixed;
+}
+
+a { color: var(--accent); text-decoration: none; transition: color 0.15s ease; }
+a:hover { color: var(--accent2); }
+
+.site-header {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border);
+}
+.site-header-inner {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.wordmark {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.4px;
+  color: var(--white);
+  display: inline-flex;
+  align-items: baseline;
+}
+.wordmark .dot {
+  color: var(--accent);
+  font-size: 32px;
+  margin-left: -2px;
+}
+.back-link {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  font-weight: 400;
+}
+.back-link:hover { color: var(--accent); }
+
+.policy {
+  max-width: 740px;
+  margin: 0 auto;
+  padding: 72px 32px 96px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: clamp(36px, 5vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -1px;
+  margin-bottom: 18px;
+}
+h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
+
+.meta {
+  font-size: 13px;
+  color: var(--dim);
+  margin-bottom: 48px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+}
+.meta-item { display: inline-flex; align-items: center; gap: 8px; }
+.meta-item-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--faint);
+  font-weight: 600;
+}
+.meta-item-value { color: var(--muted); }
+
+.intro {
+  font-size: 16px;
+  color: var(--muted);
+  line-height: 1.65;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.intro a { border-bottom: 1px solid var(--accent-dim); }
+
+.scope-note {
+  background: linear-gradient(135deg, var(--accent-bg-strong), var(--accent-bg));
+  border: 1px solid var(--accent-dim);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 22px 26px;
+  margin: 32px 0 48px;
+  font-size: 14.5px;
+  color: var(--white);
+  line-height: 1.65;
+}
+.scope-note strong {
+  color: var(--accent);
+  font-weight: 600;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 16px;
+}
+
+h2 {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+  margin: 56px 0 18px;
+  color: var(--white);
+}
+h2 .num {
+  color: var(--accent);
+  font-style: italic;
+  font-weight: 400;
+  margin-right: 12px;
+}
+
+p {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+p strong { color: var(--white); font-weight: 500; }
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 24px;
+}
+ul li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: 10px;
+}
+ul li::before {
+  content: '·';
+  position: absolute;
+  left: 6px;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.4;
+}
+ul li strong { color: var(--white); font-weight: 500; }
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
+}
+
+.contact-card {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 26px 28px;
+  margin: 24px 0;
+}
+.contact-card-name {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -0.3px;
+  margin-bottom: 8px;
+  color: var(--white);
+}
+.contact-card-abn {
+  font-size: 12px;
+  color: var(--dim);
+  margin-bottom: 16px;
+  letter-spacing: 0.04em;
+}
+.contact-card-line {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.contact-card-line a { font-weight: 500; }
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 36px 32px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--dim);
+  line-height: 1.7;
+}
+.site-footer .wordmark-mini {
+  font-family: var(--serif);
+  font-weight: 700;
+  color: var(--white);
+}
+.site-footer .wordmark-mini .dot { color: var(--accent); }
+.site-footer-links {
+  margin-top: 10px;
+  display: inline-flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.site-footer-links a {
+  color: var(--muted);
+  font-size: 12px;
+}
+.site-footer-links a:hover { color: var(--accent); }
+
+@media (max-width: 600px) {
+  .site-header { padding: 22px 0; }
+  .site-header-inner { padding: 0 22px; }
+  .wordmark { font-size: 24px; }
+  .wordmark .dot { font-size: 28px; }
+
+  .policy { padding: 48px 22px 72px; }
+  h1 { font-size: 32px; letter-spacing: -0.6px; }
+  h2 { font-size: 22px; margin-top: 44px; }
+  .meta { gap: 14px; font-size: 12.5px; }
+  .scope-note { padding: 18px 20px; font-size: 14px; }
+  p, ul li { font-size: 14.5px; }
+  .contact-card { padding: 22px 22px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a href="/" class="wordmark">Trial<span class="dot">.</span></a>
+    <a href="/" class="back-link">&larr; Back home</a>
+  </div>
+</header>
+
+<main class="policy">
+
+  <div class="eyebrow">Legal</div>
+  <h1>Privacy <em>Policy</em>.</h1>
+
+  <div class="meta">
+    <div class="meta-item">
+      <span class="meta-item-label">Last updated</span>
+      <span class="meta-item-value">18 May 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-item-label">Effective from</span>
+      <span class="meta-item-value">18 May 2026</span>
+    </div>
+  </div>
+
+  <p class="intro">
+    This Privacy Policy applies to <strong>Trial.</strong> (operated by Anders Berggren, ABN 71 441 417 792), and covers our <strong>pre-launch waitlist and Expression of Interest (EOI) form</strong> at <a href="https://hiretrial.com.au">hiretrial.com.au</a>.
+  </p>
+
+  <div class="scope-note">
+    <strong>Important — limited scope.</strong> Trial. is not yet operating as a service. This policy covers only the personal information we collect via our EOI form and any subsequent communications with prospective venue partners. An expanded Privacy Policy will apply when our platform launches, and we will notify you before that change takes effect.
+  </div>
+
+  <h2><span class="num">1.</span>Who we are</h2>
+  <p>
+    Trial. is an Australian hospitality hiring assessment platform currently in pre-launch development. We are based in Australia and operate under Australian law, including the Privacy Act 1988 (Cth) and the Australian Privacy Principles (APPs).
+  </p>
+  <p>
+    If you need to contact us about your personal information, email <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a>.
+  </p>
+
+  <h2><span class="num">2.</span>What we collect</h2>
+  <p>When you submit our EOI form, we collect:</p>
+  <ul>
+    <li><strong>Your name</strong></li>
+    <li><strong>Your email address</strong></li>
+    <li><strong>Your venue name</strong></li>
+    <li><strong>Your phone number</strong> (optional)</li>
+    <li><strong>Your venue location / suburb</strong> (optional)</li>
+    <li><strong>Any business-related information or free-text notes you choose to share</strong></li>
+  </ul>
+  <p>We may also automatically collect technical information when you visit our website:</p>
+  <ul>
+    <li><strong>IP address</strong></li>
+    <li><strong>Browser type and version</strong></li>
+    <li><strong>Pages visited and time spent</strong></li>
+  </ul>
+  <p>
+    We do <strong>not</strong> collect: passwords, financial information, sensitive information (as defined under the Privacy Act), or any data about job candidates or hiring decisions — because we are not yet running our service.
+  </p>
+
+  <h2><span class="num">3.</span>Why we collect it</h2>
+  <p>We collect your information for the following purposes:</p>
+  <ul>
+    <li>To add you to our pre-launch waitlist</li>
+    <li>To send you updates about Trial.'s launch timeline and product progress</li>
+    <li>To contact you about founding partner pricing and beta participation</li>
+    <li>To respond to questions or feedback you send us</li>
+    <li>To improve our pre-launch communications</li>
+  </ul>
+  <p>
+    We do <strong>not</strong> sell, rent, or trade your personal information. We do <strong>not</strong> use it for any purpose other than those listed above.
+  </p>
+
+  <h2><span class="num">4.</span>How we store it</h2>
+  <p>Your information is stored using the following third-party providers:</p>
+  <ul>
+    <li><strong>Supabase</strong> (APAC-hosted infrastructure) — for waitlist records</li>
+    <li><strong>Resend</strong> (email service provider) — for sending you communications</li>
+    <li><strong>Vercel</strong> (web hosting) — handles your form submission</li>
+  </ul>
+  <p>
+    These are reputable platforms with their own privacy obligations. We use encrypted connections (HTTPS / TLS), apply access controls, and access is limited to authorised personnel only.
+  </p>
+  <p>
+    Some of these providers may store or process data outside Australia. By submitting your information, you consent to this cross-border transfer for the limited purposes described above.
+  </p>
+  <p>
+    While we take reasonable steps to protect the information you provide, no method of online transmission or storage can be guaranteed to be completely secure. We cannot guarantee absolute security, but we will respond promptly to any incident that could affect your personal information.
+  </p>
+
+  <h2><span class="num">5.</span>How long we keep it</h2>
+  <p>We keep your EOI information until:</p>
+  <ul>
+    <li>You ask us to delete it (see Section 7), <strong>or</strong></li>
+    <li>12 months after your last interaction with us if you haven't engaged further, <strong>or</strong></li>
+    <li>We launch and you decline to become a customer, after which we delete it within 60 days</li>
+  </ul>
+
+  <h2><span class="num">6.</span>Marketing communications</h2>
+  <p>
+    If you give us your email via the EOI form, we may send you launch updates and product news. Every email we send will include a clear <strong>unsubscribe link</strong>, in line with the Spam Act 2003 (Cth). If you unsubscribe, we will stop sending marketing emails within a reasonable timeframe — though we may still contact you about specific things you've asked us about.
+  </p>
+
+  <h2><span class="num">7.</span>Your rights</h2>
+  <p>Under the Australian Privacy Principles, you have the right to:</p>
+  <ul>
+    <li><strong>Access</strong> your personal information we hold</li>
+    <li><strong>Correct</strong> it if it's wrong</li>
+    <li><strong>Delete</strong> it (within reasonable limits — e.g., we may retain records we're required to keep by law)</li>
+    <li><strong>Withdraw consent</strong> to marketing communications at any time</li>
+    <li><strong>Complain</strong> to us first, and to the Office of the Australian Information Commissioner (OAIC) if you're not satisfied with our response</li>
+  </ul>
+  <p>
+    To exercise any of these rights, email <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a> with your request. We aim to respond within 14 days.
+  </p>
+
+  <h2><span class="num">8.</span>Cookies and automated protections</h2>
+  <p>
+    Our website uses minimal cookies — only those required for the site to function and basic anonymous analytics. We do not use cookies for advertising or third-party tracking at this pre-launch stage.
+  </p>
+  <p>
+    We may use automated spam and abuse prevention tools to help protect our website and forms from malicious activity.
+  </p>
+
+  <h2><span class="num">9.</span>Children's privacy</h2>
+  <p>
+    Trial. is a business-to-business platform. We do not knowingly collect personal information from anyone under 18. If you believe we've accidentally collected information from a minor, please contact us and we will delete it.
+  </p>
+
+  <h2><span class="num">10.</span>Changes to this policy</h2>
+  <p>We will update this Privacy Policy when:</p>
+  <ul>
+    <li>We launch our full platform (significantly expanded scope and obligations)</li>
+    <li>Any of the practices described here change</li>
+  </ul>
+  <p>
+    If we update it, we will post the new version here and update the "Last updated" date at the top. For substantive changes — particularly the launch transition — we will email anyone on our EOI list before the new policy takes effect.
+  </p>
+
+  <h2><span class="num">11.</span>Governing law</h2>
+  <p>
+    This Privacy Policy is governed by the laws of New South Wales, Australia.
+  </p>
+
+  <h2><span class="num">12.</span>Contact</h2>
+  <p>For any questions about this policy or your personal information:</p>
+
+  <div class="contact-card">
+    <div class="contact-card-name">Trial<span style="color:var(--accent)">.</span></div>
+    <div class="contact-card-abn">ABN 71 441 417 792</div>
+    <div class="contact-card-line">Privacy: <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a></div>
+    <div class="contact-card-line">General: <a href="mailto:hello@hiretrial.com.au">hello@hiretrial.com.au</a></div>
+  </div>
+
+  <p style="margin-top:24px">
+    If you're not satisfied with our response to a privacy concern, you may contact the Office of the Australian Information Commissioner (OAIC):
+  </p>
+  <ul>
+    <li>Web: <a href="https://www.oaic.gov.au">www.oaic.gov.au</a></li>
+    <li>Phone: 1300 363 992</li>
+  </ul>
+
+</main>
+
+<footer class="site-footer">
+  <div><span class="wordmark-mini">Trial<span class="dot">.</span></span> &nbsp;&middot;&nbsp; ABN 71 441 417 792 &nbsp;&middot;&nbsp; <a href="mailto:hello@hiretrial.com.au" style="color:var(--muted)">hello@hiretrial.com.au</a></div>
+  <div class="site-footer-links">
+    <a href="/">Home</a>
+    <a href="/privacy">Privacy</a>
+  </div>
+</footer>
+
+</body>
+</html>
