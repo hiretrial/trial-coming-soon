@@ -69,24 +69,50 @@ async function readRawBody(req) {
     req.on('error', reject);
   });
 }
+// Verify Resend (Svix) webhook signature.
+// Spec: https://docs.svix.com/receiving/verifying-payloads/how-manual
+// Signed content = `{svix-id}.{svix-timestamp}.{rawBody}`
+// HMAC-SHA256 using base64-decoded secret (the part after whsec_)
+function verifyResendSignature(rawBody, headers, secret) {
+  if (!secret) return false;
 
-// Verify Resend webhook signature (HMAC-SHA256 via Svix infrastructure)
-function verifyResendSignature(rawBody, signatureHeader, secret) {
-  if (!signatureHeader || !secret) return false;
+  const svixId = headers['svix-id'] || headers['webhook-id'];
+  const svixTimestamp = headers['svix-timestamp'] || headers['webhook-timestamp'];
+  const svixSignature = headers['svix-signature'] || headers['webhook-signature'];
+
+  if (!svixId || !svixTimestamp || !svixSignature) {
+    console.error('[verifyResendSignature] Missing svix headers');
+    return false;
+  }
+
   try {
-    const signatures = signatureHeader.split(' ').map(s => s.split(',')[1]).filter(Boolean);
+    // Secret comes as "whsec_<base64>" — decode the base64 portion
+    const secretBytes = Buffer.from(secret.replace(/^whsec_/, ''), 'base64');
+    const signedContent = `${svixId}.${svixTimestamp}.${rawBody.toString('utf8')}`;
     const expected = crypto
-      .createHmac('sha256', secret.replace(/^whsec_/, ''))
-      .update(rawBody)
+      .createHmac('sha256', secretBytes)
+      .update(signedContent)
       .digest('base64');
-    return signatures.some(sig => {
+
+    // Header is space-separated list of "v1,signature v1,signature ..."
+    const candidates = svixSignature.split(' ')
+      .map(s => {
+        const parts = s.split(',');
+        return parts.length === 2 ? parts[1] : null;
+      })
+      .filter(Boolean);
+
+    return candidates.some(sig => {
       try {
         return crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
       } catch { return false; }
     });
   } catch (err) {
-    console.error('[inbound-email] Signature verification error:', err);
+    console.error('[verifyResendSignature] Error:', err);
     return false;
+  }
+}
+
   }
 }
 
@@ -175,14 +201,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. Verify signature
+// 1. Verify signature
     const rawBody = await readRawBody(req);
-    const signature = req.headers['svix-signature'] || req.headers['resend-signature'];
     const secret = process.env.RESEND_WEBHOOK_SECRET;
 
-    if (!verifyResendSignature(rawBody, signature, secret)) {
+    if (!verifyResendSignature(rawBody, req.headers, secret)) {
       console.error('[inbound-email] Invalid signature');
       return res.status(401).send('Invalid signature');
+    }
     }
 
     const event = JSON.parse(rawBody.toString('utf8'));
