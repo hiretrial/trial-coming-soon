@@ -3,7 +3,7 @@
 // Resend Inbound webhook handler — entry point for every candidate application.
 //
 // Flow:
-// 1. Verify Resend's webhook signature
+// 1. Verify Resend's webhook signature (Svix spec)
 // 2. Lookup venue from `to` address
 // 3. Detect role (Layer 1 single role → Layer 2 keyword scan → default fallback)
 // 4. Find or create candidate
@@ -17,7 +17,6 @@ import { Resend } from 'resend';
 import crypto from 'crypto';
 
 // ─── Role keyword map (Layer 2) — ORDER MATTERS, specificity first ─────────
-// "bar manager" must match before "bartender" or "bar" would match wrong.
 const ROLE_KEYWORDS = [
   { role: 'restaurant-manager', patterns: ['restaurant manager', 'venue manager', 'general manager'] },
   { role: 'cafe-manager',       patterns: ['cafe manager', 'café manager'] },
@@ -69,8 +68,8 @@ async function readRawBody(req) {
     req.on('error', reject);
   });
 }
+
 // Verify Resend (Svix) webhook signature.
-// Spec: https://docs.svix.com/receiving/verifying-payloads/how-manual
 // Signed content = `{svix-id}.{svix-timestamp}.{rawBody}`
 // HMAC-SHA256 using base64-decoded secret (the part after whsec_)
 function verifyResendSignature(rawBody, headers, secret) {
@@ -86,7 +85,6 @@ function verifyResendSignature(rawBody, headers, secret) {
   }
 
   try {
-    // Secret comes as "whsec_<base64>" — decode the base64 portion
     const secretBytes = Buffer.from(secret.replace(/^whsec_/, ''), 'base64');
     const signedContent = `${svixId}.${svixTimestamp}.${rawBody.toString('utf8')}`;
     const expected = crypto
@@ -94,7 +92,6 @@ function verifyResendSignature(rawBody, headers, secret) {
       .update(signedContent)
       .digest('base64');
 
-    // Header is space-separated list of "v1,signature v1,signature ..."
     const candidates = svixSignature.split(' ')
       .map(s => {
         const parts = s.split(',');
@@ -113,10 +110,6 @@ function verifyResendSignature(rawBody, headers, secret) {
   }
 }
 
-  }
-}
-
-// Scan text for role keywords, but only consider venue.allowed_roles
 function detectRoleFromText(text, allowedRoles) {
   if (!text) return null;
   const lower = text.toLowerCase();
@@ -127,7 +120,6 @@ function detectRoleFromText(text, allowedRoles) {
   return null;
 }
 
-// Parse "Jane Smith <jane@example.com>" → { first_name, last_name }
 function parseFromName(fromString) {
   if (!fromString) return { first_name: '', last_name: '' };
   const match = fromString.match(/^([^<]+)<.*>$/);
@@ -145,7 +137,6 @@ function parseFromEmail(fromString) {
   return (match ? match[1] : fromString).trim().toLowerCase();
 }
 
-// Pick stratified questions: 2 easy + 3 medium + 1 hard from the role's pool
 async function pickQuestions(supabase, role) {
   const { data: pool, error } = await supabase
     .from('questions')
@@ -201,7 +192,6 @@ export default async function handler(req, res) {
   }
 
   try {
-// 1. Verify signature
     const rawBody = await readRawBody(req);
     const secret = process.env.RESEND_WEBHOOK_SECRET;
 
@@ -209,11 +199,9 @@ export default async function handler(req, res) {
       console.error('[inbound-email] Invalid signature');
       return res.status(401).send('Invalid signature');
     }
-    }
 
     const event = JSON.parse(rawBody.toString('utf8'));
 
-    // 2. Only process email.received events
     if (event.type !== 'email.received') {
       console.log('[inbound-email] Ignoring event type:', event.type);
       return res.status(200).json({ ignored: true });
@@ -228,7 +216,6 @@ export default async function handler(req, res) {
 
     console.log('[inbound-email] Received:', { to: toAddress, from: fromString, subject });
 
-    // 3. Lookup venue
     const supabase = createClient(
       process.env.SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -246,8 +233,6 @@ export default async function handler(req, res) {
     }
 
     const allowedRoles = venue.allowed_roles || [];
-
-    // 4. Detect role
     let detectedRole = null;
     let detectionMethod = 'unknown';
 
@@ -272,7 +257,6 @@ export default async function handler(req, res) {
       return res.status(200).json({ ignored: 'role_detection_failed', venue: venue.slug });
     }
 
-    // 5. Extract candidate
     const candidateEmail = parseFromEmail(fromString);
     const { first_name, last_name } = parseFromName(fromString);
 
@@ -281,7 +265,6 @@ export default async function handler(req, res) {
       return res.status(200).json({ ignored: 'no_candidate_email' });
     }
 
-    // 6. Upsert candidate
     const { data: existingCandidate } = await supabase
       .from('candidates')
       .select('id')
@@ -315,7 +298,6 @@ export default async function handler(req, res) {
       candidateId = newCandidate.id;
     }
 
-    // 7. Pick questions
     const { picked, audit } = await pickQuestions(supabase, detectedRole);
 
     if (picked.length === 0) {
@@ -323,7 +305,6 @@ export default async function handler(req, res) {
       return res.status(500).send('No questions available');
     }
 
-    // 8. Create assessment
     const token = crypto.randomUUID();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -354,7 +335,6 @@ export default async function handler(req, res) {
       return res.status(500).send('Failed to create assessment');
     }
 
-    // 9. Send candidate-back email
     const resend = new Resend(process.env.RESEND_API_KEY);
     const assessmentUrl = `https://hiretrial.com.au/assess.html?token=${token}`;
 
@@ -375,7 +355,6 @@ export default async function handler(req, res) {
       console.error('[inbound-email] Candidate email send failed:', err);
     }
 
-    // 10. Forward to venue manager
     if (venue.manager_email) {
       try {
         const attachmentPayloads = [];
