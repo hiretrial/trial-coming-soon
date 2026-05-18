@@ -387,7 +387,7 @@ export default async function handler(req, res) {
     }
 
     const emailData = event.data;
-    const emailId = emailData.email_id;
+    const emailId = emailData.email_id || emailData.id;
     const toAddress = (emailData.to?.[0] || '').toLowerCase().trim();
     const fromString = emailData.from || '';
     const subject = emailData.subject || '';
@@ -395,10 +395,11 @@ export default async function handler(req, res) {
     const attachments = emailData.attachments || [];
 
     console.log('[inbound-email] Received:', { to: toAddress, from: fromString, subject, attachmentCount: attachments.length });
-    console.log('[inbound-email] Full event.data keys:', Object.keys(emailData));
+    console.log('[inbound-email] event.data keys:', Object.keys(emailData));
     console.log('[inbound-email] email_id field:', emailData.email_id);
     console.log('[inbound-email] id field:', emailData.id);
-    console.log('[inbound-email] Raw attachment metadata:', JSON.stringify(attachments[0]));
+    console.log('[inbound-email] resolved emailId:', emailId);
+    console.log('[inbound-email] First attachment metadata:', JSON.stringify(attachments[0]));
 
     const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
     const resend = new Resend(process.env.RESEND_API_KEY);
