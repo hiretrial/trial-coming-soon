@@ -1022,7 +1022,7 @@ footer .sep {
            instead of attempting to send data. Once the proper /api/eoi-submit backend
            is live (Postmark + Supabase), update the action attribute to /api/eoi-submit
            and the JS handler will route submissions through properly. -->
-      <form class="eoi" id="eoi-form" action="/api/eoi-submit" method="POST" novalidate data-state="live">
+      <form class="eoi" id="eoi-form" action="#" method="POST" novalidate data-state="placeholder">
 
         <div class="field-row">
           <div class="field-group">
@@ -1203,22 +1203,16 @@ footer .sep {
       return;
     }
 
-submitBtn.disabled = true;
+    submitBtn.disabled = true;
     submitBtn.textContent = 'Sending…';
 
-    // Build JSON payload from form (Vercel API route expects JSON)
-    const formData = new FormData(form);
-    const data = {};
-    formData.forEach((value, key) => { data[key] = value; });
+    const data = new FormData(form);
 
     try {
       const response = await fetch(form.action, {
         method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
+        body: data,
+        headers: { 'Accept': 'application/json' }
       });
 
       if (response.ok) {
