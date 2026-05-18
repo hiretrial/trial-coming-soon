@@ -314,7 +314,7 @@ export default async function handler(req, res) {
         candidate_id: candidateId,
         venue_id: venue.id,
         role: detectedRole,
-        status: 'pending',
+        status: 'in_progress',
         token,
         picked_question_ids: picked,
         picker_audit: { ...audit, detection_method: detectionMethod },
