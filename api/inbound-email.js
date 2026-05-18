@@ -87,25 +87,24 @@ function capitalise(s) {
   return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 }
 
-// ─── NEW: Download a CV attachment from Resend ─────────────────────────────
-async function fetchAttachmentBuffer(resend, emailId, attachmentMetadata) {
+async function fetchAttachmentBuffer(emailId, attachmentMetadata) {
   try {
     const apiKey = process.env.RESEND_API_KEY;
     const listResp = await fetch(
       `https://api.resend.com/emails/${emailId}/attachments`,
       { headers: { 'Authorization': `Bearer ${apiKey}` } }
     );
-    
+
     if (!listResp.ok) {
       console.error('[fetchAttachmentBuffer] List failed:', listResp.status, await listResp.text());
       return null;
     }
-    
+
     const listData = await listResp.json();
     const attachments = listData.data || listData.attachments || listData;
-    
+
     if (!Array.isArray(attachments) || attachments.length === 0) {
-      console.warn('[fetchAttachmentBuffer] No attachments in list response:', JSON.stringify(listData));
+      console.warn('[fetchAttachmentBuffer] No attachments:', JSON.stringify(listData));
       return null;
     }
 
@@ -127,26 +126,7 @@ async function fetchAttachmentBuffer(resend, emailId, attachmentMetadata) {
     return null;
   }
 }
-    });
-    if (!attachments || attachments.length === 0) return null;
 
-    const match = attachments.find(a => a.id === attachmentMetadata.id) || attachments[0];
-    if (!match || !match.download_url) return null;
-
-    const resp = await fetch(match.download_url);
-    if (!resp.ok) {
-      console.error('[fetchAttachmentBuffer] Download failed:', resp.status);
-      return null;
-    }
-    const buffer = Buffer.from(await resp.arrayBuffer());
-    return { buffer, filename: match.filename, content_type: match.content_type };
-  } catch (err) {
-    console.error('[fetchAttachmentBuffer] Error:', err);
-    return null;
-  }
-}
-
-// ─── NEW: Send CV to Claude, ask for the candidate's name ──────────────────
 async function extractNameFromCV(cvBuffer, contentType, filename) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -166,7 +146,6 @@ async function extractNameFromCV(cvBuffer, contentType, filename) {
     let documentBlock;
 
     if (isPDF) {
-      // PDFs: base64 inline
       documentBlock = {
         type: 'document',
         source: {
@@ -176,10 +155,9 @@ async function extractNameFromCV(cvBuffer, contentType, filename) {
         }
       };
     } else {
-      // DOCX: upload to Files API first
       const formData = new FormData();
-      formData.append('file', new Blob([cvBuffer], { 
-        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+      formData.append('file', new Blob([cvBuffer], {
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
       }), filename);
 
       const uploadResp = await fetch('https://api.anthropic.com/v1/files', {
@@ -247,20 +225,13 @@ async function extractNameFromCV(cvBuffer, contentType, filename) {
       first_name: capitalise(parsed.first_name.trim()),
       last_name: parsed.last_name ? capitalise(parsed.last_name.trim()) : ''
     };
-
   } catch (err) {
     console.error('[extractNameFromCV] Error:', err);
     return null;
   }
 }
 
-// Extract candidate name with 4 levels of fallback.
-// Level 0: CV → Claude (most authoritative)
-// Level 1: Header display name
-// Level 2: Body signature/intro scan
-// Level 3: Pretty-format email username
-async function extractCandidateName(resend, emailId, attachments, fromString, bodyText, candidateEmail) {
-  // Level 0 — try CV first (the source of truth)
+async function extractCandidateName(emailId, attachments, fromString, bodyText, candidateEmail) {
   if (attachments && attachments.length > 0) {
     const cv = attachments.find(a => {
       const ct = a.content_type || '';
@@ -270,7 +241,7 @@ async function extractCandidateName(resend, emailId, attachments, fromString, bo
 
     if (cv) {
       console.log('[extractCandidateName] Trying Level 0 (CV):', cv.filename);
-      const fetched = await fetchAttachmentBuffer(resend, emailId, cv);
+      const fetched = await fetchAttachmentBuffer(emailId, cv);
       if (fetched) {
         const cvName = await extractNameFromCV(fetched.buffer, fetched.content_type, fetched.filename);
         if (cvName && cvName.first_name) {
@@ -281,7 +252,6 @@ async function extractCandidateName(resend, emailId, attachments, fromString, bo
     }
   }
 
-  // Strip HTML for body scan
   const cleanBody = bodyText
     ? bodyText
         .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
@@ -294,7 +264,6 @@ async function extractCandidateName(resend, emailId, attachments, fromString, bo
         .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
     : '';
 
-  // Level 1 — header display name
   if (fromString) {
     const match = fromString.match(/^([^<]+)<.*>$/);
     if (match) {
@@ -312,7 +281,6 @@ async function extractCandidateName(resend, emailId, attachments, fromString, bo
     }
   }
 
-  // Level 2 — body signature/intro
   if (cleanBody) {
     const sigRegex = /(?:cheers|thanks|regards|sincerely|kind regards|best regards|best|yours|warmly|—|--)[,.\s]+\s*([a-zà-ÿ'-]+(?:\s+[a-zà-ÿ'-]+)?)\b/i;
     const sigMatch = cleanBody.match(sigRegex);
@@ -341,7 +309,6 @@ async function extractCandidateName(resend, emailId, attachments, fromString, bo
     }
   }
 
-  // Level 3 — email username
   if (candidateEmail) {
     const username = candidateEmail.split('@')[0];
     const parts = username.split(/[._\-+]+/)
@@ -465,7 +432,7 @@ export default async function handler(req, res) {
 
     const candidateEmail = parseFromEmail(fromString);
     const { first_name, last_name, source: nameSource } = await extractCandidateName(
-      resend, emailId, attachments, fromString, bodyText, candidateEmail
+      emailId, attachments, fromString, bodyText, candidateEmail
     );
     console.log('[inbound-email] Name extracted via:', nameSource, '→', first_name, last_name);
 
@@ -479,7 +446,6 @@ export default async function handler(req, res) {
     let candidateId;
     if (existingCandidate) {
       candidateId = existingCandidate.id;
-      // If we now have a better name than before, update the candidate row
       if (first_name) {
         await supabase.from('candidates')
           .update({ first_name, last_name, last_active_at: new Date().toISOString() })
@@ -543,7 +509,22 @@ export default async function handler(req, res) {
 
     if (venue.manager_email) {
       try {
-const attachmentPayloads = [];
+        const attachmentPayloads = [];
+        let resendAttachments = [];
+        try {
+          const listResp = await fetch(
+            `https://api.resend.com/emails/${emailId}/attachments`,
+            { headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}` } }
+          );
+          if (listResp.ok) {
+            const listData = await listResp.json();
+            resendAttachments = listData.data || listData.attachments || listData || [];
+          }
+        } catch (e) {
+          console.warn('[inbound-email] Attachment list failed for forward:', e);
+        }
+
+        for (const att of (resendAttachments || [])) {
           if (att.download_url) {
             try {
               const resp = await fetch(att.download_url);
