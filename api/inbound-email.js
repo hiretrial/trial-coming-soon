@@ -6,11 +6,12 @@
 // 1. Verify Resend's webhook signature (Svix spec)
 // 2. Lookup venue from `to` address
 // 3. Detect role (Layer 1 single role → Layer 2 keyword scan → default fallback)
-// 4. Find or create candidate
-// 5. Mint assessment token with picked questions
-// 6. Email candidate the assessment link (branded)
-// 7. Forward original email + CV to venue's manager_email (branded)
-// 8. Return 200 to Resend
+// 4. Extract candidate name (3 levels: header → body signature → email username)
+// 5. Find or create candidate
+// 6. Mint assessment token with 10 picked questions
+// 7. Email candidate the assessment link (branded)
+// 8. Forward original email + CV to venue's manager_email (branded)
+// 9. Return 200 to Resend
 
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
@@ -120,23 +121,92 @@ function detectRoleFromText(text, allowedRoles) {
   return null;
 }
 
-function parseFromName(fromString) {
-  if (!fromString) return { first_name: '', last_name: '' };
-  const match = fromString.match(/^([^<]+)<.*>$/);
-  const namePart = (match ? match[1] : fromString).trim().replace(/^["']|["']$/g, '');
-  const parts = namePart.split(/\s+/);
-  return {
-    first_name: parts[0] || '',
-    last_name: parts.slice(1).join(' ') || ''
-  };
-}
-
 function parseFromEmail(fromString) {
   if (!fromString) return null;
   const match = fromString.match(/<([^>]+)>/);
   return (match ? match[1] : fromString).trim().toLowerCase();
 }
 
+function capitalise(s) {
+  if (!s) return '';
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
+
+// Extract candidate name with 3 levels of fallback.
+// Level 1: "Jane Smith <jane@gmail.com>" → "Jane Smith" from header
+// Level 2: Body signature scan ("Cheers, Jane Smith" / "Hi, I'm Jane")
+// Level 3: Pretty-format the email username
+function extractCandidateName(fromString, bodyText, candidateEmail) {
+  // Level 1 — proper display name in From header
+  if (fromString) {
+    const match = fromString.match(/^([^<]+)<.*>$/);
+    if (match) {
+      const raw = match[1].trim().replace(/^["']|["']$/g, '');
+      if (raw && !raw.includes('@')) {
+        const parts = raw.split(/\s+/).filter(Boolean);
+        if (parts.length >= 1 && /^[A-Za-zÀ-ÿ'-]+/.test(parts[0])) {
+          return {
+            first_name: capitalise(parts[0]),
+            last_name: parts.slice(1).map(capitalise).join(' '),
+            source: 'header_display_name'
+          };
+        }
+      }
+    }
+  }
+
+  // Level 2 — body signature scan
+  if (bodyText) {
+    // Sign-off patterns: "Cheers, Jane Smith" / "Regards, Jane" / "Thanks, Jane"
+    const signatureRegex = /(?:cheers|thanks|regards|sincerely|kind regards|best regards|best|yours|warmly|—|--)[,.\s]+\s*([A-Z][a-zà-ÿ'-]+(?:\s+[A-Z][a-zà-ÿ'-]+)?)/i;
+    const sigMatch = bodyText.match(signatureRegex);
+    if (sigMatch && sigMatch[1]) {
+      const parts = sigMatch[1].trim().split(/\s+/).filter(Boolean);
+      if (parts.length >= 1) {
+        return {
+          first_name: capitalise(parts[0]),
+          last_name: parts.slice(1).map(capitalise).join(' '),
+          source: 'body_signature'
+        };
+      }
+    }
+
+    // Intro patterns: "Hi, I'm Jane Smith" / "My name is Jane"
+    const introRegex = /(?:i['']m|my name is|this is)\s+([A-Z][a-zà-ÿ'-]+(?:\s+[A-Z][a-zà-ÿ'-]+)?)/i;
+    const introMatch = bodyText.match(introRegex);
+    if (introMatch && introMatch[1]) {
+      const parts = introMatch[1].trim().split(/\s+/).filter(Boolean);
+      if (parts.length >= 1) {
+        return {
+          first_name: capitalise(parts[0]),
+          last_name: parts.slice(1).map(capitalise).join(' '),
+          source: 'body_intro'
+        };
+      }
+    }
+  }
+
+  // Level 3 — pretty-format the email username
+  if (candidateEmail) {
+    const username = candidateEmail.split('@')[0];
+    const parts = username
+      .split(/[._\-+]+/)
+      .filter(p => p && /^[a-zA-Z]+$/.test(p))
+      .map(capitalise);
+    
+    if (parts.length >= 1) {
+      return {
+        first_name: parts[0],
+        last_name: parts.slice(1).join(' '),
+        source: 'email_username'
+      };
+    }
+  }
+
+  return { first_name: '', last_name: '', source: 'none' };
+}
+
+// Pick stratified questions: 3 easy + 5 medium + 2 hard = 10 total
 async function pickQuestions(supabase, role) {
   const { data: pool, error } = await supabase
     .from('questions')
@@ -160,9 +230,9 @@ async function pickQuestions(supabase, role) {
   };
 
   const picks = [
-    ...pickN(byDifficulty.easy, 2),
-    ...pickN(byDifficulty.medium, 3),
-    ...pickN(byDifficulty.hard, 1)
+    ...pickN(byDifficulty.easy, 3),
+    ...pickN(byDifficulty.medium, 5),
+    ...pickN(byDifficulty.hard, 2)
   ];
 
   const categoryCounts = {};
@@ -258,7 +328,8 @@ export default async function handler(req, res) {
     }
 
     const candidateEmail = parseFromEmail(fromString);
-    const { first_name, last_name } = parseFromName(fromString);
+    const { first_name, last_name, source: nameSource } = extractCandidateName(fromString, bodyText, candidateEmail);
+    console.log('[inbound-email] Name extracted via:', nameSource, '→', first_name, last_name);
 
     if (!candidateEmail) {
       console.error('[inbound-email] No candidate email in:', fromString);
@@ -317,7 +388,7 @@ export default async function handler(req, res) {
         status: 'in_progress',
         token,
         picked_question_ids: picked,
-        picker_audit: { ...audit, detection_method: detectionMethod },
+        picker_audit: { ...audit, detection_method: detectionMethod, name_source: nameSource },
         expires_at: expiresAt,
         candidate_profile: {
           first_name,
@@ -337,6 +408,7 @@ export default async function handler(req, res) {
 
     const resend = new Resend(process.env.RESEND_API_KEY);
     const assessmentUrl = `https://hiretrial.com.au/assess.html?token=${token}`;
+    const displayName = first_name || 'there';
 
     try {
       await resend.emails.send({
@@ -345,7 +417,7 @@ export default async function handler(req, res) {
         reply_to: 'hello@hiretrial.com.au',
         subject: `Complete your trial for ${venue.name} — ${roleLabel(detectedRole)}`,
         html: candidateEmailHtml({
-          firstName: first_name || 'there',
+          firstName: displayName,
           venueName: venue.name,
           roleLabel: roleLabel(detectedRole),
           assessmentUrl
@@ -397,6 +469,7 @@ export default async function handler(req, res) {
       venue: venue.slug,
       role: detectedRole,
       detectionMethod,
+      nameSource,
       assessmentId: assessment.id
     });
 
@@ -435,7 +508,7 @@ function candidateEmailHtml({ firstName, venueName, roleLabel, assessmentUrl }) 
       Hi ${firstName} —<br><span style="font-style:italic;font-weight:500;color:#c8a96e;">${venueName}</span> wants to know how you'd handle their floor.
     </h1>
     <p style="font-size:15px;line-height:1.6;color:rgba(248,246,240,0.62);margin:24px 0;font-family:Arial,sans-serif;">
-      Thanks for applying for the <strong style="color:#f8f6f0;font-weight:500;">${roleLabel}</strong> role at ${venueName}. Before they bring you in, they've asked for a quick trial — six scenario questions that take <strong style="color:#f8f6f0;font-weight:500;">about ten to twelve minutes</strong>. There are no right or wrong answers in the abstract — they want to see how <em>you</em> think.
+      Thanks for applying for the <strong style="color:#f8f6f0;font-weight:500;">${roleLabel}</strong> role at ${venueName}. Before they bring you in, they've asked for a quick trial — ten scenario questions that take <strong style="color:#f8f6f0;font-weight:500;">about twelve to fifteen minutes</strong>. There are no right or wrong answers in the abstract — they want to see how <em>you</em> think.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:32px 0;">
       <tr><td style="background:#c8a96e;border-radius:8px;">
