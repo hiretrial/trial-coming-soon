@@ -46,7 +46,7 @@ export default async function handler(req, res) {
       return res.status(410).json({ error: 'Assessment expired' });
     }
 
-    if (['submitted', 'scored', 'awaiting_review'].includes(assessment.status)) {
+    if (assessment.status === 'submitted') {
       return res.status(409).json({ error: 'Already submitted' });
     }
 
