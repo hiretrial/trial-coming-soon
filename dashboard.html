@@ -442,12 +442,16 @@ table.t tr.clickable:hover { background: rgba(248, 246, 240, 0.02); }
   font-weight: 500;
   border: 1px solid;
 }
-.status-chip.pending { color: var(--cream-dim); border-color: var(--ink-line-strong); }
-.status-chip.assessed { color: var(--gold); border-color: var(--gold-line); }
-.status-chip.shortlisted { color: var(--success); border-color: rgba(109, 180, 136, 0.4); }
-.status-chip.interview { color: var(--warn); border-color: rgba(212, 162, 86, 0.4); }
+.status-chip.in_progress { color: var(--cream-dim); border-color: var(--ink-line-strong); }
+.status-chip.submitted { color: var(--gold); border-color: var(--gold-line); }
+.status-chip.reviewed { color: var(--gold); border-color: var(--gold-line); }
+.status-chip.interview_requested { color: var(--warn); border-color: rgba(212, 162, 86, 0.4); }
+.status-chip.interview_scheduled { color: var(--warn); border-color: rgba(212, 162, 86, 0.4); }
+.status-chip.interview_completed { color: var(--warn); border-color: rgba(212, 162, 86, 0.4); }
+.status-chip.offered { color: var(--success); border-color: rgba(109, 180, 136, 0.4); }
 .status-chip.hired { color: var(--success); background: rgba(109, 180, 136, 0.1); border-color: rgba(109, 180, 136, 0.4); }
 .status-chip.rejected { color: var(--danger); border-color: rgba(217, 122, 107, 0.4); }
+.status-chip.expired { color: var(--cream-faint); border-color: var(--ink-line); }
 
 .empty-state {
   padding: 64px 24px;
@@ -773,9 +777,9 @@ table.t tr.clickable:hover { background: rgba(248, 246, 240, 0.02); }
           <div class="stat-sub">Need your decision</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">Shortlisted</div>
-          <div class="stat-value" id="stat-shortlisted">0</div>
-          <div class="stat-sub">In your shortlist</div>
+          <div class="stat-label">Interviewing</div>
+          <div class="stat-value" id="stat-interviewing">0</div>
+          <div class="stat-sub">In interview stage</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Avg score</div>
@@ -958,6 +962,14 @@ let CURRENT_USER = null;
 let CURRENT_VENUE = null;
 let CANDIDATES_CACHE = [];
 
+// Status enum (must match assessments.status CHECK constraint)
+// in_progress → submitted → reviewed → interview_requested → interview_scheduled
+//             → interview_completed → offered → hired
+//                                            → rejected
+//                                            → expired
+const TERMINAL_STATUSES = ['hired', 'rejected', 'expired'];
+const INTERVIEW_STATUSES = ['interview_requested', 'interview_scheduled', 'interview_completed', 'offered'];
+
 // ─── Helpers ─────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
 const showToast = (msg) => {
@@ -989,16 +1001,10 @@ const scoreBand = (s) => {
   return 'low';
 };
 const statusChip = (status) => {
-  const map = {
-    'in_progress': 'pending', 'pending': 'pending',
-    'submitted': 'assessed', 'scored': 'assessed',
-    'shortlisted': 'shortlisted',
-    'interview_requested': 'interview', 'interview_scheduled': 'interview',
-    'hired': 'hired',
-    'rejected': 'rejected', 'passed': 'rejected'
-  };
-  const cls = map[status] || 'pending';
-  return `<span class="status-chip ${cls}">${(status || 'pending').replace(/_/g, ' ')}</span>`;
+  // Use raw status as the class — CSS has rules for every valid enum value
+  const safe = status || 'in_progress';
+  const label = safe.replace(/_/g, ' ');
+  return `<span class="status-chip ${safe}">${label}</span>`;
 };
 
 // ─── AUTH ────────────────────────────────────────────────────────
@@ -1114,7 +1120,9 @@ async function loadDashboard() {
 }
 
 async function loadCandidates() {
-  // Pull all assessments + joined candidate data for this venue
+  if (!CURRENT_VENUE) return;
+
+  // SCOPED to this venue only
   const { data, error } = await supabase
     .from('assessments')
     .select(`
@@ -1133,6 +1141,7 @@ async function loadCandidates() {
       candidate_id,
       candidates ( id, first_name, last_name, email, phone, suburb, state, network_score )
     `)
+    .eq('venue_id', CURRENT_VENUE.id)
     .order('submitted_at', { ascending: false, nullsFirst: false });
 
   const wrap = $('candidates-table-wrap');
@@ -1144,14 +1153,18 @@ async function loadCandidates() {
 
   // Stats
   const submitted = CANDIDATES_CACHE.filter(a => a.submitted_at);
-  const pending = CANDIDATES_CACHE.filter(a => a.submitted_at && !a.reviewed_at);
-  const shortlisted = CANDIDATES_CACHE.filter(a => a.status === 'shortlisted');
+  // "Awaiting review" = submitted but never opened (no reviewed_at) and not terminal
+  const pending = CANDIDATES_CACHE.filter(a =>
+    a.submitted_at && !a.reviewed_at && !TERMINAL_STATUSES.includes(a.status)
+  );
+  // "Interviewing" = in any interview-stage status
+  const interviewing = CANDIDATES_CACHE.filter(a => INTERVIEW_STATUSES.includes(a.status));
   const scores = submitted.map(a => a.overall_score).filter(s => s != null);
   const avg = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0) / scores.length) : null;
 
   $('stat-total').textContent = submitted.length;
   $('stat-pending').textContent = pending.length;
-  $('stat-shortlisted').textContent = shortlisted.length;
+  $('stat-interviewing').textContent = interviewing.length;
   $('stat-avg-score').textContent = avg != null ? avg : '—';
   $('badge-candidates').textContent = pending.length;
 
@@ -1194,13 +1207,17 @@ async function loadCandidates() {
 }
 
 async function loadInterviews() {
+  if (!CURRENT_VENUE) return;
+
+  // SCOPED to this venue only
   const { data, error } = await supabase
     .from('assessments')
     .select(`
       id, role, status, overall_score, interview_scheduled_at,
       candidate_id, candidates ( first_name, last_name, email, phone )
     `)
-    .in('status', ['interview_requested', 'interview_scheduled'])
+    .eq('venue_id', CURRENT_VENUE.id)
+    .in('status', INTERVIEW_STATUSES)
     .order('interview_scheduled_at', { ascending: true, nullsFirst: false });
 
   const wrap = $('interviews-table-wrap');
@@ -1212,7 +1229,7 @@ async function loadInterviews() {
     wrap.innerHTML = `
       <div class="empty-state">
         <div class="empty-state-title">No interviews scheduled</div>
-        <div class="empty-state-sub">Shortlist a candidate and request an interview — they'll appear here.</div>
+        <div class="empty-state-sub">Request an interview with a candidate from the Candidates tab — they'll appear here.</div>
       </div>`;
     return;
   }
@@ -1241,6 +1258,9 @@ async function loadInterviews() {
 }
 
 async function loadHires() {
+  if (!CURRENT_VENUE) return;
+
+  // SCOPED to this venue only
   const { data, error } = await supabase
     .from('outcomes')
     .select(`
@@ -1248,6 +1268,7 @@ async function loadHires() {
       manager_satisfaction, within_guarantee_period, guarantee_credit_issued,
       candidate_id, candidates ( first_name, last_name, email )
     `)
+    .eq('venue_id', CURRENT_VENUE.id)
     .order('hired_at', { ascending: false });
 
   const wrap = $('hires-table-wrap');
@@ -1326,23 +1347,56 @@ function renderChecklist() {
 
 // ─── CANDIDATE MODAL ─────────────────────────────────────────────
 window.openCandModal = async (assessmentId) => {
-  const a = CANDIDATES_CACHE.find(x => x.id === assessmentId);
-  if (!a) {
-    // Lookup directly (interviews tab uses same modal but cache may differ)
-    const { data } = await supabase
-      .from('assessments')
-      .select(`*, candidates ( * )`)
-      .eq('id', assessmentId).single();
-    if (!data) return;
-    renderCandModal(data);
+  // Fetch full record (cache has trimmed columns)
+  const { data: full, error } = await supabase
+    .from('assessments')
+    .select(`*, candidates ( * )`)
+    .eq('id', assessmentId)
+    .eq('venue_id', CURRENT_VENUE.id)  // belt and braces: prevent cross-venue access via crafted IDs
+    .single();
+
+  if (error || !full) {
+    showToast('Could not load candidate');
     return;
   }
-  // Fetch full record (cache has trimmed columns)
-  const { data: full } = await supabase
-    .from('assessments').select(`*, candidates ( * )`).eq('id', assessmentId).single();
+
+  // Auto-mark reviewed if not already, and not in a terminal state
+  if (!full.reviewed_at && !TERMINAL_STATUSES.includes(full.status)) {
+    const newStatus = full.status === 'submitted' ? 'reviewed' : full.status;
+    const { error: rErr } = await supabase
+      .from('assessments')
+      .update({
+        reviewed_at: new Date().toISOString(),
+        status: newStatus
+      })
+      .eq('id', full.id);
+
+    if (!rErr) {
+      full.reviewed_at = new Date().toISOString();
+      full.status = newStatus;
+      // Update cache so stats refresh without a full reload
+      const cached = CANDIDATES_CACHE.find(x => x.id === full.id);
+      if (cached) { cached.reviewed_at = full.reviewed_at; cached.status = full.status; }
+      // Refresh stats + badge without re-rendering the table
+      refreshStats();
+    }
+  }
+
   renderCandModal(full);
 };
 window.closeCandModal = () => $('candidate-modal').classList.remove('show');
+
+function refreshStats() {
+  const submitted = CANDIDATES_CACHE.filter(a => a.submitted_at);
+  const pending = CANDIDATES_CACHE.filter(a =>
+    a.submitted_at && !a.reviewed_at && !TERMINAL_STATUSES.includes(a.status)
+  );
+  const interviewing = CANDIDATES_CACHE.filter(a => INTERVIEW_STATUSES.includes(a.status));
+  $('stat-total').textContent = submitted.length;
+  $('stat-pending').textContent = pending.length;
+  $('stat-interviewing').textContent = interviewing.length;
+  $('badge-candidates').textContent = pending.length;
+}
 
 function renderCandModal(a) {
   const c = a.candidates || {};
@@ -1398,37 +1452,49 @@ function renderCandModal(a) {
   `;
   $('modal-cand-body').innerHTML = body;
 
-  // Action buttons depend on status
+  // Action buttons depend on status — linear flow, no shortlist step
   const actions = [];
-  if (a.status !== 'shortlisted' && a.status !== 'interview_requested' && a.status !== 'hired') {
+  const status = a.status;
+
+  if (status === 'submitted' || status === 'reviewed') {
+    // Pre-interview decision point
     actions.push(`<button class="btn btn-ghost" onclick="rejectCandidate('${a.id}')">Pass</button>`);
-    actions.push(`<button class="btn btn-primary" onclick="shortlistCandidate('${a.id}')">Shortlist</button>`);
+    actions.push(`<button class="btn btn-primary" onclick="requestInterview('${a.id}')">Request interview &rarr;</button>`);
+  } else if (status === 'interview_requested' || status === 'interview_scheduled' || status === 'interview_completed' || status === 'offered') {
+    // Interview stage — can mark hired or pass
+    actions.push(`<button class="btn btn-ghost" onclick="rejectCandidate('${a.id}')">Pass</button>`);
+    actions.push(`<button class="btn btn-primary" onclick="openHireModalFor('${a.id}','${name.replace(/'/g,"\\'")}','${a.role || ''}')">Mark hired &rarr;</button>`);
   }
-  if (a.status === 'shortlisted') {
-    actions.push(`<button class="btn btn-primary" onclick="requestInterview('${a.id}')">Request interview</button>`);
-  }
-  if (a.status === 'interview_scheduled' || a.status === 'interview_requested') {
-    actions.push(`<button class="btn btn-primary" onclick="openHireModalFor('${a.id}','${name.replace(/'/g,"\\'")}','${a.role || ''}')">Mark hired</button>`);
-  }
+  // No actions for: in_progress, hired, rejected, expired (terminal/pre-submit)
+
   $('modal-cand-actions').innerHTML = actions.join('');
 
   $('candidate-modal').classList.add('show');
 }
 
-window.shortlistCandidate = async (id) => {
-  const { error } = await supabase.from('assessments').update({ status: 'shortlisted', reviewed_at: new Date().toISOString() }).eq('id', id);
-  if (error) { showToast('Update failed: ' + error.message); return; }
-  showToast('Shortlisted'); closeCandModal(); await loadCandidates();
-};
 window.rejectCandidate = async (id) => {
-  const { error } = await supabase.from('assessments').update({ status: 'passed', reviewed_at: new Date().toISOString() }).eq('id', id);
+  const { error } = await supabase
+    .from('assessments')
+    .update({ status: 'rejected', reviewed_at: new Date().toISOString() })
+    .eq('id', id);
   if (error) { showToast('Update failed: ' + error.message); return; }
-  showToast('Passed'); closeCandModal(); await loadCandidates();
+  showToast('Passed');
+  closeCandModal();
+  await Promise.all([loadCandidates(), loadInterviews()]);
 };
+
 window.requestInterview = async (id) => {
-  const { error } = await supabase.from('assessments').update({ status: 'interview_requested', interview_requested_at: new Date().toISOString() }).eq('id', id);
+  const { error } = await supabase
+    .from('assessments')
+    .update({
+      status: 'interview_requested',
+      interview_requested_at: new Date().toISOString(),
+      reviewed_at: new Date().toISOString()
+    })
+    .eq('id', id);
   if (error) { showToast('Update failed: ' + error.message); return; }
-  showToast('Interview requested'); closeCandModal();
+  showToast('Interview requested');
+  closeCandModal();
   await Promise.all([loadCandidates(), loadInterviews()]);
 };
 
@@ -1450,9 +1516,13 @@ async function confirmHire() {
   const role = $('hire-role').value.trim();
   if (!startDate || !role) { showToast('Start date and role required'); return; }
 
-  // Fetch the assessment to grab candidate_id
+  // Fetch the assessment to grab candidate_id (scoped to current venue)
   const { data: a, error: aErr } = await supabase
-    .from('assessments').select('id, candidate_id, venue_id').eq('id', HIRE_PENDING_ASSESSMENT_ID).single();
+    .from('assessments')
+    .select('id, candidate_id, venue_id')
+    .eq('id', HIRE_PENDING_ASSESSMENT_ID)
+    .eq('venue_id', CURRENT_VENUE.id)
+    .single();
   if (aErr) { showToast('Could not load assessment: ' + aErr.message); return; }
 
   // Insert into outcomes — this fires the schedule_outcome_pulses trigger automatically
@@ -1467,7 +1537,7 @@ async function confirmHire() {
   });
   if (oErr) { showToast('Hire failed: ' + oErr.message); return; }
 
-  // Update assessment status
+  // Update assessment status to 'hired'
   await supabase.from('assessments').update({ status: 'hired' }).eq('id', a.id);
 
   showToast('Hire confirmed. 90-day clock started.');
