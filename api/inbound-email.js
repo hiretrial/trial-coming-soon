@@ -1,17 +1,6 @@
 // api/inbound-email.js
 //
 // Resend Inbound webhook handler — entry point for every candidate application.
-//
-// Flow:
-// 1. Verify Resend's webhook signature (Svix spec)
-// 2. Lookup venue from `to` address
-// 3. Detect role (Layer 1 single role → Layer 2 keyword scan → default fallback)
-// 4. Extract candidate name (3 levels: header → body signature → email username)
-// 5. Find or create candidate
-// 6. Mint assessment token with 10 picked questions
-// 7. Email candidate the assessment link (branded dark/gold)
-// 8. Forward original email + CV to venue's manager_email (branded dark/gold)
-// 9. Return 200 to Resend
 
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
@@ -71,8 +60,6 @@ async function readRawBody(req) {
 }
 
 // Verify Resend (Svix) webhook signature.
-// Signed content = `{svix-id}.{svix-timestamp}.{rawBody}`
-// HMAC-SHA256 using base64-decoded secret (the part after whsec_)
 function verifyResendSignature(rawBody, headers, secret) {
   if (!secret) return false;
 
@@ -133,7 +120,26 @@ function capitalise(s) {
 }
 
 // Extract candidate name with 3 levels of fallback.
+// Level 1: Header display name → "Jane Smith <jane@gmail.com>"
+// Level 2: Body signature/intro scan ("Cheers, Jane Smith")
+// Level 3: Pretty-format email username
 function extractCandidateName(fromString, bodyText, candidateEmail) {
+  // Strip HTML if body is HTML-formatted (Gmail-style emails often only send HTML)
+  const cleanBody = bodyText
+    ? bodyText
+        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+        .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/p>/gi, '\n')
+        .replace(/<[^>]+>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+    : '';
+
   // Level 1 — proper display name in From header
   if (fromString) {
     const match = fromString.match(/^([^<]+)<.*>$/);
@@ -153,9 +159,9 @@ function extractCandidateName(fromString, bodyText, candidateEmail) {
   }
 
   // Level 2 — body signature scan
-  if (bodyText) {
-    const signatureRegex = /(?:cheers|thanks|regards|sincerely|kind regards|best regards|best|yours|warmly|—|--)[,.\s]+\s*([A-Z][a-zà-ÿ'-]+(?:\s+[A-Z][a-zà-ÿ'-]+)?)/i;
-    const sigMatch = bodyText.match(signatureRegex);
+  if (cleanBody) {
+    const signatureRegex = /(?:cheers|thanks|regards|sincerely|kind regards|best regards|best|yours|warmly|—|--)[,.\s]+\s*([a-zà-ÿ'-]+(?:\s+[a-zà-ÿ'-]+)?)\b/i;
+    const sigMatch = cleanBody.match(signatureRegex);
     if (sigMatch && sigMatch[1]) {
       const parts = sigMatch[1].trim().split(/\s+/).filter(Boolean);
       if (parts.length >= 1) {
@@ -167,8 +173,8 @@ function extractCandidateName(fromString, bodyText, candidateEmail) {
       }
     }
 
-    const introRegex = /(?:i['']m|my name is|this is)\s+([A-Z][a-zà-ÿ'-]+(?:\s+[A-Z][a-zà-ÿ'-]+)?)/i;
-    const introMatch = bodyText.match(introRegex);
+    const introRegex = /(?:i['']m|my name is|this is)\s+([a-zà-ÿ'-]+(?:\s+[a-zà-ÿ'-]+)?)\b/i;
+    const introMatch = cleanBody.match(introRegex);
     if (introMatch && introMatch[1]) {
       const parts = introMatch[1].trim().split(/\s+/).filter(Boolean);
       if (parts.length >= 1) {
@@ -279,7 +285,7 @@ export default async function handler(req, res) {
     const bodyText = emailData.text || emailData.html || '';
     const attachments = emailData.attachments || [];
 
-    console.log('[inbound-email] Received:', { to: toAddress, from: fromString, subject });
+    console.log('[inbound-email] Received:', { to: toAddress, from: fromString, subject, attachmentCount: attachments.length });
 
     const supabase = createClient(
       process.env.SUPABASE_URL,
@@ -325,6 +331,7 @@ export default async function handler(req, res) {
     const candidateEmail = parseFromEmail(fromString);
     const { first_name, last_name, source: nameSource } = extractCandidateName(fromString, bodyText, candidateEmail);
     console.log('[inbound-email] Name extracted via:', nameSource, '→', first_name, last_name);
+    console.log('[inbound-email] Attachments raw:', JSON.stringify(attachments));
 
     if (!candidateEmail) {
       console.error('[inbound-email] No candidate email in:', fromString);
