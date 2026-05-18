@@ -1,0 +1,87 @@
+<!--
+═══════════════════════════════════════════════════════════════
+  Trial. — Shared Page Footer
+  
+  Lives at /footer.html (root of trial-coming-soon repo).
+  Loaded into any page via:
+  
+    <div id="trial-footer"></div>
+    <script>
+      fetch('/footer.html').then(r => r.text()).then(html => {
+        document.getElementById('trial-footer').innerHTML = html;
+      });
+    </script>
+  
+  Update this file once → every page updates.
+═══════════════════════════════════════════════════════════════
+-->
+
+<style>
+  .trial-footer {
+    padding: 56px 24px 40px;
+    border-top: 1px solid rgba(248, 246, 240, 0.08);
+    text-align: center;
+    font-family: 'DM Sans', 'Inter Tight', system-ui, sans-serif;
+    color: rgba(248, 246, 240, 0.38);
+    background: transparent;
+  }
+  .trial-footer-wordmark {
+    font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #f8f6f0;
+    margin-bottom: 14px;
+    letter-spacing: -0.3px;
+  }
+  .trial-footer-wordmark .dot { color: #c8a96e; font-size: 28px; }
+  .trial-footer-tag {
+    font-size: 12px;
+    color: rgba(248, 246, 240, 0.48);
+    letter-spacing: 0.04em;
+    margin-bottom: 24px;
+  }
+  .trial-footer-meta {
+    font-size: 11px;
+    color: rgba(248, 246, 240, 0.38);
+    letter-spacing: 0.06em;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0;
+    justify-content: center;
+    align-items: center;
+  }
+  .trial-footer-meta a {
+    color: rgba(248, 246, 240, 0.48);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(248, 246, 240, 0.08);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .trial-footer-meta a:hover {
+    color: #c8a96e;
+    border-color: #c8a96e;
+  }
+  .trial-footer-meta .sep {
+    margin: 0 10px;
+    color: rgba(248, 246, 240, 0.22);
+  }
+  @media (max-width: 540px) {
+    .trial-footer { padding: 44px 20px 32px; }
+    .trial-footer-meta { font-size: 10.5px; line-height: 1.9; }
+    .trial-footer-meta .sep { margin: 0 7px; }
+  }
+</style>
+
+<footer class="trial-footer">
+  <div class="trial-footer-wordmark">Trial<span class="dot">.</span></div>
+  <div class="trial-footer-tag">Hospitality hiring, built by operators.</div>
+  <div class="trial-footer-meta">
+    <a href="mailto:hello@hiretrial.com.au">hello@hiretrial.com.au</a>
+    <span class="sep">·</span>
+    <a href="/privacy">Privacy</a>
+    <span class="sep">·</span>
+    ABN 71 441 417 792
+    <span class="sep">·</span>
+    Australia
+  </div>
+</footer>
