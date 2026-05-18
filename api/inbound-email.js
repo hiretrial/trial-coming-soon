@@ -178,7 +178,6 @@ async function extractNameFromCV(cvBuffer, contentType, filename) {
       }
 
       const snippet = cvText.substring(0, 2000);
-      console.log('[extractNameFromCV] DOCX text snippet (first 300):', snippet.substring(0, 300));
 
       messagePayload = {
         model: 'claude-haiku-4-5-20251001',
@@ -388,6 +387,10 @@ export default async function handler(req, res) {
     const attachments = emailData.attachments || [];
 
     console.log('[inbound-email] Received:', { to: toAddress, from: fromString, subject, attachmentCount: attachments.length });
+    console.log('[inbound-email] Body text field length:', (emailData.text || '').length);
+    console.log('[inbound-email] Body html field length:', (emailData.html || '').length);
+    console.log('[inbound-email] Body text preview:', (emailData.text || '').substring(0, 200));
+    console.log('[inbound-email] Body html preview:', (emailData.html || '').substring(0, 200));
 
     const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
     const resend = new Resend(process.env.RESEND_API_KEY);
@@ -559,25 +562,30 @@ function candidateEmailHtml({ firstName, venueName, roleLabel, assessmentUrl }) 
   return `<!DOCTYPE html>
 <html lang="en-AU"><head><meta charset="UTF-8"><title>Your Trial. assessment</title></head>
 <body style="margin:0;padding:0;background:#0a0a0a;font-family:Georgia,'Times New Roman',serif;color:#f8f6f0;">
-<table cellpadding="0" cellspacing="0" width="100%" style="max-width:560px;margin:0 auto;background:#0a0a0a;padding:48px 32px;">
-  <tr><td>
-    <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:900;letter-spacing:-0.6px;color:#f8f6f0;margin-bottom:48px;">Trial<span style="color:#c8a96e;">.</span></div>
-    <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:16px;font-family:Arial,sans-serif;">Your assessment</div>
-    <h1 style="font-family:'Playfair Display',Georgia,serif;font-weight:800;font-size:36px;line-height:1.1;letter-spacing:-1px;margin:0 0 16px 0;color:#f8f6f0;">
-      Hi ${firstName} —<br><span style="font-style:italic;font-weight:500;color:#c8a96e;">${venueName}</span> wants to know how you'd handle their floor.
-    </h1>
-    <p style="font-size:15px;line-height:1.6;color:rgba(248,246,240,0.62);margin:24px 0;font-family:Arial,sans-serif;">
-      Thanks for applying for the <strong style="color:#f8f6f0;font-weight:500;">${roleLabel}</strong> role at ${venueName}. Before they bring you in, they've asked for a quick trial — ten scenario questions that take <strong style="color:#f8f6f0;font-weight:500;">about twelve to fifteen minutes</strong>. There are no right or wrong answers in the abstract — they want to see how <em>you</em> think.
-    </p>
-    <table cellpadding="0" cellspacing="0" style="margin:32px 0;"><tr><td style="background:#c8a96e;border-radius:8px;">
-      <a href="${assessmentUrl}" style="display:inline-block;padding:14px 28px;color:#0a0a0a;text-decoration:none;font-family:Arial,sans-serif;font-weight:600;font-size:15px;letter-spacing:0.02em;">Begin your assessment &rarr;</a>
-    </td></tr></table>
-    <p style="font-size:13px;line-height:1.6;color:rgba(248,246,240,0.42);margin:24px 0 0 0;font-family:Arial,sans-serif;">
-      Your link expires in 7 days. If the button doesn't work, paste this into your browser:<br>
-      <span style="color:#c8a96e;word-break:break-all;">${assessmentUrl}</span>
-    </p>
-    <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.06);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.42);text-align:center;font-family:Arial,sans-serif;">Trial. · hello@hiretrial.com.au · ABN 71 441 417 792</div>
-  </td></tr></table>
+<table cellpadding="0" cellspacing="0" width="100%" style="background:#0a0a0a;padding:32px 16px;">
+  <tr><td align="center">
+    <table cellpadding="0" cellspacing="0" width="100%" style="max-width:560px;background:linear-gradient(180deg,#1a1610 0%,#14110b 100%);border:1px solid rgba(200,169,110,0.18);border-radius:14px;padding:44px 36px;">
+      <tr><td>
+        <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:900;letter-spacing:-0.6px;color:#f8f6f0;margin-bottom:48px;">Trial<span style="color:#c8a96e;">.</span></div>
+        <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:16px;font-family:Arial,sans-serif;">Your assessment</div>
+        <h1 style="font-family:'Playfair Display',Georgia,serif;font-weight:800;font-size:36px;line-height:1.1;letter-spacing:-1px;margin:0 0 16px 0;color:#f8f6f0;">
+          Hi ${firstName} —<br><span style="font-style:italic;font-weight:500;color:#c8a96e;">${venueName}</span> wants to know how you'd handle their floor.
+        </h1>
+        <p style="font-size:15px;line-height:1.6;color:rgba(248,246,240,0.7);margin:24px 0;font-family:Arial,sans-serif;">
+          Thanks for applying for the <strong style="color:#f8f6f0;font-weight:500;">${roleLabel}</strong> role at ${venueName}. Before they bring you in, they've asked for a quick trial — ten scenario questions that take <strong style="color:#f8f6f0;font-weight:500;">about twelve to fifteen minutes</strong>. There are no right or wrong answers in the abstract — they want to see how <em>you</em> think.
+        </p>
+        <table cellpadding="0" cellspacing="0" style="margin:32px 0;"><tr><td style="background:#c8a96e;border-radius:8px;">
+          <a href="${assessmentUrl}" style="display:inline-block;padding:14px 28px;color:#0a0a0a;text-decoration:none;font-family:Arial,sans-serif;font-weight:600;font-size:15px;letter-spacing:0.02em;">Begin your assessment &rarr;</a>
+        </td></tr></table>
+        <p style="font-size:13px;line-height:1.6;color:rgba(248,246,240,0.5);margin:24px 0 0 0;font-family:Arial,sans-serif;">
+          Your link expires in 7 days. If the button doesn't work, paste this into your browser:<br>
+          <span style="color:#c8a96e;word-break:break-all;">${assessmentUrl}</span>
+        </p>
+        <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(200,169,110,0.12);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.5);text-align:center;font-family:Arial,sans-serif;">Trial. · hello@hiretrial.com.au · ABN 71 441 417 792</div>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
 </body></html>`;
 }
 
@@ -585,26 +593,31 @@ function forwardEmailHtml({ venueName, candidateName, candidateEmail, roleLabel,
   return `<!DOCTYPE html>
 <html lang="en-AU"><head><meta charset="UTF-8"><title>New application via Trial.</title></head>
 <body style="margin:0;padding:0;background:#0a0a0a;font-family:Georgia,'Times New Roman',serif;color:#f8f6f0;">
-<table cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;margin:0 auto;background:#0a0a0a;padding:48px 32px;">
-  <tr><td>
-    <div style="font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:900;letter-spacing:-0.5px;color:#f8f6f0;margin-bottom:40px;">Trial<span style="color:#c8a96e;">.</span></div>
-    <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:14px;font-family:Arial,sans-serif;">New application &middot; ${roleLabel}</div>
-    <h1 style="font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:30px;line-height:1.15;letter-spacing:-0.6px;margin:0 0 6px 0;color:#f8f6f0;">${candidateName}</h1>
-    <div style="font-size:14px;color:rgba(248,246,240,0.52);margin-bottom:32px;font-family:Arial,sans-serif;">
-      <a href="mailto:${candidateEmail}" style="color:#c8a96e;text-decoration:none;">${candidateEmail}</a>
-    </div>
-    <p style="font-size:14.5px;line-height:1.65;color:rgba(248,246,240,0.72);margin:0 0 28px 0;font-family:Arial,sans-serif;">
-      Original application as it landed in your Trial<span style="color:#c8a96e;">.</span> inbox for <strong style="color:#f8f6f0;font-weight:500;">${venueName}</strong>. CV attached. We've sent the candidate their assessment — score lands in <a href="https://dashboard.hiretrial.com.au" style="color:#c8a96e;text-decoration:none;font-weight:500;">your dashboard</a> shortly.
-    </p>
-    <div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:24px;margin:24px 0;">
-      <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:10px;font-family:Arial,sans-serif;">Original subject</div>
-      <div style="font-size:15px;color:#f8f6f0;margin-bottom:24px;font-family:Arial,sans-serif;font-weight:500;">${escapeHtml(originalSubject)}</div>
-      <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:10px;font-family:Arial,sans-serif;">Original message</div>
-      <div style="font-size:13.5px;color:rgba(248,246,240,0.72);line-height:1.65;white-space:pre-wrap;font-family:Arial,sans-serif;">${escapeHtml(originalBody)}</div>
-    </div>
-    <div style="font-size:13px;color:rgba(248,246,240,0.42);margin:32px 0 0 0;font-family:Arial,sans-serif;line-height:1.5;">Reply to this email to respond directly to <strong style="color:rgba(248,246,240,0.62);font-weight:500;">${candidateName}</strong>.</div>
-    <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.06);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.42);text-align:center;font-family:Arial,sans-serif;">Trial<span style="color:#c8a96e;">.</span> &middot; hello@hiretrial.com.au &middot; ABN 71 441 417 792</div>
-  </td></tr></table>
+<table cellpadding="0" cellspacing="0" width="100%" style="background:#0a0a0a;padding:32px 16px;">
+  <tr><td align="center">
+    <table cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;background:linear-gradient(180deg,#1a1610 0%,#14110b 100%);border:1px solid rgba(200,169,110,0.18);border-radius:14px;padding:44px 36px;">
+      <tr><td>
+        <div style="font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:900;letter-spacing:-0.5px;color:#f8f6f0;margin-bottom:40px;">Trial<span style="color:#c8a96e;">.</span></div>
+        <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:14px;font-family:Arial,sans-serif;">New application &middot; ${roleLabel}</div>
+        <h1 style="font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:30px;line-height:1.15;letter-spacing:-0.6px;margin:0 0 6px 0;color:#f8f6f0;">${candidateName}</h1>
+        <div style="font-size:14px;color:rgba(248,246,240,0.6);margin-bottom:32px;font-family:Arial,sans-serif;">
+          <a href="mailto:${candidateEmail}" style="color:#c8a96e;text-decoration:none;">${candidateEmail}</a>
+        </div>
+        <p style="font-size:14.5px;line-height:1.65;color:rgba(248,246,240,0.75);margin:0 0 28px 0;font-family:Arial,sans-serif;">
+          Original application as it landed in your Trial<span style="color:#c8a96e;">.</span> inbox for <strong style="color:#f8f6f0;font-weight:500;">${venueName}</strong>. CV attached. We've sent the candidate their assessment — score lands in <a href="https://dashboard.hiretrial.com.au" style="color:#c8a96e;text-decoration:none;font-weight:500;">your dashboard</a> shortly.
+        </p>
+        <div style="background:rgba(0,0,0,0.35);border:1px solid rgba(200,169,110,0.14);border-radius:10px;padding:24px;margin:24px 0;">
+          <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:10px;font-family:Arial,sans-serif;">Original subject</div>
+          <div style="font-size:15px;color:#f8f6f0;margin-bottom:24px;font-family:Arial,sans-serif;font-weight:500;">${escapeHtml(originalSubject)}</div>
+          <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:10px;font-family:Arial,sans-serif;">Original message</div>
+          <div style="font-size:13.5px;color:rgba(248,246,240,0.75);line-height:1.65;white-space:pre-wrap;font-family:Arial,sans-serif;">${escapeHtml(originalBody)}</div>
+        </div>
+        <div style="font-size:13px;color:rgba(248,246,240,0.5);margin:32px 0 0 0;font-family:Arial,sans-serif;line-height:1.5;">Reply to this email to respond directly to <strong style="color:rgba(248,246,240,0.7);font-weight:500;">${candidateName}</strong>.</div>
+        <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(200,169,110,0.12);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.5);text-align:center;font-family:Arial,sans-serif;">Trial<span style="color:#c8a96e;">.</span> &middot; hello@hiretrial.com.au &middot; ABN 71 441 417 792</div>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
 </body></html>`;
 }
 
