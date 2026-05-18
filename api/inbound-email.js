@@ -91,7 +91,7 @@ async function fetchAttachmentBuffer(emailId, attachmentMetadata) {
   try {
     const apiKey = process.env.RESEND_API_KEY;
     const listResp = await fetch(
-      `https://api.resend.com/emails/${emailId}/attachments`,
+      `https://api.resend.com/emails/receiving/${emailId}/attachments`,
       { headers: { 'Authorization': `Bearer ${apiKey}` } }
     );
 
