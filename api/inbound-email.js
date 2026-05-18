@@ -90,9 +90,43 @@ function capitalise(s) {
 // ─── NEW: Download a CV attachment from Resend ─────────────────────────────
 async function fetchAttachmentBuffer(resend, emailId, attachmentMetadata) {
   try {
-    // Resend Attachments API: list all attachments for this email, find ours
-    const { data: attachments } = await resend.emails.receiving.attachments.list({
-      emailId: emailId
+    const apiKey = process.env.RESEND_API_KEY;
+    const listResp = await fetch(
+      `https://api.resend.com/emails/${emailId}/attachments`,
+      { headers: { 'Authorization': `Bearer ${apiKey}` } }
+    );
+    
+    if (!listResp.ok) {
+      console.error('[fetchAttachmentBuffer] List failed:', listResp.status, await listResp.text());
+      return null;
+    }
+    
+    const listData = await listResp.json();
+    const attachments = listData.data || listData.attachments || listData;
+    
+    if (!Array.isArray(attachments) || attachments.length === 0) {
+      console.warn('[fetchAttachmentBuffer] No attachments in list response:', JSON.stringify(listData));
+      return null;
+    }
+
+    const match = attachments.find(a => a.id === attachmentMetadata.id) || attachments[0];
+    if (!match || !match.download_url) {
+      console.warn('[fetchAttachmentBuffer] No download_url:', JSON.stringify(match));
+      return null;
+    }
+
+    const resp = await fetch(match.download_url);
+    if (!resp.ok) {
+      console.error('[fetchAttachmentBuffer] Download failed:', resp.status);
+      return null;
+    }
+    const buffer = Buffer.from(await resp.arrayBuffer());
+    return { buffer, filename: match.filename, content_type: match.content_type };
+  } catch (err) {
+    console.error('[fetchAttachmentBuffer] Error:', err);
+    return null;
+  }
+}
     });
     if (!attachments || attachments.length === 0) return null;
 
@@ -509,9 +543,7 @@ export default async function handler(req, res) {
 
     if (venue.manager_email) {
       try {
-        const attachmentPayloads = [];
-        const { data: resendAttachments } = await resend.emails.receiving.attachments.list({ emailId });
-        for (const att of (resendAttachments || [])) {
+const attachmentPayloads = [];
           if (att.download_url) {
             try {
               const resp = await fetch(att.download_url);
