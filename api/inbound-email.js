@@ -383,14 +383,30 @@ export default async function handler(req, res) {
     const toAddress = (emailData.to?.[0] || '').toLowerCase().trim();
     const fromString = emailData.from || '';
     const subject = emailData.subject || '';
-    const bodyText = emailData.text || emailData.html || '';
     const attachments = emailData.attachments || [];
 
     console.log('[inbound-email] Received:', { to: toAddress, from: fromString, subject, attachmentCount: attachments.length });
-    console.log('[inbound-email] Body text field length:', (emailData.text || '').length);
-    console.log('[inbound-email] Body html field length:', (emailData.html || '').length);
-    console.log('[inbound-email] Body text preview:', (emailData.text || '').substring(0, 200));
-    console.log('[inbound-email] Body html preview:', (emailData.html || '').substring(0, 200));
+
+    // Body isn't in webhook payload — fetch separately via Receiving API
+    let bodyText = '';
+    let bodyHtml = '';
+    try {
+      const bodyResp = await fetch(
+        `https://api.resend.com/emails/receiving/${emailId}`,
+        { headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}` } }
+      );
+      if (bodyResp.ok) {
+        const bodyData = await bodyResp.json();
+        bodyText = bodyData.text || '';
+        bodyHtml = bodyData.html || '';
+        console.log('[inbound-email] Fetched body — text length:', bodyText.length, 'html length:', bodyHtml.length);
+      } else {
+        console.error('[inbound-email] Body fetch failed:', bodyResp.status, await bodyResp.text());
+      }
+    } catch (e) {
+      console.error('[inbound-email] Body fetch error:', e);
+    }
+    const bodyContent = bodyText || bodyHtml || '';
 
     const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
     const resend = new Resend(process.env.RESEND_API_KEY);
@@ -415,7 +431,7 @@ export default async function handler(req, res) {
       detectionMethod = 'layer_1_single_role';
     }
     if (!detectedRole) {
-      detectedRole = detectRoleFromText(subject, allowedRoles) || detectRoleFromText(bodyText, allowedRoles);
+      detectedRole = detectRoleFromText(subject, allowedRoles) || detectRoleFromText(bodyContent, allowedRoles);
       if (detectedRole) detectionMethod = 'layer_2_keyword';
     }
     if (!detectedRole && venue.default_role) {
@@ -428,7 +444,7 @@ export default async function handler(req, res) {
 
     const candidateEmail = parseFromEmail(fromString);
     const { first_name, last_name, source: nameSource } = await extractCandidateName(
-      emailId, attachments, fromString, bodyText, candidateEmail
+      emailId, attachments, fromString, bodyContent, candidateEmail
     );
     console.log('[inbound-email] Name extracted via:', nameSource, '→', first_name, last_name);
 
@@ -540,7 +556,7 @@ export default async function handler(req, res) {
             venueName: venue.name,
             candidateName: `${first_name} ${last_name}`.trim() || candidateEmail,
             candidateEmail, roleLabel: roleLabel(detectedRole),
-            originalSubject: subject, originalBody: bodyText
+            originalSubject: subject, originalBody: bodyContent
           }),
           attachments: attachmentPayloads
         });
@@ -564,14 +580,14 @@ function candidateEmailHtml({ firstName, venueName, roleLabel, assessmentUrl }) 
 <body style="margin:0;padding:0;background:#0a0a0a;font-family:Georgia,'Times New Roman',serif;color:#f8f6f0;">
 <table cellpadding="0" cellspacing="0" width="100%" style="background:#0a0a0a;padding:32px 16px;">
   <tr><td align="center">
-    <table cellpadding="0" cellspacing="0" width="100%" style="max-width:560px;background:linear-gradient(180deg,#1a1610 0%,#14110b 100%);border:1px solid rgba(200,169,110,0.18);border-radius:14px;padding:44px 36px;">
+    <table cellpadding="0" cellspacing="0" width="100%" style="max-width:560px;background:linear-gradient(180deg,#1f1a12 0%,#16120c 100%);border:1px solid rgba(200,169,110,0.32);border-radius:14px;padding:44px 36px;box-shadow:0 0 40px rgba(200,169,110,0.08);">
       <tr><td>
         <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:900;letter-spacing:-0.6px;color:#f8f6f0;margin-bottom:48px;">Trial<span style="color:#c8a96e;">.</span></div>
         <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:16px;font-family:Arial,sans-serif;">Your assessment</div>
         <h1 style="font-family:'Playfair Display',Georgia,serif;font-weight:800;font-size:36px;line-height:1.1;letter-spacing:-1px;margin:0 0 16px 0;color:#f8f6f0;">
           Hi ${firstName} —<br><span style="font-style:italic;font-weight:500;color:#c8a96e;">${venueName}</span> wants to know how you'd handle their floor.
         </h1>
-        <p style="font-size:15px;line-height:1.6;color:rgba(248,246,240,0.7);margin:24px 0;font-family:Arial,sans-serif;">
+        <p style="font-size:15px;line-height:1.6;color:rgba(248,246,240,0.72);margin:24px 0;font-family:Arial,sans-serif;">
           Thanks for applying for the <strong style="color:#f8f6f0;font-weight:500;">${roleLabel}</strong> role at ${venueName}. Before they bring you in, they've asked for a quick trial — ten scenario questions that take <strong style="color:#f8f6f0;font-weight:500;">about twelve to fifteen minutes</strong>. There are no right or wrong answers in the abstract — they want to see how <em>you</em> think.
         </p>
         <table cellpadding="0" cellspacing="0" style="margin:32px 0;"><tr><td style="background:#c8a96e;border-radius:8px;">
@@ -581,7 +597,7 @@ function candidateEmailHtml({ firstName, venueName, roleLabel, assessmentUrl }) 
           Your link expires in 7 days. If the button doesn't work, paste this into your browser:<br>
           <span style="color:#c8a96e;word-break:break-all;">${assessmentUrl}</span>
         </p>
-        <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(200,169,110,0.12);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.5);text-align:center;font-family:Arial,sans-serif;">Trial. · hello@hiretrial.com.au · ABN 71 441 417 792</div>
+        <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(200,169,110,0.18);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.5);text-align:center;font-family:Arial,sans-serif;">Trial. · hello@hiretrial.com.au · ABN 71 441 417 792</div>
       </td></tr>
     </table>
   </td></tr>
@@ -595,7 +611,7 @@ function forwardEmailHtml({ venueName, candidateName, candidateEmail, roleLabel,
 <body style="margin:0;padding:0;background:#0a0a0a;font-family:Georgia,'Times New Roman',serif;color:#f8f6f0;">
 <table cellpadding="0" cellspacing="0" width="100%" style="background:#0a0a0a;padding:32px 16px;">
   <tr><td align="center">
-    <table cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;background:linear-gradient(180deg,#1a1610 0%,#14110b 100%);border:1px solid rgba(200,169,110,0.18);border-radius:14px;padding:44px 36px;">
+    <table cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;background:linear-gradient(180deg,#1f1a12 0%,#16120c 100%);border:1px solid rgba(200,169,110,0.32);border-radius:14px;padding:44px 36px;box-shadow:0 0 40px rgba(200,169,110,0.08);">
       <tr><td>
         <div style="font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:900;letter-spacing:-0.5px;color:#f8f6f0;margin-bottom:40px;">Trial<span style="color:#c8a96e;">.</span></div>
         <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:14px;font-family:Arial,sans-serif;">New application &middot; ${roleLabel}</div>
@@ -606,14 +622,14 @@ function forwardEmailHtml({ venueName, candidateName, candidateEmail, roleLabel,
         <p style="font-size:14.5px;line-height:1.65;color:rgba(248,246,240,0.75);margin:0 0 28px 0;font-family:Arial,sans-serif;">
           Original application as it landed in your Trial<span style="color:#c8a96e;">.</span> inbox for <strong style="color:#f8f6f0;font-weight:500;">${venueName}</strong>. CV attached. We've sent the candidate their assessment — score lands in <a href="https://dashboard.hiretrial.com.au" style="color:#c8a96e;text-decoration:none;font-weight:500;">your dashboard</a> shortly.
         </p>
-        <div style="background:rgba(0,0,0,0.35);border:1px solid rgba(200,169,110,0.14);border-radius:10px;padding:24px;margin:24px 0;">
+        <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(200,169,110,0.22);border-radius:10px;padding:24px;margin:24px 0;">
           <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:10px;font-family:Arial,sans-serif;">Original subject</div>
           <div style="font-size:15px;color:#f8f6f0;margin-bottom:24px;font-family:Arial,sans-serif;font-weight:500;">${escapeHtml(originalSubject)}</div>
           <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:10px;font-family:Arial,sans-serif;">Original message</div>
           <div style="font-size:13.5px;color:rgba(248,246,240,0.75);line-height:1.65;white-space:pre-wrap;font-family:Arial,sans-serif;">${escapeHtml(originalBody)}</div>
         </div>
         <div style="font-size:13px;color:rgba(248,246,240,0.5);margin:32px 0 0 0;font-family:Arial,sans-serif;line-height:1.5;">Reply to this email to respond directly to <strong style="color:rgba(248,246,240,0.7);font-weight:500;">${candidateName}</strong>.</div>
-        <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(200,169,110,0.12);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.5);text-align:center;font-family:Arial,sans-serif;">Trial<span style="color:#c8a96e;">.</span> &middot; hello@hiretrial.com.au &middot; ABN 71 441 417 792</div>
+        <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(200,169,110,0.18);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.5);text-align:center;font-family:Arial,sans-serif;">Trial<span style="color:#c8a96e;">.</span> &middot; hello@hiretrial.com.au &middot; ABN 71 441 417 792</div>
       </td></tr>
     </table>
   </td></tr>
