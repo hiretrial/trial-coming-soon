@@ -6,6 +6,11 @@
       "destination": "/dashboard.html"
     },
     {
+      "source": "/",
+      "has": [{ "type": "host", "value": "hq.hiretrial.com.au" }],
+      "destination": "/hq.html"
+    },
+    {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "hq.hiretrial.com.au" }],
       "destination": "/hq.html"
