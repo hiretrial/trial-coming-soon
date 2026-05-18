@@ -4,10 +4,11 @@
 // 1. Validates token + payload
 // 2. Writes answers + integrity signals to the assessments row
 // 3. Marks status as 'submitted'
-// 4. Awaits scoring (~5-10s on Haiku) so it actually runs on Vercel serverless
-// 5. Returns success
+// 4. Calls scoreAssessment() in-process (no HTTP round-trip)
+// 5. Returns success with the score
 
 import { createClient } from '@supabase/supabase-js';
+import { scoreAssessment } from './_lib/score-assessment-core.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -31,7 +32,7 @@ export default async function handler(req, res) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    // ─── 2. Load the assessment ───
+    // ─── 2. Load assessment ───
     const { data: assessment, error: loadErr } = await supabase
       .from('assessments')
       .select('id, status, expires_at, picked_question_ids')
@@ -54,13 +55,13 @@ export default async function handler(req, res) {
     const pickedIds = assessment.picked_question_ids || [];
     const missingIds = pickedIds.filter(id => !answers[id] || answers[id].trim().length < 20);
     if (missingIds.length > 0) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Some answers are too short or missing',
         missing_question_count: missingIds.length
       });
     }
 
-    // ─── 4. Update the assessment row ───
+    // ─── 4. Write submission to assessment row ───
     const { error: updateErr } = await supabase
       .from('assessments')
       .update({
@@ -81,47 +82,33 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Failed to save submission' });
     }
 
-    console.log('[submit-assessment] Submitted, triggering scoring:', assessment.id);
+    console.log('[submit-assessment] Submitted, scoring inline:', assessment.id);
 
-    // ─── 5. Trigger scoring AWAITED ───
-    // Fire-and-forget doesn't work on Vercel serverless — the lambda terminates
-    // before the HTTP request fires. Must await.
-    try {
-      await triggerScoring(assessment.id);
-      console.log('[submit-assessment] Scoring complete for:', assessment.id);
-    } catch (err) {
-      console.error('[submit-assessment] Scoring failed (non-fatal):', err);
-      // Don't fail the submission — candidate still sees success
+    // ─── 5. Score inline (~5-10s on Haiku) ───
+    // Direct in-process call — no HTTP, no auth wall, no fire-and-forget weirdness.
+    // Submission is already saved; if scoring fails, candidate still sees success
+    // and the row can be re-scored manually via /api/score-assessment.
+    const scoringResult = await scoreAssessment(supabase, assessment.id);
+
+    if (scoringResult.ok) {
+      console.log('[submit-assessment] Scoring complete:', {
+        assessment_id: assessment.id,
+        overall_score: scoringResult.overall_score,
+        tier: scoringResult.tier
+      });
+    } else {
+      console.error('[submit-assessment] Scoring failed (non-fatal):', scoringResult.error, scoringResult.code);
     }
 
-    // ─── 6. Done — return success to candidate ───
+    // ─── 6. Return success ───
     return res.status(200).json({
       ok: true,
-      message: 'Assessment submitted successfully'
+      message: 'Assessment submitted successfully',
+      scored: scoringResult.ok
     });
 
   } catch (err) {
     console.error('[submit-assessment] Unexpected error:', err);
     return res.status(500).json({ error: 'Server error' });
   }
-}
-
-// Awaited call to the scoring endpoint.
-async function triggerScoring(assessmentId) {
-  const baseUrl = process.env.VERCEL_URL 
-    ? `https://${process.env.VERCEL_URL}` 
-    : 'https://hiretrial.com.au';
-  
-  const resp = await fetch(`${baseUrl}/api/score-assessment`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ assessment_id: assessmentId })
-  });
-
-  if (!resp.ok) {
-    const text = await resp.text();
-    throw new Error(`Scoring API returned ${resp.status}: ${text.slice(0, 200)}`);
-  }
-
-  return resp.json();
 }
