@@ -143,43 +143,50 @@ async function extractNameFromCV(cvBuffer, contentType, filename) {
   }
 
   try {
-    let documentBlock;
+    let messagePayload;
 
     if (isPDF) {
-      documentBlock = {
-        type: 'document',
-        source: {
-          type: 'base64',
-          media_type: 'application/pdf',
-          data: cvBuffer.toString('base64')
-        }
+      messagePayload = {
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 200,
+        messages: [{
+          role: 'user',
+          content: [
+            {
+              type: 'document',
+              source: {
+                type: 'base64',
+                media_type: 'application/pdf',
+                data: cvBuffer.toString('base64')
+              }
+            },
+            {
+              type: 'text',
+              text: 'What is the candidate\'s full name in this CV? Respond with ONLY a JSON object: {"first_name": "X", "last_name": "Y"}. No other text, no markdown. If unsure, use empty strings.'
+            }
+          ]
+        }]
       };
     } else {
-      const formData = new FormData();
-      formData.append('file', new Blob([cvBuffer], {
-        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      }), filename);
+      const mammoth = (await import('mammoth')).default;
+      const result = await mammoth.extractRawText({ buffer: cvBuffer });
+      const cvText = result.value;
 
-      const uploadResp = await fetch('https://api.anthropic.com/v1/files', {
-        method: 'POST',
-        headers: {
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-beta': 'files-api-2025-04-14'
-        },
-        body: formData
-      });
-
-      if (!uploadResp.ok) {
-        const err = await uploadResp.text();
-        console.error('[extractNameFromCV] DOCX upload failed:', uploadResp.status, err);
+      if (!cvText || cvText.trim().length === 0) {
+        console.warn('[extractNameFromCV] DOCX extracted no text');
         return null;
       }
 
-      const uploaded = await uploadResp.json();
-      documentBlock = {
-        type: 'document',
-        source: { type: 'file', file_id: uploaded.id }
+      const snippet = cvText.substring(0, 2000);
+      console.log('[extractNameFromCV] DOCX text snippet (first 300):', snippet.substring(0, 300));
+
+      messagePayload = {
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 200,
+        messages: [{
+          role: 'user',
+          content: `Below is the text content of a candidate's CV. What is the candidate's full name? Respond with ONLY a JSON object: {"first_name": "X", "last_name": "Y"}. No other text, no markdown. If unsure, use empty strings.\n\nCV text:\n${snippet}`
+        }]
       };
     }
 
@@ -188,23 +195,9 @@ async function extractNameFromCV(cvBuffer, contentType, filename) {
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-beta': 'files-api-2025-04-14'
+        'anthropic-version': '2023-06-01'
       },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 200,
-        messages: [{
-          role: 'user',
-          content: [
-            documentBlock,
-            {
-              type: 'text',
-              text: 'What is the candidate\'s full name in this CV? Respond with ONLY a JSON object: {"first_name": "X", "last_name": "Y"}. No other text, no markdown. If unsure, use empty strings.'
-            }
-          ]
-        }]
-      })
+      body: JSON.stringify(messagePayload)
     });
 
     if (!messagesResp.ok) {
@@ -395,11 +388,6 @@ export default async function handler(req, res) {
     const attachments = emailData.attachments || [];
 
     console.log('[inbound-email] Received:', { to: toAddress, from: fromString, subject, attachmentCount: attachments.length });
-    console.log('[inbound-email] event.data keys:', Object.keys(emailData));
-    console.log('[inbound-email] email_id field:', emailData.email_id);
-    console.log('[inbound-email] id field:', emailData.id);
-    console.log('[inbound-email] resolved emailId:', emailId);
-    console.log('[inbound-email] First attachment metadata:', JSON.stringify(attachments[0]));
 
     const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
     const resend = new Resend(process.env.RESEND_API_KEY);
@@ -518,7 +506,7 @@ export default async function handler(req, res) {
         let resendAttachments = [];
         try {
           const listResp = await fetch(
-            `https://api.resend.com/emails/${emailId}/attachments`,
+            `https://api.resend.com/emails/receiving/${emailId}/attachments`,
             { headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}` } }
           );
           if (listResp.ok) {
