@@ -4,7 +4,7 @@
 // 1. Validates token + payload
 // 2. Writes answers + integrity signals to the assessments row
 // 3. Marks status as 'submitted'
-// 4. Triggers async scoring (fire-and-forget — candidate doesn't wait)
+// 4. Awaits scoring (~5-10s on Haiku) so it actually runs on Vercel serverless
 // 5. Returns success
 
 import { createClient } from '@supabase/supabase-js';
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    // ─── 2. Load the assessment to confirm it exists, isn't expired, isn't already submitted ───
+    // ─── 2. Load the assessment ───
     const { data: assessment, error: loadErr } = await supabase
       .from('assessments')
       .select('id, status, expires_at, picked_question_ids')
@@ -81,11 +81,18 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Failed to save submission' });
     }
 
-    // ─── 5. Trigger async scoring (fire-and-forget) ───
-    // Candidate doesn't wait for scoring. The scoring function runs in background.
-    triggerScoring(assessment.id).catch(err => {
-      console.error('[submit-assessment] Scoring trigger failed (non-fatal):', err);
-    });
+    console.log('[submit-assessment] Submitted, triggering scoring:', assessment.id);
+
+    // ─── 5. Trigger scoring AWAITED ───
+    // Fire-and-forget doesn't work on Vercel serverless — the lambda terminates
+    // before the HTTP request fires. Must await.
+    try {
+      await triggerScoring(assessment.id);
+      console.log('[submit-assessment] Scoring complete for:', assessment.id);
+    } catch (err) {
+      console.error('[submit-assessment] Scoring failed (non-fatal):', err);
+      // Don't fail the submission — candidate still sees success
+    }
 
     // ─── 6. Done — return success to candidate ───
     return res.status(200).json({
@@ -99,19 +106,22 @@ export default async function handler(req, res) {
   }
 }
 
-// Fire-and-forget call to the scoring endpoint.
-// Uses internal HTTP call (Vercel serverless functions can't share runtime).
+// Awaited call to the scoring endpoint.
 async function triggerScoring(assessmentId) {
   const baseUrl = process.env.VERCEL_URL 
     ? `https://${process.env.VERCEL_URL}` 
     : 'https://hiretrial.com.au';
   
-  // Don't await the response — we're firing and forgetting
-  fetch(`${baseUrl}/api/score-assessment`, {
+  const resp = await fetch(`${baseUrl}/api/score-assessment`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ assessment_id: assessmentId })
-  }).catch(err => {
-    console.error('[triggerScoring] fetch failed:', err);
   });
+
+  if (!resp.ok) {
+    const text = await resp.text();
+    throw new Error(`Scoring API returned ${resp.status}: ${text.slice(0, 200)}`);
+  }
+
+  return resp.json();
 }
