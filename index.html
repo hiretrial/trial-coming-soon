@@ -581,6 +581,16 @@ form.eoi {
   .field-row { grid-template-columns: 1fr; gap: 0; }
 }
 
+/* Three-column row for Suburb / State / Postcode */
+.field-row-loc {
+  display: grid;
+  grid-template-columns: 1fr 120px 110px;
+  gap: 20px;
+}
+@media (max-width: 600px) {
+  .field-row-loc { grid-template-columns: 1fr; gap: 0; }
+}
+
 label {
   display: block;
   font-size: 11px;
@@ -1086,6 +1096,32 @@ footer .sep {
             <option value="multi-venue">Multi-venue group</option>
             <option value="other">Other front-of-house venue</option>
           </select>
+        </div>
+
+        <!-- Venue location — Suburb / State / Postcode, all required -->
+        <div class="field-row-loc">
+          <div class="field-group">
+            <label for="suburb">Suburb <span class="req">*</span></label>
+            <input type="text" id="suburb" name="suburb" required autocomplete="address-level2" placeholder="e.g. Surry Hills">
+          </div>
+          <div class="field-group">
+            <label for="state">State <span class="req">*</span></label>
+            <select id="state" name="state" required autocomplete="address-level1">
+              <option value="">Select…</option>
+              <option value="NSW">NSW</option>
+              <option value="VIC">VIC</option>
+              <option value="QLD">QLD</option>
+              <option value="WA">WA</option>
+              <option value="SA">SA</option>
+              <option value="TAS">TAS</option>
+              <option value="ACT">ACT</option>
+              <option value="NT">NT</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="postcode">Postcode <span class="req">*</span></label>
+            <input type="text" id="postcode" name="postcode" required autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="2010">
+          </div>
         </div>
 
         <div class="field-row">
