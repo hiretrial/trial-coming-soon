@@ -363,6 +363,394 @@ body.light .detail-frustration { background: rgba(0,0,0,0.03); }
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast.error { border-left-color: var(--danger); }
 .toast.success { border-left-color: var(--success); }
+
+/* ═══════════════════════════════════════════════════════════════
+   PIPELINE TAB
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Venue stats grid (per-venue health) */
+.venue-stats-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px; padding: 22px;
+}
+.venue-stat-card {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 9px;
+  padding: 18px 20px; transition: border-color 0.2s ease;
+}
+.venue-stat-card:hover { border-color: var(--accent-soft); }
+.venue-stat-card-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 14px; gap: 10px;
+}
+.venue-stat-card-name {
+  font-family: 'Playfair Display', serif; font-weight: 600;
+  font-size: 16px; letter-spacing: -0.2px; line-height: 1.2;
+}
+.venue-stat-card-badge {
+  font-size: 9px; padding: 3px 7px; border-radius: 3px; letter-spacing: 0.1em;
+  text-transform: uppercase; font-weight: 600; white-space: nowrap;
+}
+.venue-stat-card-badge.founding {
+  background: var(--accent-soft); color: var(--accent);
+}
+.venue-stat-card-badge.standard {
+  background: var(--bg2); color: var(--dim); border: 1px solid var(--border2);
+}
+.venue-stat-rows { display: flex; flex-direction: column; gap: 7px; }
+.venue-stat-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 12px;
+}
+.venue-stat-row-label { color: var(--dim); }
+.venue-stat-row-value {
+  font-family: 'Playfair Display', serif; font-weight: 600;
+  color: var(--white); font-variant-numeric: tabular-nums;
+}
+.venue-stat-row-value.accent { color: var(--accent); }
+.venue-stat-row-value.warn { color: var(--warning); }
+.venue-stat-row-value.danger { color: var(--danger); }
+.venue-stat-row-value.success { color: var(--success); }
+.venue-stat-gap {
+  margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);
+  font-size: 11px; color: var(--muted); font-style: italic;
+}
+.venue-stat-gap.aligned { color: var(--success); }
+.venue-stat-gap.high { color: var(--warning); }
+.venue-stat-gap.severe { color: var(--danger); }
+
+/* Anonymous candidate ID styling */
+.cand-id {
+  font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+  font-size: 12px; color: var(--accent); font-weight: 500;
+  background: var(--accent-soft); padding: 3px 8px; border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+.score-pill {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  min-width: 42px; padding: 3px 10px; border-radius: 12px;
+  font-size: 13px; font-variant-numeric: tabular-nums;
+}
+.score-pill.high { background: rgba(109,181,138,0.15); color: var(--success); }
+.score-pill.mid  { background: rgba(212,160,74,0.15); color: var(--warning); }
+.score-pill.low  { background: rgba(217,119,87,0.15); color: var(--danger); }
+.score-pill.neutral { background: var(--bg3); color: var(--muted); }
+
+.cand-status {
+  display: inline-block; padding: 3px 9px; font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase; border-radius: 3px;
+  font-weight: 600; border: 1px solid;
+}
+.cand-status.assessed    { color: var(--accent); border-color: var(--accent-soft); background: var(--accent-soft); }
+.cand-status.interviewed { color: var(--warning); border-color: rgba(212,160,74,0.4); }
+.cand-status.hired       { color: var(--success); background: rgba(109,181,138,0.1); border-color: rgba(109,181,138,0.4); }
+.cand-status.rejected    { color: var(--dim); border-color: var(--border2); }
+
+.integrity-flag {
+  display: inline-block; font-size: 11px;
+  padding: 1px 7px; border-radius: 3px;
+  background: rgba(217,119,87,0.12); color: var(--danger); font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REVENUE TAB
+   ═══════════════════════════════════════════════════════════════ */
+.rev-breakdown {
+  padding: 22px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+}
+@media (max-width: 800px) { .rev-breakdown { grid-template-columns: 1fr; } }
+.rev-segment {
+  display: flex; flex-direction: column; gap: 12px;
+}
+.rev-segment-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding-bottom: 12px; border-bottom: 1px solid var(--border);
+}
+.rev-segment-title {
+  font-family: 'Playfair Display', serif; font-weight: 600;
+  font-size: 17px; letter-spacing: -0.2px;
+}
+.rev-segment-title.founding { color: var(--accent); }
+.rev-segment-total {
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  font-size: 18px; color: var(--white); font-variant-numeric: tabular-nums;
+}
+.rev-plan-row {
+  display: grid; grid-template-columns: 1fr auto auto; gap: 14px;
+  align-items: center; padding: 8px 0;
+  font-size: 13px;
+}
+.rev-plan-name { color: var(--muted); }
+.rev-plan-count { color: var(--dim); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+.rev-plan-mrr {
+  font-family: 'Playfair Display', serif; font-weight: 600;
+  color: var(--white); font-variant-numeric: tabular-nums; min-width: 80px; text-align: right;
+}
+.rev-progress {
+  margin-top: 12px;
+}
+.rev-progress-label {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--dim); font-weight: 600; margin-bottom: 6px;
+}
+.rev-progress-count { color: var(--accent); }
+.rev-progress-bar {
+  height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden;
+}
+.rev-progress-fill {
+  height: 100%; background: var(--accent);
+  border-radius: 2px; transition: width 0.4s ease;
+}
+
+/* Cost table */
+.cost-table {
+  display: flex; flex-direction: column;
+}
+.cost-row {
+  display: grid; grid-template-columns: 1fr auto auto auto;
+  gap: 16px; align-items: center;
+  padding: 12px 22px; border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.cost-row:last-child { border-bottom: none; }
+.cost-row.total {
+  background: var(--accent-soft); font-weight: 600;
+}
+.cost-row.total .cost-name { color: var(--accent); font-family: 'Playfair Display', serif; font-size: 14px; }
+.cost-row.total .cost-amount { color: var(--accent); }
+.cost-name { color: var(--white); }
+.cost-name-sub {
+  font-size: 11px; color: var(--dim); display: block; margin-top: 2px;
+}
+.cost-cycle {
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--dim); font-weight: 600;
+}
+.cost-amount {
+  font-family: 'Playfair Display', serif; font-weight: 600;
+  color: var(--white); font-variant-numeric: tabular-nums; min-width: 80px; text-align: right;
+}
+.cost-status-pill {
+  font-size: 9px; padding: 2px 7px; border-radius: 3px;
+  letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;
+}
+.cost-status-pill.tracked { background: var(--accent-soft); color: var(--accent); }
+.cost-status-pill.flat    { background: var(--bg3); color: var(--dim); }
+.cost-status-pill.amortised { background: rgba(212,160,74,0.1); color: var(--warning); }
+
+/* Margin / cash flow card */
+.margin-summary {
+  padding: 24px 28px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  border-bottom: 1px solid var(--border);
+}
+@media (max-width: 700px) { .margin-summary { grid-template-columns: 1fr; gap: 18px; } }
+.margin-figure {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.margin-figure-label {
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--dim); font-weight: 600;
+}
+.margin-figure-value {
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  font-size: 28px; letter-spacing: -0.5px; font-variant-numeric: tabular-nums;
+}
+.margin-figure-value.positive { color: var(--success); }
+.margin-figure-value.negative { color: var(--danger); }
+.margin-figure-value.accent   { color: var(--accent); }
+.margin-figure-sub {
+  font-size: 11.5px; color: var(--muted); margin-top: 2px;
+}
+
+/* 12-week forecast strip */
+.forecast {
+  padding: 22px 28px;
+}
+.forecast-title {
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--dim); font-weight: 600; margin-bottom: 14px;
+}
+.forecast-bars {
+  display: flex; gap: 4px; align-items: flex-end;
+  height: 80px;
+}
+.forecast-bar-col {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 4px; min-width: 0;
+}
+.forecast-bar {
+  width: 100%; min-height: 6px; background: var(--accent);
+  border-radius: 3px 3px 0 0; transition: opacity 0.2s ease;
+  opacity: 0.45;
+}
+.forecast-bar.solid { opacity: 1; }
+.forecast-bar-label {
+  font-size: 9px; color: var(--dim); letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.forecast-legend {
+  display: flex; gap: 16px; margin-top: 14px; padding-top: 14px;
+  border-top: 1px solid var(--border); flex-wrap: wrap;
+  font-size: 11px; color: var(--muted);
+}
+.forecast-legend-item { display: flex; align-items: center; gap: 6px; }
+.forecast-legend-swatch {
+  width: 10px; height: 10px; border-radius: 2px; background: var(--accent);
+}
+.forecast-legend-swatch.projected { opacity: 0.45; }
+
+/* Privacy banner on Pipeline tab */
+.privacy-note {
+  margin: 0 22px 22px;
+  padding: 12px 16px;
+  background: rgba(10,186,181,0.05); border: 1px solid var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  font-size: 12px; color: var(--muted); line-height: 1.55;
+}
+.privacy-note strong { color: var(--accent); font-weight: 600; }
+
+/* ═══════════════════════════════════════════════════════════════
+   APPROVE EOI MODAL
+   ═══════════════════════════════════════════════════════════════ */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 150;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center; padding: 24px;
+}
+.modal-backdrop.shown { display: flex; }
+.modal {
+  width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto;
+  background: var(--card); border: 1px solid var(--border2); border-radius: 12px;
+  box-shadow: 0 32px 64px rgba(0,0,0,0.5);
+  animation: modalIn 0.18s ease;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-header {
+  padding: 22px 28px 16px; border-bottom: 1px solid var(--border);
+}
+.modal-eyebrow {
+  font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--accent); font-weight: 600; margin-bottom: 8px;
+}
+.modal-title {
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  font-size: 22px; letter-spacing: -0.3px; line-height: 1.2;
+}
+.modal-title em { font-style: italic; color: var(--accent); font-weight: 500; }
+.modal-sub {
+  font-size: 12.5px; color: var(--muted); margin-top: 4px;
+}
+.modal-body { padding: 22px 28px; }
+.modal-section { margin-bottom: 22px; }
+.modal-section:last-child { margin-bottom: 0; }
+.modal-section-label {
+  display: block; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--dim); font-weight: 600; margin-bottom: 10px;
+}
+
+/* Radio list */
+.radio-list {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.radio-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border: 1px solid var(--border2); border-radius: 7px;
+  cursor: pointer; transition: all 0.15s ease;
+  background: var(--bg3);
+}
+.radio-row:hover { border-color: var(--accent-soft); }
+.radio-row.selected { border-color: var(--accent); background: var(--accent-soft); }
+.radio-row input { accent-color: var(--accent); cursor: pointer; }
+.radio-row-label {
+  flex: 1; display: flex; flex-direction: column; gap: 2px;
+}
+.radio-row-primary { font-size: 13.5px; font-weight: 500; color: var(--white); }
+.radio-row-secondary { font-size: 11.5px; color: var(--dim); }
+.radio-row-price {
+  font-family: 'Playfair Display', serif; font-weight: 600;
+  font-size: 14px; color: var(--accent); font-variant-numeric: tabular-nums;
+}
+
+/* Founding toggle */
+.founding-toggle {
+  padding: 14px 16px; background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 8px; display: flex; align-items: center; gap: 14px;
+}
+.founding-toggle.locked-out {
+  border-color: rgba(217,119,87,0.3); background: rgba(217,119,87,0.05);
+}
+.founding-toggle input[type="checkbox"] {
+  width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0;
+}
+.founding-toggle input[type="checkbox"]:disabled { cursor: not-allowed; opacity: 0.4; }
+.founding-toggle-text { flex: 1; }
+.founding-toggle-title {
+  font-size: 13px; font-weight: 500; color: var(--white); margin-bottom: 2px;
+}
+.founding-toggle-sub {
+  font-size: 11.5px; color: var(--dim); line-height: 1.4;
+}
+.founding-toggle.locked-out .founding-toggle-sub { color: var(--danger); }
+.founding-count {
+  font-family: 'Playfair Display', serif; font-style: italic;
+  color: var(--accent); font-weight: 600;
+}
+
+/* Pricing preview */
+.price-preview {
+  padding: 18px 20px; border: 1px solid var(--accent-soft); border-radius: 8px;
+  background: var(--accent-soft); display: flex; flex-direction: column; gap: 6px;
+}
+.price-preview-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 13px;
+}
+.price-preview-label { color: var(--muted); }
+.price-preview-value {
+  font-family: 'Playfair Display', serif; font-weight: 600;
+  color: var(--white); font-variant-numeric: tabular-nums;
+}
+.price-preview-value.accent { color: var(--accent); }
+.price-preview-tagline {
+  font-size: 11px; color: var(--accent); font-style: italic;
+  margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(10,186,181,0.2);
+}
+
+/* Recipient block */
+.recipient {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; background: var(--bg3); border-radius: 7px;
+  font-size: 13px;
+}
+.recipient-avatar {
+  width: 30px; height: 30px; border-radius: 50%; background: var(--accent-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-weight: 700; font-size: 11px;
+  color: var(--accent);
+}
+.recipient-text { flex: 1; min-width: 0; }
+.recipient-name { color: var(--white); font-weight: 500; }
+.recipient-email { color: var(--muted); font-size: 11.5px; }
+
+/* Footer */
+.modal-footer {
+  padding: 16px 28px 22px;
+  display: flex; justify-content: flex-end; gap: 10px;
+  border-top: 1px solid var(--border);
+}
+.modal-footer .btn { min-width: 100px; }
+@media (max-width: 600px) {
+  .modal { max-height: 100vh; border-radius: 0; }
+  .modal-footer { flex-direction: column-reverse; }
+  .modal-footer .btn { width: 100%; }
+}
 </style>
 </head>
 <body>
@@ -411,6 +799,8 @@ body.light .detail-frustration { background: rgba(0,0,0,0.03); }
     <div class="tab" data-tab="venues">
       Venues <span class="tab-badge" id="venues-badge">0</span>
     </div>
+    <div class="tab" data-tab="pipeline">Pipeline</div>
+    <div class="tab" data-tab="revenue">Revenue</div>
   </div>
 
   <div class="body">
@@ -502,10 +892,234 @@ body.light .detail-frustration { background: rgba(0,0,0,0.03); }
       </div>
     </div>
 
+    <!-- ═══ PIPELINE TAB ═══ -->
+    <div id="tab-pipeline" style="display:none">
+      <div class="section">
+        <p class="section-eyebrow">Candidate pipeline &middot; anonymised</p>
+        <h2 class="section-title">Pipeline.</h2>
+        <p class="section-sub">Aggregate health across venues. Candidates appear as anonymous IDs only &mdash; names, emails, and assessment answers stay inside the venue's RLS bubble. You see the shape, not the people.</p>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-label">Total assessments</div>
+            <div class="metric-value accent" id="m-total-assessments">—</div>
+            <div class="metric-sub">All-time across all venues</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Avg score (all)</div>
+            <div class="metric-value" id="m-avg-score-all">—</div>
+            <div class="metric-sub">Across every assessment</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Avg score (hired)</div>
+            <div class="metric-value" id="m-avg-score-hired">—</div>
+            <div class="metric-sub">Hires only &middot; calibration signal</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Conversion rate</div>
+            <div class="metric-value" id="m-conversion-rate">—</div>
+            <div class="metric-sub">Assessed &rarr; hired</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="section-eyebrow">Per-venue health</p>
+        <h2 class="section-title" style="font-size:22px">Venue-level stats</h2>
+        <p class="section-sub">Threshold drift, calibration gap, conversion &mdash; where your scoring is working and where it isn't.</p>
+        <div class="card">
+          <div id="venue-stats-wrap"><div class="loader">Loading venue stats&hellip;</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="section-eyebrow">Candidates</p>
+        <h2 class="section-title" style="font-size:22px">Anonymous candidate rows</h2>
+        <p class="section-sub">All candidates across all venues, no PII. CND-XXXXXX is system-wide unique; only the venue can match it to a real person.</p>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-title">All candidates</div>
+              <div class="card-sub" id="candidate-count-sub">—</div>
+            </div>
+            <div class="filters" id="candidate-filters">
+              <div class="filter active" data-cfilter="all">All <span class="filter-count" id="cf-all">0</span></div>
+              <div class="filter" data-cfilter="assessed">Assessed <span class="filter-count" id="cf-assessed">0</span></div>
+              <div class="filter" data-cfilter="interviewed">Interviewed <span class="filter-count" id="cf-interviewed">0</span></div>
+              <div class="filter" data-cfilter="hired">Hired <span class="filter-count" id="cf-hired">0</span></div>
+              <div class="filter" data-cfilter="flagged">Integrity-flagged <span class="filter-count" id="cf-flagged">0</span></div>
+            </div>
+          </div>
+          <div id="candidates-table-wrap"><div class="loader">Loading candidates&hellip;</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ REVENUE TAB ═══ -->
+    <div id="tab-revenue" style="display:none">
+      <div class="section">
+        <p class="section-eyebrow">Show me the money</p>
+        <h2 class="section-title">Revenue.</h2>
+        <p class="section-sub">Where Trial. is right now &mdash; MRR, ARR, per-hire fees, costs, runway. Stubbed for now; real numbers wire in after Stripe webhooks land.</p>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-label">MRR</div>
+            <div class="metric-value accent" id="m-mrr">—</div>
+            <div class="metric-sub" id="m-mrr-sub">Monthly recurring revenue</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">ARR projection</div>
+            <div class="metric-value" id="m-arr">—</div>
+            <div class="metric-sub">MRR × 12 + retained hire fees</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Per-hire pending</div>
+            <div class="metric-value" id="m-perhire-pending">—</div>
+            <div class="metric-sub" id="m-perhire-pending-sub">Awaiting day-90 confirm</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Per-hire overdue</div>
+            <div class="metric-value" id="m-perhire-overdue">—</div>
+            <div class="metric-sub">Day 90+ unconfirmed</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="section-eyebrow">Subscriptions</p>
+        <h2 class="section-title" style="font-size:22px">Revenue breakdown by plan</h2>
+        <p class="section-sub">MRR split across Founding vs Standard, by plan size. This is where you watch the founding-50 fill up.</p>
+        <div class="card">
+          <div id="rev-breakdown-wrap"><div class="loader">Loading breakdown&hellip;</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="section-eyebrow">Operating costs</p>
+        <h2 class="section-title" style="font-size:22px">Monthly burn</h2>
+        <p class="section-sub">Infrastructure, AI inference, and platform fees. Tracks Anthropic API spend live as it scales with assessments.</p>
+        <div class="card">
+          <div id="cost-table-wrap"><div class="loader">Loading costs&hellip;</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="section-eyebrow">Margin</p>
+        <h2 class="section-title" style="font-size:22px">Gross margin &amp; cash flow</h2>
+        <p class="section-sub">Revenue minus costs &mdash; the one number that actually matters. 12-week forecast factors in EOI pipeline conversion likelihood.</p>
+        <div class="card">
+          <div id="margin-wrap"><div class="loader">Loading margin&hellip;</div></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ═══ APPROVE EOI MODAL ═══ -->
+<div class="modal-backdrop" id="approve-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-eyebrow">Approve EOI &middot; Configure plan</div>
+      <h2 class="modal-title">Approve <em id="approve-venue-name">venue</em>.</h2>
+      <div class="modal-sub">Set the plan and founding status before dispatching the setup link.</div>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- Recipient -->
+      <div class="modal-section">
+        <span class="modal-section-label">Setup link will be sent to</span>
+        <div class="recipient">
+          <div class="recipient-avatar" id="approve-recipient-initials">?</div>
+          <div class="recipient-text">
+            <div class="recipient-name" id="approve-recipient-name">—</div>
+            <div class="recipient-email" id="approve-recipient-email">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Plan size -->
+      <div class="modal-section">
+        <span class="modal-section-label">Plan size</span>
+        <div class="radio-list" id="approve-plan-list">
+          <label class="radio-row" data-plan="solo">
+            <input type="radio" name="approve-plan" value="solo">
+            <div class="radio-row-label">
+              <div class="radio-row-primary">Solo</div>
+              <div class="radio-row-secondary">1 venue</div>
+            </div>
+            <span class="radio-row-price" data-price-for="solo">—</span>
+          </label>
+          <label class="radio-row" data-plan="starter">
+            <input type="radio" name="approve-plan" value="starter">
+            <div class="radio-row-label">
+              <div class="radio-row-primary">Starter</div>
+              <div class="radio-row-secondary">2&ndash;3 venues</div>
+            </div>
+            <span class="radio-row-price" data-price-for="starter">—</span>
+          </label>
+          <label class="radio-row" data-plan="growth">
+            <input type="radio" name="approve-plan" value="growth">
+            <div class="radio-row-label">
+              <div class="radio-row-primary">Growth</div>
+              <div class="radio-row-secondary">4&ndash;5 venues</div>
+            </div>
+            <span class="radio-row-price" data-price-for="growth">—</span>
+          </label>
+          <label class="radio-row" data-plan="enterprise">
+            <input type="radio" name="approve-plan" value="enterprise">
+            <div class="radio-row-label">
+              <div class="radio-row-primary">Enterprise</div>
+              <div class="radio-row-secondary">6+ venues &middot; custom pricing</div>
+            </div>
+            <span class="radio-row-price" data-price-for="enterprise">Custom</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Founding partner toggle -->
+      <div class="modal-section">
+        <span class="modal-section-label">Founding partner status</span>
+        <label class="founding-toggle" id="approve-founding-toggle">
+          <input type="checkbox" id="approve-founding-check">
+          <div class="founding-toggle-text">
+            <div class="founding-toggle-title">Founding partner &middot; locked for life</div>
+            <div class="founding-toggle-sub" id="approve-founding-sub">
+              Calculating founding spots remaining&hellip;
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <!-- Pricing preview -->
+      <div class="modal-section">
+        <span class="modal-section-label">Pricing preview</span>
+        <div class="price-preview" id="approve-price-preview">
+          <div class="price-preview-row">
+            <span class="price-preview-label">Monthly</span>
+            <span class="price-preview-value accent" id="approve-price-monthly">—</span>
+          </div>
+          <div class="price-preview-row">
+            <span class="price-preview-label">Per retained hire (90 days)</span>
+            <span class="price-preview-value" id="approve-price-perhire">—</span>
+          </div>
+          <div class="price-preview-tagline" id="approve-price-tagline">Pick a plan to see pricing.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" id="approve-cancel">Cancel</button>
+      <button class="btn btn-primary btn-sm" id="approve-dispatch" disabled>Approve &amp; dispatch &rarr;</button>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════════════════════════════
      APP LOGIC
@@ -852,8 +1466,7 @@ async function handleEOIAction(action, id) {
     return updateEOI(id, { status: 'declined', declined_at: new Date().toISOString() }, 'Declined');
   }
   if (action === 'approve') {
-    if (!confirm(`Approve ${eoi.venue_name}? This will create a venue record and dispatch a branded setup link to ${eoi.email}.`)) return;
-    await approveEOI(id);
+    openApproveModal(eoi);
   }
 }
 
@@ -866,10 +1479,11 @@ async function updateEOI(id, patch, successMsg) {
   renderEOIsTable();
 }
 
-async function approveEOI(id) {
+async function approveEOI(id, opts = {}) {
+  // opts: { plan_size, is_founding_partner }
   // Call the /api/approve-eoi backend that handles:
-  //  1. Create venues row
-  //  2. Generate setup_token + per-customer Stripe Checkout Session
+  //  1. Create venues row (with plan_size + is_founding_partner pre-set)
+  //  2. Generate setup_token + per-customer Stripe Checkout Session for the matched product
   //  3. Send branded setup email via Resend
   //  4. Update eoi_submissions.status = 'converted', set venue_id + converted_at
   showToast('Approving and dispatching…');
@@ -881,7 +1495,11 @@ async function approveEOI(id) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${session?.access_token || ''}`
       },
-      body: JSON.stringify({ eoi_id: id })
+      body: JSON.stringify({
+        eoi_id: id,
+        plan_size: opts.plan_size,
+        is_founding_partner: !!opts.is_founding_partner
+      })
     });
     const data = await resp.json();
     if (!resp.ok || !data.ok) {
@@ -896,6 +1514,147 @@ async function approveEOI(id) {
     showToast('Approve failed: ' + err.message, 'error');
   }
 }
+
+// ═══ APPROVE MODAL — pricing model + state ═══
+const PRICING = {
+  founding: {
+    solo:       { monthly: 99.99,  perHire: 99 },
+    starter:    { monthly: 199.00, perHire: 89 },
+    growth:     { monthly: 349.00, perHire: 79 },
+    enterprise: { monthly: null,   perHire: null }
+  },
+  standard: {
+    solo:       { monthly: 129.99, perHire: 79 },
+    starter:    { monthly: 249.00, perHire: 99 },
+    growth:     { monthly: 499.00, perHire: 135 },
+    enterprise: { monthly: null,   perHire: null }
+  }
+};
+const FOUNDING_CAP = 50;
+
+let APPROVE_STATE = { eoi: null, plan: null, founding: false };
+
+function openApproveModal(eoi) {
+  APPROVE_STATE = { eoi, plan: null, founding: false };
+
+  // Recipient
+  $('approve-venue-name').textContent = eoi.venue_name || 'venue';
+  $('approve-recipient-name').textContent = eoi.contact_name || '—';
+  $('approve-recipient-email').textContent = eoi.email || '—';
+  $('approve-recipient-initials').textContent = initials(eoi.contact_name);
+
+  // Founding count — how many existing venues have is_founding_partner=true
+  const foundingCount = VENUES.filter(v => v.is_founding_partner).length;
+  const spotsLeft = Math.max(0, FOUNDING_CAP - foundingCount);
+  const atCap = spotsLeft === 0;
+  const sub = $('approve-founding-sub');
+  const toggle = $('approve-founding-toggle');
+  const check = $('approve-founding-check');
+
+  if (atCap) {
+    toggle.classList.add('locked-out');
+    check.checked = false;
+    check.disabled = true;
+    APPROVE_STATE.founding = false;
+    sub.innerHTML = `All ${FOUNDING_CAP} founding spots filled. This venue goes on <strong>standard pricing</strong>.`;
+  } else {
+    toggle.classList.remove('locked-out');
+    check.disabled = false;
+    check.checked = true; // default ON for first 50
+    APPROVE_STATE.founding = true;
+    sub.innerHTML = `<span class="founding-count">${spotsLeft}</span> of ${FOUNDING_CAP} founding spots remaining. Locks pricing for life.`;
+  }
+
+  // Reset radio selection
+  document.querySelectorAll('input[name="approve-plan"]').forEach(r => { r.checked = false; });
+  document.querySelectorAll('#approve-plan-list .radio-row').forEach(row => row.classList.remove('selected'));
+
+  // Update price hints on radio rows + price preview
+  updateApprovePrices();
+
+  // Disable dispatch until plan picked
+  $('approve-dispatch').disabled = true;
+
+  // Show modal
+  $('approve-modal').classList.add('shown');
+}
+
+function closeApproveModal() {
+  $('approve-modal').classList.remove('shown');
+  APPROVE_STATE = { eoi: null, plan: null, founding: false };
+}
+
+function updateApprovePrices() {
+  const isFounding = APPROVE_STATE.founding;
+  const bracket = isFounding ? PRICING.founding : PRICING.standard;
+
+  // Update each radio row's inline price
+  ['solo', 'starter', 'growth'].forEach(plan => {
+    const el = document.querySelector(`[data-price-for="${plan}"]`);
+    if (!el) return;
+    const p = bracket[plan];
+    el.textContent = p.monthly ? `$${p.monthly.toFixed(p.monthly % 1 === 0 ? 0 : 2)}/mo` : '—';
+  });
+
+  // Update main preview block
+  const plan = APPROVE_STATE.plan;
+  if (!plan) {
+    $('approve-price-monthly').textContent = '—';
+    $('approve-price-perhire').textContent = '—';
+    $('approve-price-tagline').textContent = 'Pick a plan to see pricing.';
+    return;
+  }
+  if (plan === 'enterprise') {
+    $('approve-price-monthly').textContent = 'Custom';
+    $('approve-price-perhire').textContent = 'Custom';
+    $('approve-price-tagline').textContent = 'Enterprise quoted bespoke — backend will skip Stripe link, dispatch a conversation-only email.';
+    return;
+  }
+  const p = bracket[plan];
+  const monthlyIncGst = (p.monthly * 1.1).toFixed(2);
+  $('approve-price-monthly').textContent = `$${p.monthly.toFixed(p.monthly % 1 === 0 ? 0 : 2)} + GST · $${monthlyIncGst} inc.`;
+  $('approve-price-perhire').textContent = `$${p.perHire} + GST · at 90-day retention`;
+  $('approve-price-tagline').textContent = isFounding
+    ? `Locked for life · ${plan.charAt(0).toUpperCase() + plan.slice(1)} founding pricing.`
+    : `Standard ${plan} pricing · annual unlock at 6 months.`;
+}
+
+// Wire modal interactions
+document.querySelectorAll('input[name="approve-plan"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    APPROVE_STATE.plan = radio.value;
+    document.querySelectorAll('#approve-plan-list .radio-row').forEach(row => {
+      row.classList.toggle('selected', row.dataset.plan === radio.value);
+    });
+    updateApprovePrices();
+    $('approve-dispatch').disabled = false;
+  });
+});
+
+$('approve-founding-check').addEventListener('change', e => {
+  APPROVE_STATE.founding = e.target.checked;
+  updateApprovePrices();
+});
+
+$('approve-cancel').addEventListener('click', closeApproveModal);
+$('approve-modal').addEventListener('click', e => {
+  if (e.target.id === 'approve-modal') closeApproveModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && $('approve-modal').classList.contains('shown')) closeApproveModal();
+});
+
+$('approve-dispatch').addEventListener('click', async () => {
+  if (!APPROVE_STATE.eoi || !APPROVE_STATE.plan) return;
+  const eoi = APPROVE_STATE.eoi;
+  const plan_size = APPROVE_STATE.plan;
+  const is_founding_partner = APPROVE_STATE.founding;
+  $('approve-dispatch').disabled = true;
+  $('approve-dispatch').textContent = 'Dispatching…';
+  await approveEOI(eoi.id, { plan_size, is_founding_partner });
+  $('approve-dispatch').textContent = 'Approve & dispatch →';
+  closeApproveModal();
+});
 
 // ═══ VENUES TABLE ═══
 function renderVenuesTable() {
@@ -941,14 +1700,455 @@ function renderVenuesTable() {
     </table>`;
 }
 
+// ═══════════════════════════════════════════════════════════════
+// PIPELINE TAB — anonymous candidate view
+// ═══════════════════════════════════════════════════════════════
+
+// STUB DATA — replace with real Supabase queries once backend lands
+// Real source: SELECT id, venue_id, score, status, integrity_flag, created_at FROM candidates
+// Names/emails/answers NEVER queried — only the venue can see those via RLS
+const PIPELINE_STUB = {
+  // Aggregate stats (would come from a SQL view)
+  totals: {
+    assessments: 12,
+    avgScoreAll: 58.4,
+    avgScoreHired: 71.2,
+    conversionRate: 0.25  // 3/12
+  },
+  // Per-venue stats (aggregate, no PII)
+  venueStats: [
+    {
+      venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f',
+      name: 'Hotel Sweeneys',
+      is_founding_partner: true,
+      total_assessments: 12,
+      threshold: 60,
+      avg_score: 58.4,
+      avg_hired_score: 71.2,
+      above_threshold: 5,
+      below_threshold: 7,
+      interviews_run: 4,
+      hires_made: 3,
+      pending_pulse: 1
+    }
+  ],
+  // Anonymous candidate rows
+  // Real CND-XXXXXX generated server-side at assessment creation
+  candidates: [
+    { id: 'CND-7K2NM4', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 78, status: 'hired', integrity_flag: false, days_since: 14 },
+    { id: 'CND-3F9PQ8', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 72, status: 'hired', integrity_flag: false, days_since: 11 },
+    { id: 'CND-W4R7XY', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 65, status: 'interviewed', integrity_flag: false, days_since: 9 },
+    { id: 'CND-N1B5MV', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 64, status: 'hired', integrity_flag: false, days_since: 7 },
+    { id: 'CND-J8C3HL', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 62, status: 'interviewed', integrity_flag: false, days_since: 6 },
+    { id: 'CND-Q2T6KS', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 61, status: 'rejected', integrity_flag: false, days_since: 5 },
+    { id: 'CND-L9F1WD', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 58, status: 'assessed', integrity_flag: false, days_since: 4 },
+    { id: 'CND-Z6Y4BR', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 54, status: 'assessed', integrity_flag: true, days_since: 3 },
+    { id: 'CND-G7H2VN', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 51, status: 'rejected', integrity_flag: false, days_since: 3 },
+    { id: 'CND-P5D8XQ', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 47, status: 'rejected', integrity_flag: false, days_since: 2 },
+    { id: 'CND-T3M6KF', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 41, status: 'rejected', integrity_flag: true, days_since: 2 },
+    { id: 'CND-V9N4JR', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 38, status: 'assessed', integrity_flag: false, days_since: 1 }
+  ]
+};
+
+let CANDIDATE_FILTER = 'all';
+
+const scoreBand = score => {
+  if (score >= 70) return 'high';
+  if (score >= 40) return 'mid';
+  return 'low';
+};
+
+function renderPipelineTab() {
+  renderPipelineMetrics();
+  renderVenueStats();
+  renderCandidatesTable();
+}
+
+function renderPipelineMetrics() {
+  const t = PIPELINE_STUB.totals;
+  $('m-total-assessments').textContent = t.assessments;
+  $('m-avg-score-all').textContent = t.avgScoreAll.toFixed(1);
+  $('m-avg-score-hired').textContent = t.avgScoreHired.toFixed(1);
+  $('m-conversion-rate').textContent = (t.conversionRate * 100).toFixed(0) + '%';
+}
+
+function renderVenueStats() {
+  const wrap = $('venue-stats-wrap');
+  const stats = PIPELINE_STUB.venueStats;
+  if (!stats.length) {
+    wrap.innerHTML = `<div class="empty"><div class="empty-title">No venue activity yet</div><div class="empty-sub">When venues start running assessments, their health metrics appear here.</div></div>`;
+    return;
+  }
+
+  wrap.innerHTML = `
+    <div class="privacy-note">
+      <strong>Privacy guarantee:</strong> aggregate stats only. Candidate names, contact details, and assessment answers stay inside each venue's RLS bubble. TrialHQ sees the shape of the data, not the people.
+    </div>
+    <div class="venue-stats-grid">
+      ${stats.map(v => {
+        const gap = v.avg_score - v.threshold;
+        const gapClass = Math.abs(gap) <= 5 ? 'aligned' : Math.abs(gap) <= 15 ? 'high' : 'severe';
+        const gapLabel = gap > 5
+          ? `Avg score sits ${gap.toFixed(1)} above threshold — threshold may be too low`
+          : gap < -5
+          ? `Avg score sits ${Math.abs(gap).toFixed(1)} below threshold — venue may be over-filtering`
+          : `Threshold well calibrated (within ±5 of avg score)`;
+        const hiredGap = v.avg_hired_score - v.threshold;
+        return `
+          <div class="venue-stat-card">
+            <div class="venue-stat-card-head">
+              <div class="venue-stat-card-name">${escapeHtml(v.name)}</div>
+              <span class="venue-stat-card-badge ${v.is_founding_partner ? 'founding' : 'standard'}">${v.is_founding_partner ? 'Founding' : 'Standard'}</span>
+            </div>
+            <div class="venue-stat-rows">
+              <div class="venue-stat-row">
+                <span class="venue-stat-row-label">Total assessments</span>
+                <span class="venue-stat-row-value">${v.total_assessments}</span>
+              </div>
+              <div class="venue-stat-row">
+                <span class="venue-stat-row-label">Threshold setting</span>
+                <span class="venue-stat-row-value accent">${v.threshold}</span>
+              </div>
+              <div class="venue-stat-row">
+                <span class="venue-stat-row-label">Avg score (all candidates)</span>
+                <span class="venue-stat-row-value">${v.avg_score.toFixed(1)}</span>
+              </div>
+              <div class="venue-stat-row">
+                <span class="venue-stat-row-label">Avg score (hired)</span>
+                <span class="venue-stat-row-value success">${v.avg_hired_score.toFixed(1)}</span>
+              </div>
+              <div class="venue-stat-row">
+                <span class="venue-stat-row-label">Above / below threshold</span>
+                <span class="venue-stat-row-value">${v.above_threshold} / ${v.below_threshold}</span>
+              </div>
+              <div class="venue-stat-row">
+                <span class="venue-stat-row-label">Interviews run</span>
+                <span class="venue-stat-row-value">${v.interviews_run}</span>
+              </div>
+              <div class="venue-stat-row">
+                <span class="venue-stat-row-label">Hires made</span>
+                <span class="venue-stat-row-value success">${v.hires_made}</span>
+              </div>
+              <div class="venue-stat-row">
+                <span class="venue-stat-row-label">Conversion (assessed → hired)</span>
+                <span class="venue-stat-row-value">${(v.hires_made / v.total_assessments * 100).toFixed(0)}%</span>
+              </div>
+              <div class="venue-stat-row">
+                <span class="venue-stat-row-label">Pending pulse checks</span>
+                <span class="venue-stat-row-value ${v.pending_pulse > 0 ? 'warn' : ''}">${v.pending_pulse}</span>
+              </div>
+            </div>
+            <div class="venue-stat-gap ${gapClass}">${gapLabel}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>`;
+}
+
+function renderCandidatesTable() {
+  const all = PIPELINE_STUB.candidates;
+  // Build filter counts
+  const counts = {
+    all: all.length,
+    assessed: all.filter(c => c.status === 'assessed').length,
+    interviewed: all.filter(c => c.status === 'interviewed').length,
+    hired: all.filter(c => c.status === 'hired').length,
+    flagged: all.filter(c => c.integrity_flag).length
+  };
+  Object.entries(counts).forEach(([k, v]) => {
+    const el = $(`cf-${k}`); if (el) el.textContent = v;
+  });
+  $('candidate-count-sub').textContent = `${all.length} candidates across ${PIPELINE_STUB.venueStats.length} venue${PIPELINE_STUB.venueStats.length === 1 ? '' : 's'}`;
+
+  let filtered;
+  if (CANDIDATE_FILTER === 'flagged') filtered = all.filter(c => c.integrity_flag);
+  else if (CANDIDATE_FILTER === 'all') filtered = all;
+  else filtered = all.filter(c => c.status === CANDIDATE_FILTER);
+
+  const wrap = $('candidates-table-wrap');
+  if (!filtered.length) {
+    wrap.innerHTML = `<div class="empty"><div class="empty-title">No candidates in this view</div><div class="empty-sub">Try a different filter.</div></div>`;
+    return;
+  }
+  wrap.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Candidate ID</th>
+        <th>Venue</th>
+        <th>Score</th>
+        <th>Status</th>
+        <th>Days since</th>
+        <th>Integrity</th>
+      </tr></thead>
+      <tbody>
+        ${filtered.map(c => `
+          <tr>
+            <td><span class="cand-id">${escapeHtml(c.id)}</span></td>
+            <td style="color:var(--muted);font-size:12.5px">${escapeHtml(c.venue_name)}</td>
+            <td><span class="score-pill ${scoreBand(c.score)}">${c.score}</span></td>
+            <td><span class="cand-status ${c.status}">${c.status}</span></td>
+            <td style="color:var(--muted);font-size:12px">${c.days_since}d</td>
+            <td>${c.integrity_flag ? '<span class="integrity-flag">⚑ flagged</span>' : '<span style="color:var(--dim);font-size:12px">—</span>'}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>`;
+}
+
+// Wire candidate filter clicks (delegated, since table renders after DOM ready)
+document.addEventListener('click', e => {
+  const filter = e.target.closest('#candidate-filters .filter');
+  if (!filter) return;
+  document.querySelectorAll('#candidate-filters .filter').forEach(x => x.classList.remove('active'));
+  filter.classList.add('active');
+  CANDIDATE_FILTER = filter.dataset.cfilter;
+  renderCandidatesTable();
+});
+
+// ═══════════════════════════════════════════════════════════════
+// REVENUE TAB — MRR, ARR, costs, margin, forecast
+// ═══════════════════════════════════════════════════════════════
+
+// STUB DATA — replace with real queries:
+//   - venues table grouped by (plan_size, is_founding_partner) for MRR
+//   - outcomes table for per-hire fees (where status='retained_90_days', stripe_charge_status)
+//   - cost line items: Anthropic API calculated from assessments × $0.003,
+//     others manually entered as flat monthly
+const REVENUE_STUB = {
+  mrr: 99.99,       // Hotel Sweeneys @ Founding Solo
+  founding_count: 1,
+  standard_count: 0,
+  founding_cap: 50,
+  arr: 99.99 * 12 + (3 * 99),  // MRR × 12 + the 3 hires × $99 founding per-hire
+  perhire_pending: 0,
+  perhire_pending_count: 0,
+  perhire_overdue: 0,
+  perhire_paid_mtd: 297,        // $99 × 3 (the 3 hires made)
+
+  breakdown: {
+    founding: [
+      { plan: 'solo',       count: 1, mrr_each: 99.99,  perhire_each: 99 },
+      { plan: 'starter',    count: 0, mrr_each: 199.00, perhire_each: 89 },
+      { plan: 'growth',     count: 0, mrr_each: 349.00, perhire_each: 79 },
+      { plan: 'enterprise', count: 0, mrr_each: null,   perhire_each: null }
+    ],
+    standard: [
+      { plan: 'solo',       count: 0, mrr_each: 129.99, perhire_each: 79 },
+      { plan: 'starter',    count: 0, mrr_each: 249.00, perhire_each: 99 },
+      { plan: 'growth',     count: 0, mrr_each: 499.00, perhire_each: 135 },
+      { plan: 'enterprise', count: 0, mrr_each: null,   perhire_each: null }
+    ]
+  },
+
+  // Monthly operating costs
+  costs: [
+    { name: 'Anthropic API',     sub: 'AI scoring · ~$0.003/assessment · scales with volume', cycle: 'tracked',  amount: 1.20 },
+    { name: 'Resend',            sub: 'Transactional email · welcomes, pulses, retention',   cycle: 'flat',     amount: 0 },
+    { name: 'Supabase',          sub: 'Database + Auth + Edge Functions · free tier',         cycle: 'flat',     amount: 0 },
+    { name: 'Vercel',            sub: 'Hosting · hiretrial.com.au + subdomains',              cycle: 'flat',     amount: 0 },
+    { name: 'Microsoft 365',     sub: 'anders@ + aliases · annual prepay',                    cycle: 'amortised',amount: 2.95 },
+    { name: 'Domain (GoDaddy)',  sub: 'hiretrial.com.au · 3-year prepay',                     cycle: 'amortised',amount: 1.22 },
+    { name: 'Calendly',          sub: 'Demo booking',                                          cycle: 'flat',     amount: 13.20 },
+    { name: 'Stripe fees',       sub: '~1.75% + $0.30 AU domestic',                            cycle: 'tracked',  amount: 2.05 },
+    { name: 'Insurance (PI)',    sub: 'Professional Indemnity · monthly · post-launch',       cycle: 'flat',     amount: 0 },
+    { name: 'Legal123',          sub: 'Legal Suite v2.4 + amendments · one-off, amortised',   cycle: 'amortised',amount: 24.83 }
+  ],
+
+  // 12-week MRR forecast: solid bars are actual, faded are projections
+  // Each value is MRR for that week
+  forecast: [
+    { week: 'W-3', mrr: 0,    actual: true },
+    { week: 'W-2', mrr: 0,    actual: true },
+    { week: 'W-1', mrr: 100,  actual: true },
+    { week: 'Now', mrr: 100,  actual: true },
+    { week: 'W+1', mrr: 300,  actual: false },
+    { week: 'W+2', mrr: 500,  actual: false },
+    { week: 'W+3', mrr: 700,  actual: false },
+    { week: 'W+4', mrr: 1100, actual: false },
+    { week: 'W+5', mrr: 1500, actual: false },
+    { week: 'W+6', mrr: 2000, actual: false },
+    { week: 'W+7', mrr: 2600, actual: false },
+    { week: 'W+8', mrr: 3300, actual: false }
+  ]
+};
+
+const fmtAud = n => {
+  if (n === null || n === undefined) return '—';
+  if (n === 0) return '$0';
+  return '$' + n.toLocaleString('en-AU', { minimumFractionDigits: n % 1 === 0 ? 0 : 2, maximumFractionDigits: 2 });
+};
+
+function renderRevenueTab() {
+  renderRevenueMetrics();
+  renderRevenueBreakdown();
+  renderCostTable();
+  renderMarginAndForecast();
+}
+
+function renderRevenueMetrics() {
+  const r = REVENUE_STUB;
+  $('m-mrr').textContent = fmtAud(r.mrr);
+  $('m-mrr-sub').textContent = `${r.founding_count} founding · ${r.standard_count} standard`;
+  $('m-arr').textContent = fmtAud(r.arr);
+  $('m-perhire-pending').textContent = fmtAud(r.perhire_pending);
+  $('m-perhire-pending-sub').textContent = `${r.perhire_pending_count} hire${r.perhire_pending_count === 1 ? '' : 's'} aging`;
+  $('m-perhire-overdue').textContent = fmtAud(r.perhire_overdue);
+}
+
+function renderRevenueBreakdown() {
+  const wrap = $('rev-breakdown-wrap');
+  const r = REVENUE_STUB.breakdown;
+
+  const foundingTotal = r.founding.reduce((s, p) => s + (p.count * (p.mrr_each || 0)), 0);
+  const standardTotal = r.standard.reduce((s, p) => s + (p.count * (p.mrr_each || 0)), 0);
+  const foundingFillPct = Math.round((REVENUE_STUB.founding_count / REVENUE_STUB.founding_cap) * 100);
+
+  const planLabels = { solo: 'Solo', starter: 'Starter', growth: 'Growth', enterprise: 'Enterprise' };
+  const venueLabel = c => `${c} venue${c === 1 ? '' : 's'}`;
+
+  wrap.innerHTML = `
+    <div class="rev-breakdown">
+
+      <div class="rev-segment">
+        <div class="rev-segment-head">
+          <span class="rev-segment-title founding">Founding partners</span>
+          <span class="rev-segment-total">${fmtAud(foundingTotal)}/mo</span>
+        </div>
+        ${r.founding.map(p => `
+          <div class="rev-plan-row">
+            <span class="rev-plan-name">${planLabels[p.plan]}${p.mrr_each ? ` <span style="color:var(--dim);font-size:11px">· ${fmtAud(p.mrr_each)}/mo</span>` : ''}</span>
+            <span class="rev-plan-count">${venueLabel(p.count)}</span>
+            <span class="rev-plan-mrr">${fmtAud(p.count * (p.mrr_each || 0))}</span>
+          </div>
+        `).join('')}
+        <div class="rev-progress">
+          <div class="rev-progress-label">
+            <span>Founding spots filled</span>
+            <span class="rev-progress-count">${REVENUE_STUB.founding_count} / ${REVENUE_STUB.founding_cap}</span>
+          </div>
+          <div class="rev-progress-bar">
+            <div class="rev-progress-fill" style="width:${foundingFillPct}%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rev-segment">
+        <div class="rev-segment-head">
+          <span class="rev-segment-title">Standard pricing</span>
+          <span class="rev-segment-total">${fmtAud(standardTotal)}/mo</span>
+        </div>
+        ${r.standard.map(p => `
+          <div class="rev-plan-row">
+            <span class="rev-plan-name">${planLabels[p.plan]}${p.mrr_each ? ` <span style="color:var(--dim);font-size:11px">· ${fmtAud(p.mrr_each)}/mo</span>` : ''}</span>
+            <span class="rev-plan-count">${venueLabel(p.count)}</span>
+            <span class="rev-plan-mrr">${fmtAud(p.count * (p.mrr_each || 0))}</span>
+          </div>
+        `).join('')}
+        <div class="rev-progress">
+          <div class="rev-progress-label">
+            <span>Activates after founding 50 fills</span>
+            <span class="rev-progress-count">${REVENUE_STUB.standard_count} venue${REVENUE_STUB.standard_count === 1 ? '' : 's'}</span>
+          </div>
+          <div class="rev-progress-bar">
+            <div class="rev-progress-fill" style="width:0%;opacity:0.35"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>`;
+}
+
+function renderCostTable() {
+  const wrap = $('cost-table-wrap');
+  const costs = REVENUE_STUB.costs;
+  const total = costs.reduce((s, c) => s + c.amount, 0);
+  const cycleLabel = { tracked: 'Variable', flat: 'Flat', amortised: 'Amortised' };
+
+  wrap.innerHTML = `
+    <div class="cost-table">
+      ${costs.map(c => `
+        <div class="cost-row">
+          <div>
+            <span class="cost-name">${escapeHtml(c.name)}</span>
+            <span class="cost-name-sub">${escapeHtml(c.sub)}</span>
+          </div>
+          <span class="cost-status-pill ${c.cycle}">${cycleLabel[c.cycle] || c.cycle}</span>
+          <span class="cost-cycle">/mo</span>
+          <span class="cost-amount">${fmtAud(c.amount)}</span>
+        </div>
+      `).join('')}
+      <div class="cost-row total">
+        <div><span class="cost-name">Total monthly burn</span></div>
+        <span></span>
+        <span class="cost-cycle">/mo</span>
+        <span class="cost-amount">${fmtAud(total)}</span>
+      </div>
+    </div>`;
+}
+
+function renderMarginAndForecast() {
+  const wrap = $('margin-wrap');
+  const r = REVENUE_STUB;
+  const totalCosts = r.costs.reduce((s, c) => s + c.amount, 0);
+  const grossMargin = r.mrr - totalCosts;
+  const marginPct = r.mrr > 0 ? Math.round((grossMargin / r.mrr) * 100) : 0;
+
+  const maxMrr = Math.max(...r.forecast.map(f => f.mrr), 1);
+
+  wrap.innerHTML = `
+    <div class="margin-summary">
+      <div class="margin-figure">
+        <span class="margin-figure-label">Monthly revenue</span>
+        <span class="margin-figure-value accent">${fmtAud(r.mrr)}</span>
+        <span class="margin-figure-sub">${r.founding_count + r.standard_count} active venue${(r.founding_count + r.standard_count) === 1 ? '' : 's'}</span>
+      </div>
+      <div class="margin-figure">
+        <span class="margin-figure-label">Monthly costs</span>
+        <span class="margin-figure-value">${fmtAud(totalCosts)}</span>
+        <span class="margin-figure-sub">Across ${r.costs.length} line items</span>
+      </div>
+      <div class="margin-figure">
+        <span class="margin-figure-label">Gross margin</span>
+        <span class="margin-figure-value ${grossMargin >= 0 ? 'positive' : 'negative'}">${fmtAud(grossMargin)}</span>
+        <span class="margin-figure-sub">${marginPct}% margin</span>
+      </div>
+    </div>
+    <div class="forecast">
+      <div class="forecast-title">12-Week MRR Forecast &middot; Stub</div>
+      <div class="forecast-bars">
+        ${r.forecast.map(f => {
+          const h = Math.max(6, (f.mrr / maxMrr) * 70);
+          return `
+            <div class="forecast-bar-col">
+              <div class="forecast-bar ${f.actual ? 'solid' : ''}" style="height:${h}px" title="${f.week}: ${fmtAud(f.mrr)}"></div>
+              <div class="forecast-bar-label">${f.week}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <div class="forecast-legend">
+        <div class="forecast-legend-item">
+          <span class="forecast-legend-swatch"></span>
+          <span>Actual MRR</span>
+        </div>
+        <div class="forecast-legend-item">
+          <span class="forecast-legend-swatch projected"></span>
+          <span>Projected (assumes ~2 new venues/week post-launch)</span>
+        </div>
+      </div>
+    </div>`;
+}
+
 // ═══ TAB SWITCHING ═══
 function switchTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
-  ['overview', 'eois', 'venues'].forEach(n => {
+  ['overview', 'eois', 'venues', 'pipeline', 'revenue'].forEach(n => {
     const el = $(`tab-${n}`);
     if (el) el.style.display = n === name ? 'block' : 'none';
   });
   if (name === 'eois' && EXPANDED_EOI_ID) renderEOIsTable();
+  if (name === 'pipeline') renderPipelineTab();
+  if (name === 'revenue') renderRevenueTab();
 }
 
 document.querySelectorAll('.tab').forEach(t => {
