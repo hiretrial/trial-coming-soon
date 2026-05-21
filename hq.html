@@ -614,6 +614,251 @@ body.light .detail-frustration { background: rgba(0,0,0,0.03); }
 .privacy-note strong { color: var(--accent); font-weight: 600; }
 
 /* ═══════════════════════════════════════════════════════════════
+   COMMAND BAR (Pipeline tab venue navigation)
+   ═══════════════════════════════════════════════════════════════ */
+.cmdbar {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; margin-bottom: 18px;
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+}
+.cmdbar-input-wrap {
+  flex: 1; min-width: 240px;
+  position: relative; display: flex; align-items: center;
+  background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px;
+  padding: 0 14px;
+  transition: border-color 0.15s ease;
+}
+.cmdbar-input-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.cmdbar-icon {
+  font-size: 16px; color: var(--dim); margin-right: 10px;
+}
+.cmdbar-input-wrap:focus-within .cmdbar-icon { color: var(--accent); }
+.cmdbar-input {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: var(--white); font-family: inherit; font-size: 13.5px;
+  padding: 10px 0; min-width: 0;
+}
+.cmdbar-input::placeholder { color: var(--dim); }
+.cmdbar-kbd {
+  font-family: 'SF Mono', monospace; font-size: 10px; font-weight: 600;
+  padding: 3px 7px; border-radius: 4px;
+  background: var(--bg2); border: 1px solid var(--border2);
+  color: var(--dim); letter-spacing: 0.04em;
+  margin-left: 8px; flex-shrink: 0;
+}
+.cmdbar-controls {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.cmdbar-select {
+  background: var(--bg3); border: 1px solid var(--border2); border-radius: 7px;
+  color: var(--muted); font-family: inherit; font-size: 12px;
+  padding: 8px 28px 8px 12px;
+  cursor: pointer; appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2 4l3 3 3-3' stroke='rgba(248,246,240,0.5)' stroke-width='1.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat; background-position: right 10px center;
+  transition: all 0.15s ease;
+}
+.cmdbar-select:hover { border-color: var(--accent-soft); color: var(--white); }
+.cmdbar-select:focus { outline: none; border-color: var(--accent); }
+.cmdbar-select option { background: var(--bg); color: var(--white); }
+
+/* Typeahead dropdown */
+.typeahead {
+  background: var(--card); border: 1px solid var(--accent-soft); border-radius: 10px;
+  margin-bottom: 18px; overflow: hidden;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+}
+.typeahead-list { max-height: 360px; overflow-y: auto; }
+.typeahead-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 16px; cursor: pointer; border-bottom: 1px solid var(--border);
+  transition: background 0.12s ease;
+}
+.typeahead-item:last-child { border-bottom: none; }
+.typeahead-item:hover, .typeahead-item.highlighted { background: var(--accent-soft); }
+.typeahead-item-name {
+  flex: 1; font-size: 13.5px; font-weight: 500; color: var(--white);
+}
+.typeahead-item-meta {
+  font-size: 11.5px; color: var(--dim); display: flex; gap: 8px;
+}
+.typeahead-item-icon {
+  width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-weight: 700; font-size: 11px;
+  color: var(--accent); flex-shrink: 0;
+}
+.typeahead-empty {
+  padding: 28px; text-align: center; color: var(--dim); font-size: 13px;
+}
+
+/* Smart section blocks */
+.smart-section {
+  margin-bottom: 28px;
+}
+.smart-section-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 4px 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.smart-section-icon {
+  font-size: 14px; color: var(--accent);
+}
+.smart-section-icon.attention { color: var(--warning); }
+.smart-section-title {
+  font-family: 'Playfair Display', serif; font-weight: 600;
+  font-size: 16px; letter-spacing: -0.2px;
+}
+.smart-section-count {
+  font-size: 11px; padding: 2px 8px; border-radius: 10px;
+  background: var(--accent-soft); color: var(--accent); font-weight: 600;
+}
+.smart-section-sub {
+  font-size: 11.5px; color: var(--dim); font-style: italic;
+  margin-left: auto;
+}
+.smart-section-body {
+  display: flex; flex-direction: column; gap: 6px;
+}
+
+/* Venue row in smart list */
+.venue-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto auto auto;
+  gap: 14px; align-items: center;
+  padding: 12px 16px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+  cursor: pointer; transition: all 0.15s ease;
+}
+.venue-row:hover {
+  border-color: var(--accent-soft);
+  background: rgba(10,186,181,0.04);
+  transform: translateY(-1px);
+}
+.venue-row-icon {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-weight: 700; font-size: 12px;
+  color: var(--accent);
+}
+.venue-row-main {
+  display: flex; flex-direction: column; gap: 3px; min-width: 0;
+}
+.venue-row-name {
+  font-size: 14px; font-weight: 500; color: var(--white);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.venue-row-meta {
+  font-size: 11.5px; color: var(--dim); display: flex; gap: 8px;
+  flex-wrap: wrap;
+}
+.venue-row-meta-divider { color: var(--faint); }
+.venue-row-badge {
+  font-size: 9px; padding: 2px 7px; border-radius: 3px;
+  letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;
+  white-space: nowrap;
+}
+.venue-row-badge.founding { background: var(--accent-soft); color: var(--accent); }
+.venue-row-badge.standard { background: var(--bg3); color: var(--dim); border: 1px solid var(--border2); }
+.venue-row-stat {
+  font-family: 'Playfair Display', serif; font-weight: 600;
+  font-size: 14px; color: var(--white); font-variant-numeric: tabular-nums;
+  min-width: 50px; text-align: right;
+}
+.venue-row-stat-sub {
+  font-size: 10px; color: var(--dim); letter-spacing: 0.04em;
+  text-transform: uppercase; text-align: right;
+}
+.venue-row-flag {
+  font-size: 11px; padding: 3px 8px; border-radius: 3px;
+  background: rgba(217,119,87,0.12); color: var(--danger); font-weight: 600;
+  white-space: nowrap;
+}
+.venue-row-flag.warn { background: rgba(212,160,74,0.12); color: var(--warning); }
+.venue-row-arrow {
+  color: var(--dim); font-size: 14px; transition: transform 0.15s ease, color 0.15s ease;
+}
+.venue-row:hover .venue-row-arrow {
+  color: var(--accent); transform: translateX(3px);
+}
+.venue-row.pinned .venue-row-icon { background: rgba(212,160,74,0.15); color: var(--warning); }
+
+.smart-empty {
+  padding: 20px 16px; text-align: center; color: var(--dim);
+  font-size: 12.5px; font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VENUE DRILL-DOWN
+   ═══════════════════════════════════════════════════════════════ */
+.venue-drilldown { animation: drilldownIn 0.22s ease; }
+@keyframes drilldownIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.drilldown-head {
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 0 22px; border-bottom: 1px solid var(--border);
+  margin-bottom: 28px; flex-wrap: wrap;
+}
+.drilldown-back {
+  background: transparent; border: 1px solid var(--border2); color: var(--muted);
+  font-family: inherit; font-size: 12px; padding: 7px 12px;
+  border-radius: 6px; cursor: pointer; transition: all 0.15s ease;
+}
+.drilldown-back:hover { border-color: var(--accent); color: var(--accent); }
+.drilldown-title-wrap {
+  flex: 1; display: flex; align-items: baseline; gap: 12px; min-width: 0;
+}
+.drilldown-title {
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  font-size: 26px; letter-spacing: -0.4px; line-height: 1.1;
+}
+.drilldown-badge {
+  font-size: 10px; padding: 3px 9px; border-radius: 3px;
+  letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;
+  background: var(--accent-soft); color: var(--accent);
+}
+.drilldown-pin {
+  background: transparent; border: 1px solid var(--border2);
+  color: var(--muted); font-size: 18px;
+  width: 36px; height: 36px; border-radius: 50%;
+  cursor: pointer; transition: all 0.15s ease;
+}
+.drilldown-pin:hover { border-color: var(--warning); color: var(--warning); }
+.drilldown-pin.pinned { background: rgba(212,160,74,0.1); border-color: var(--warning); color: var(--warning); }
+
+.drilldown-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px; margin-bottom: 28px;
+}
+.drilldown-stat {
+  background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+  padding: 14px 18px;
+}
+.drilldown-stat-label {
+  font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--dim); font-weight: 600; margin-bottom: 8px;
+}
+.drilldown-stat-value {
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  font-size: 22px; line-height: 1; font-variant-numeric: tabular-nums;
+}
+.drilldown-stat-value.accent { color: var(--accent); }
+.drilldown-stat-value.success { color: var(--success); }
+.drilldown-stat-value.warn { color: var(--warning); }
+.drilldown-stat-value.danger { color: var(--danger); }
+.drilldown-stat-sub {
+  font-size: 11px; color: var(--muted); margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    APPROVE EOI MODAL
    ═══════════════════════════════════════════════════════════════ */
 .modal-backdrop {
@@ -923,37 +1168,113 @@ body.light .detail-frustration { background: rgba(0,0,0,0.03); }
         </div>
       </div>
 
-      <div class="section">
-        <p class="section-eyebrow">Per-venue health</p>
-        <h2 class="section-title" style="font-size:22px">Venue-level stats</h2>
-        <p class="section-sub">Threshold drift, calibration gap, conversion &mdash; where your scoring is working and where it isn't.</p>
-        <div class="card">
-          <div id="venue-stats-wrap"><div class="loader">Loading venue stats&hellip;</div></div>
+      <!-- COMMAND BAR -->
+      <div class="cmdbar">
+        <div class="cmdbar-input-wrap">
+          <span class="cmdbar-icon">⌕</span>
+          <input type="text" class="cmdbar-input" id="venue-search" placeholder="Type to find a venue — name, suburb, plan, status…" autocomplete="off" spellcheck="false">
+          <span class="cmdbar-kbd" id="cmdbar-kbd">⌘K</span>
+        </div>
+        <div class="cmdbar-controls">
+          <select class="cmdbar-select" id="venue-sort">
+            <option value="needs-attention">Sort: Needs attention</option>
+            <option value="recent">Sort: Most recent</option>
+            <option value="alpha">Sort: A → Z</option>
+            <option value="assessments-desc">Sort: Most assessments</option>
+            <option value="hires-desc">Sort: Most hires</option>
+            <option value="score-desc">Sort: Highest avg score</option>
+            <option value="score-asc">Sort: Lowest avg score</option>
+          </select>
+          <select class="cmdbar-select" id="venue-status-filter">
+            <option value="any">Status: Any</option>
+            <option value="active">Status: Active only</option>
+            <option value="pending">Status: Pending setup</option>
+            <option value="paused">Status: Paused</option>
+          </select>
+          <select class="cmdbar-select" id="venue-plan-filter">
+            <option value="any">Plan: Any</option>
+            <option value="founding">Founding partners</option>
+            <option value="standard">Standard pricing</option>
+          </select>
         </div>
       </div>
 
-      <div class="section">
-        <p class="section-eyebrow">Candidates</p>
-        <h2 class="section-title" style="font-size:22px">Anonymous candidate rows</h2>
-        <p class="section-sub">All candidates across all venues, no PII. CND-XXXXXX is system-wide unique; only the venue can match it to a real person.</p>
+      <!-- TYPEAHEAD RESULTS (shown when search has input) -->
+      <div class="typeahead" id="venue-typeahead" style="display:none">
+        <div class="typeahead-list" id="typeahead-list"></div>
+      </div>
 
-        <div class="card">
-          <div class="card-header">
-            <div class="card-header-left">
-              <div class="card-title">All candidates</div>
-              <div class="card-sub" id="candidate-count-sub">—</div>
-            </div>
-            <div class="filters" id="candidate-filters">
-              <div class="filter active" data-cfilter="all">All <span class="filter-count" id="cf-all">0</span></div>
-              <div class="filter" data-cfilter="assessed">Assessed <span class="filter-count" id="cf-assessed">0</span></div>
-              <div class="filter" data-cfilter="interviewed">Interviewed <span class="filter-count" id="cf-interviewed">0</span></div>
-              <div class="filter" data-cfilter="hired">Hired <span class="filter-count" id="cf-hired">0</span></div>
-              <div class="filter" data-cfilter="flagged">Integrity-flagged <span class="filter-count" id="cf-flagged">0</span></div>
-            </div>
+      <!-- SMART LIST: Pinned / Needs attention / All -->
+      <div id="venue-smart-list">
+
+        <!-- Pinned section (only shows if pinned items exist) -->
+        <div class="smart-section" id="smart-section-pinned" style="display:none">
+          <div class="smart-section-head">
+            <span class="smart-section-icon">★</span>
+            <span class="smart-section-title">Pinned</span>
+            <span class="smart-section-count" id="pinned-count">0</span>
           </div>
-          <div id="candidates-table-wrap"><div class="loader">Loading candidates&hellip;</div></div>
+          <div class="smart-section-body" id="pinned-list"></div>
+        </div>
+
+        <!-- Needs attention -->
+        <div class="smart-section" id="smart-section-attention">
+          <div class="smart-section-head">
+            <span class="smart-section-icon attention">⚑</span>
+            <span class="smart-section-title">Needs attention</span>
+            <span class="smart-section-count" id="attention-count">0</span>
+            <span class="smart-section-sub">Integrity flags, no hires in 30d, calibration drift, pending pulses</span>
+          </div>
+          <div class="smart-section-body" id="attention-list"></div>
+        </div>
+
+        <!-- All venues -->
+        <div class="smart-section">
+          <div class="smart-section-head">
+            <span class="smart-section-title">All venues</span>
+            <span class="smart-section-count" id="all-venues-count">0</span>
+          </div>
+          <div class="smart-section-body" id="all-venues-list"></div>
+        </div>
+
+      </div>
+
+      <!-- VENUE DRILL-DOWN PANEL (slides in when a venue is selected) -->
+      <div class="venue-drilldown" id="venue-drilldown" style="display:none">
+        <div class="drilldown-head">
+          <button class="drilldown-back" id="drilldown-back">← Back to all venues</button>
+          <div class="drilldown-title-wrap">
+            <h2 class="drilldown-title" id="drilldown-title">—</h2>
+            <span class="drilldown-badge" id="drilldown-badge"></span>
+          </div>
+          <button class="drilldown-pin" id="drilldown-pin" title="Pin this venue">☆</button>
+        </div>
+
+        <div class="drilldown-stats" id="drilldown-stats"></div>
+
+        <div class="section">
+          <p class="section-eyebrow">Candidates &middot; anonymised</p>
+          <h2 class="section-title" style="font-size:18px">Candidate rows</h2>
+          <p class="section-sub">CND-XXXXXX is system-wide unique. Only the venue can match it back to a real person.</p>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-title">Candidates at this venue</div>
+                <div class="card-sub" id="drilldown-candidate-sub">—</div>
+              </div>
+              <div class="filters" id="candidate-filters">
+                <div class="filter active" data-cfilter="all">All <span class="filter-count" id="cf-all">0</span></div>
+                <div class="filter" data-cfilter="assessed">Assessed <span class="filter-count" id="cf-assessed">0</span></div>
+                <div class="filter" data-cfilter="interviewed">Interviewed <span class="filter-count" id="cf-interviewed">0</span></div>
+                <div class="filter" data-cfilter="hired">Hired <span class="filter-count" id="cf-hired">0</span></div>
+                <div class="filter" data-cfilter="flagged">Integrity-flagged <span class="filter-count" id="cf-flagged">0</span></div>
+              </div>
+            </div>
+            <div id="drilldown-candidates-wrap"><div class="loader">Loading candidates&hellip;</div></div>
+          </div>
         </div>
       </div>
+
     </div>
 
     <!-- ═══ REVENUE TAB ═══ -->
@@ -1701,26 +2022,30 @@ function renderVenuesTable() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// PIPELINE TAB — anonymous candidate view
+// PIPELINE TAB — command bar + smart list + drill-down
 // ═══════════════════════════════════════════════════════════════
 
-// STUB DATA — replace with real Supabase queries once backend lands
-// Real source: SELECT id, venue_id, score, status, integrity_flag, created_at FROM candidates
-// Names/emails/answers NEVER queried — only the venue can see those via RLS
+// STUB DATA — replace with real Supabase queries once backend lands.
+// Privacy contract: candidate query selects ONLY anonymous fields
+// (id, venue_id, score, status, integrity_flag, created_at) — never names,
+// emails, or assessment answers. PII stays inside venue RLS bubble.
 const PIPELINE_STUB = {
-  // Aggregate stats (would come from a SQL view)
   totals: {
     assessments: 12,
     avgScoreAll: 58.4,
     avgScoreHired: 71.2,
-    conversionRate: 0.25  // 3/12
+    conversionRate: 0.25
   },
-  // Per-venue stats (aggregate, no PII)
+  // Per-venue aggregates. In production: SQL view aggregating candidates+outcomes by venue_id.
+  // Each venue also gets a `needs_attention` array of human-readable concerns
+  // (computed server-side or derived from raw stats).
   venueStats: [
     {
       venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f',
       name: 'Hotel Sweeneys',
+      suburb: 'The Rocks, NSW',
       is_founding_partner: true,
+      status: 'active',
       total_assessments: 12,
       threshold: 60,
       avg_score: 58.4,
@@ -1729,28 +2054,47 @@ const PIPELINE_STUB = {
       below_threshold: 7,
       interviews_run: 4,
       hires_made: 3,
-      pending_pulse: 1
+      pending_pulse: 1,
+      integrity_flags_30d: 2,
+      days_since_last_hire: 7,
+      created_at: '2026-05-15T00:00:00Z',
+      needs_attention: ['2 integrity flags last 30 days', 'Threshold 1.6 below avg score (recalibrate?)']
     }
   ],
-  // Anonymous candidate rows
-  // Real CND-XXXXXX generated server-side at assessment creation
+  // Anonymous candidate rows per venue
   candidates: [
-    { id: 'CND-7K2NM4', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 78, status: 'hired', integrity_flag: false, days_since: 14 },
-    { id: 'CND-3F9PQ8', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 72, status: 'hired', integrity_flag: false, days_since: 11 },
-    { id: 'CND-W4R7XY', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 65, status: 'interviewed', integrity_flag: false, days_since: 9 },
-    { id: 'CND-N1B5MV', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 64, status: 'hired', integrity_flag: false, days_since: 7 },
-    { id: 'CND-J8C3HL', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 62, status: 'interviewed', integrity_flag: false, days_since: 6 },
-    { id: 'CND-Q2T6KS', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 61, status: 'rejected', integrity_flag: false, days_since: 5 },
-    { id: 'CND-L9F1WD', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 58, status: 'assessed', integrity_flag: false, days_since: 4 },
-    { id: 'CND-Z6Y4BR', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 54, status: 'assessed', integrity_flag: true, days_since: 3 },
-    { id: 'CND-G7H2VN', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 51, status: 'rejected', integrity_flag: false, days_since: 3 },
-    { id: 'CND-P5D8XQ', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 47, status: 'rejected', integrity_flag: false, days_since: 2 },
-    { id: 'CND-T3M6KF', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 41, status: 'rejected', integrity_flag: true, days_since: 2 },
-    { id: 'CND-V9N4JR', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', venue_name: 'Hotel Sweeneys', score: 38, status: 'assessed', integrity_flag: false, days_since: 1 }
+    { id: 'CND-7K2NM4', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', score: 78, status: 'hired',       integrity_flag: false, days_since: 14 },
+    { id: 'CND-3F9PQ8', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', score: 72, status: 'hired',       integrity_flag: false, days_since: 11 },
+    { id: 'CND-W4R7XY', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', score: 65, status: 'interviewed', integrity_flag: false, days_since: 9 },
+    { id: 'CND-N1B5MV', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', score: 64, status: 'hired',       integrity_flag: false, days_since: 7 },
+    { id: 'CND-J8C3HL', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', score: 62, status: 'interviewed', integrity_flag: false, days_since: 6 },
+    { id: 'CND-Q2T6KS', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', score: 61, status: 'rejected',    integrity_flag: false, days_since: 5 },
+    { id: 'CND-L9F1WD', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', score: 58, status: 'assessed',    integrity_flag: false, days_since: 4 },
+    { id: 'CND-Z6Y4BR', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', score: 54, status: 'assessed',    integrity_flag: true,  days_since: 3 },
+    { id: 'CND-G7H2VN', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', score: 51, status: 'rejected',    integrity_flag: false, days_since: 3 },
+    { id: 'CND-P5D8XQ', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', score: 47, status: 'rejected',    integrity_flag: false, days_since: 2 },
+    { id: 'CND-T3M6KF', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', score: 41, status: 'rejected',    integrity_flag: true,  days_since: 2 },
+    { id: 'CND-V9N4JR', venue_id: '1470ba2c-a9e6-4029-8708-0d762103003f', score: 38, status: 'assessed',    integrity_flag: false, days_since: 1 }
   ]
 };
 
+// State for Pipeline tab
 let CANDIDATE_FILTER = 'all';
+let VENUE_SORT = 'needs-attention';
+let VENUE_STATUS_FILTER = 'any';
+let VENUE_PLAN_FILTER = 'any';
+let VENUE_SEARCH = '';
+let SELECTED_VENUE_ID = null;
+let TYPEAHEAD_HIGHLIGHT = -1;
+
+// Pinned venues — persisted to localStorage
+let PINNED_VENUES = (() => {
+  try { return JSON.parse(localStorage.getItem('trialhq-pinned-venues') || '[]'); }
+  catch { return []; }
+})();
+const savePinned = () => {
+  try { localStorage.setItem('trialhq-pinned-venues', JSON.stringify(PINNED_VENUES)); } catch {}
+};
 
 const scoreBand = score => {
   if (score >= 70) return 'high';
@@ -1758,10 +2102,35 @@ const scoreBand = score => {
   return 'low';
 };
 
+const initialsFromVenue = name => {
+  if (!name) return '?';
+  const cleaned = name.replace(/^(the|a)\s+/i, '');
+  const parts = cleaned.split(/\s+/).filter(Boolean);
+  return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '?';
+};
+
+// Derive computed flags for "needs attention" sort
+const venueNeedsAttention = v => v.needs_attention && v.needs_attention.length > 0;
+const venueAttentionScore = v => {
+  // Higher = more urgent. Used as a sort key.
+  let score = 0;
+  if (v.integrity_flags_30d > 0) score += v.integrity_flags_30d * 10;
+  if (v.pending_pulse > 0) score += v.pending_pulse * 5;
+  if (v.days_since_last_hire > 30) score += 8;
+  // Calibration drift: |threshold − avg_score|
+  if (v.threshold && v.avg_score) {
+    const drift = Math.abs(v.threshold - v.avg_score);
+    if (drift > 15) score += 12;
+    else if (drift > 5) score += 4;
+  }
+  return score;
+};
+
 function renderPipelineTab() {
   renderPipelineMetrics();
-  renderVenueStats();
-  renderCandidatesTable();
+  renderSmartList();
+  // If a venue was previously selected, re-render the drill-down
+  if (SELECTED_VENUE_ID) renderVenueDrilldown(SELECTED_VENUE_ID);
 }
 
 function renderPipelineMetrics() {
@@ -1772,82 +2141,269 @@ function renderPipelineMetrics() {
   $('m-conversion-rate').textContent = (t.conversionRate * 100).toFixed(0) + '%';
 }
 
-function renderVenueStats() {
-  const wrap = $('venue-stats-wrap');
-  const stats = PIPELINE_STUB.venueStats;
-  if (!stats.length) {
-    wrap.innerHTML = `<div class="empty"><div class="empty-title">No venue activity yet</div><div class="empty-sub">When venues start running assessments, their health metrics appear here.</div></div>`;
-    return;
+// Apply filters + sort, return ordered list
+function getFilteredVenues() {
+  let list = PIPELINE_STUB.venueStats.slice();
+
+  // Status filter
+  if (VENUE_STATUS_FILTER !== 'any') {
+    list = list.filter(v => v.status === VENUE_STATUS_FILTER || (VENUE_STATUS_FILTER === 'pending' && (v.status === 'pending' || v.status === 'pending_setup')));
+  }
+  // Plan filter
+  if (VENUE_PLAN_FILTER === 'founding') list = list.filter(v => v.is_founding_partner);
+  if (VENUE_PLAN_FILTER === 'standard') list = list.filter(v => !v.is_founding_partner);
+
+  // Text search (free-text against name, suburb, plan, status)
+  if (VENUE_SEARCH) {
+    const q = VENUE_SEARCH.toLowerCase();
+    list = list.filter(v => {
+      const haystack = [
+        v.name, v.suburb, v.status,
+        v.is_founding_partner ? 'founding' : 'standard'
+      ].filter(Boolean).join(' ').toLowerCase();
+      return haystack.includes(q);
+    });
   }
 
-  wrap.innerHTML = `
-    <div class="privacy-note">
-      <strong>Privacy guarantee:</strong> aggregate stats only. Candidate names, contact details, and assessment answers stay inside each venue's RLS bubble. TrialHQ sees the shape of the data, not the people.
-    </div>
-    <div class="venue-stats-grid">
-      ${stats.map(v => {
-        const gap = v.avg_score - v.threshold;
-        const gapClass = Math.abs(gap) <= 5 ? 'aligned' : Math.abs(gap) <= 15 ? 'high' : 'severe';
-        const gapLabel = gap > 5
-          ? `Avg score sits ${gap.toFixed(1)} above threshold — threshold may be too low`
-          : gap < -5
-          ? `Avg score sits ${Math.abs(gap).toFixed(1)} below threshold — venue may be over-filtering`
-          : `Threshold well calibrated (within ±5 of avg score)`;
-        const hiredGap = v.avg_hired_score - v.threshold;
-        return `
-          <div class="venue-stat-card">
-            <div class="venue-stat-card-head">
-              <div class="venue-stat-card-name">${escapeHtml(v.name)}</div>
-              <span class="venue-stat-card-badge ${v.is_founding_partner ? 'founding' : 'standard'}">${v.is_founding_partner ? 'Founding' : 'Standard'}</span>
-            </div>
-            <div class="venue-stat-rows">
-              <div class="venue-stat-row">
-                <span class="venue-stat-row-label">Total assessments</span>
-                <span class="venue-stat-row-value">${v.total_assessments}</span>
-              </div>
-              <div class="venue-stat-row">
-                <span class="venue-stat-row-label">Threshold setting</span>
-                <span class="venue-stat-row-value accent">${v.threshold}</span>
-              </div>
-              <div class="venue-stat-row">
-                <span class="venue-stat-row-label">Avg score (all candidates)</span>
-                <span class="venue-stat-row-value">${v.avg_score.toFixed(1)}</span>
-              </div>
-              <div class="venue-stat-row">
-                <span class="venue-stat-row-label">Avg score (hired)</span>
-                <span class="venue-stat-row-value success">${v.avg_hired_score.toFixed(1)}</span>
-              </div>
-              <div class="venue-stat-row">
-                <span class="venue-stat-row-label">Above / below threshold</span>
-                <span class="venue-stat-row-value">${v.above_threshold} / ${v.below_threshold}</span>
-              </div>
-              <div class="venue-stat-row">
-                <span class="venue-stat-row-label">Interviews run</span>
-                <span class="venue-stat-row-value">${v.interviews_run}</span>
-              </div>
-              <div class="venue-stat-row">
-                <span class="venue-stat-row-label">Hires made</span>
-                <span class="venue-stat-row-value success">${v.hires_made}</span>
-              </div>
-              <div class="venue-stat-row">
-                <span class="venue-stat-row-label">Conversion (assessed → hired)</span>
-                <span class="venue-stat-row-value">${(v.hires_made / v.total_assessments * 100).toFixed(0)}%</span>
-              </div>
-              <div class="venue-stat-row">
-                <span class="venue-stat-row-label">Pending pulse checks</span>
-                <span class="venue-stat-row-value ${v.pending_pulse > 0 ? 'warn' : ''}">${v.pending_pulse}</span>
-              </div>
-            </div>
-            <div class="venue-stat-gap ${gapClass}">${gapLabel}</div>
-          </div>
-        `;
-      }).join('')}
-    </div>`;
+  // Sort
+  list.sort((a, b) => {
+    switch (VENUE_SORT) {
+      case 'needs-attention': return venueAttentionScore(b) - venueAttentionScore(a) || a.name.localeCompare(b.name);
+      case 'recent':          return new Date(b.created_at) - new Date(a.created_at);
+      case 'alpha':           return a.name.localeCompare(b.name);
+      case 'assessments-desc':return b.total_assessments - a.total_assessments;
+      case 'hires-desc':      return b.hires_made - a.hires_made;
+      case 'score-desc':      return b.avg_score - a.avg_score;
+      case 'score-asc':       return a.avg_score - b.avg_score;
+      default: return 0;
+    }
+  });
+  return list;
 }
 
-function renderCandidatesTable() {
-  const all = PIPELINE_STUB.candidates;
-  // Build filter counts
+function renderSmartList() {
+  const all = getFilteredVenues();
+  const pinnedSet = new Set(PINNED_VENUES);
+  const pinned = all.filter(v => pinnedSet.has(v.venue_id));
+  const attention = all.filter(v => !pinnedSet.has(v.venue_id) && venueNeedsAttention(v));
+  const rest = all.filter(v => !pinnedSet.has(v.venue_id) && !venueNeedsAttention(v));
+
+  // Pinned section visibility
+  const pinnedSec = $('smart-section-pinned');
+  if (pinned.length > 0) {
+    pinnedSec.style.display = '';
+    $('pinned-count').textContent = pinned.length;
+    $('pinned-list').innerHTML = pinned.map(v => renderVenueRow(v, true)).join('');
+  } else {
+    pinnedSec.style.display = 'none';
+  }
+
+  // Needs attention
+  $('attention-count').textContent = attention.length;
+  if (attention.length > 0) {
+    $('attention-list').innerHTML = attention.map(v => renderVenueRow(v)).join('');
+  } else {
+    $('attention-list').innerHTML = `<div class="smart-empty">No venues need attention right now ✓</div>`;
+  }
+
+  // All venues
+  $('all-venues-count').textContent = rest.length;
+  if (rest.length > 0) {
+    $('all-venues-list').innerHTML = rest.map(v => renderVenueRow(v)).join('');
+  } else if (VENUE_SEARCH || VENUE_STATUS_FILTER !== 'any' || VENUE_PLAN_FILTER !== 'any') {
+    $('all-venues-list').innerHTML = `<div class="smart-empty">No venues match the current filters.</div>`;
+  } else {
+    $('all-venues-list').innerHTML = `<div class="smart-empty">No venues yet.</div>`;
+  }
+
+  // Wire row clicks
+  document.querySelectorAll('[data-venue-row-id]').forEach(row => {
+    row.addEventListener('click', () => {
+      SELECTED_VENUE_ID = row.dataset.venueRowId;
+      showVenueDrilldown(SELECTED_VENUE_ID);
+    });
+  });
+}
+
+function renderVenueRow(v, isPinned = false) {
+  const planBadge = v.is_founding_partner
+    ? `<span class="venue-row-badge founding">Founding</span>`
+    : `<span class="venue-row-badge standard">Standard</span>`;
+
+  // Show primary flag (most urgent) if any
+  let flagHtml = '';
+  if (v.integrity_flags_30d > 0) {
+    flagHtml = `<span class="venue-row-flag">⚑ ${v.integrity_flags_30d} integrity flag${v.integrity_flags_30d === 1 ? '' : 's'}</span>`;
+  } else if (v.pending_pulse > 0) {
+    flagHtml = `<span class="venue-row-flag warn">${v.pending_pulse} pulse pending</span>`;
+  } else if (v.days_since_last_hire > 30) {
+    flagHtml = `<span class="venue-row-flag warn">${v.days_since_last_hire}d since last hire</span>`;
+  } else if (v.threshold && v.avg_score && Math.abs(v.threshold - v.avg_score) > 15) {
+    flagHtml = `<span class="venue-row-flag warn">Calibration drift</span>`;
+  }
+
+  return `
+    <div class="venue-row ${isPinned ? 'pinned' : ''}" data-venue-row-id="${v.venue_id}">
+      <div class="venue-row-icon">${initialsFromVenue(v.name)}</div>
+      <div class="venue-row-main">
+        <div class="venue-row-name">${escapeHtml(v.name)}</div>
+        <div class="venue-row-meta">
+          ${planBadge}
+          <span class="venue-row-meta-divider">·</span>
+          <span>${v.total_assessments} assessment${v.total_assessments === 1 ? '' : 's'}</span>
+          <span class="venue-row-meta-divider">·</span>
+          <span>${v.hires_made} hire${v.hires_made === 1 ? '' : 's'}</span>
+          ${v.suburb ? `<span class="venue-row-meta-divider">·</span><span>${escapeHtml(v.suburb)}</span>` : ''}
+        </div>
+      </div>
+      ${flagHtml}
+      <div>
+        <div class="venue-row-stat">${v.avg_score.toFixed(1)}</div>
+        <div class="venue-row-stat-sub">Avg score</div>
+      </div>
+      <span class="venue-row-arrow">→</span>
+    </div>
+  `;
+}
+
+// ═══ TYPEAHEAD ═══
+function renderTypeahead() {
+  const list = $('typeahead-list');
+  const wrap = $('venue-typeahead');
+  if (!VENUE_SEARCH) {
+    wrap.style.display = 'none';
+    TYPEAHEAD_HIGHLIGHT = -1;
+    return;
+  }
+  const q = VENUE_SEARCH.toLowerCase();
+  const matches = PIPELINE_STUB.venueStats.filter(v => {
+    const haystack = [v.name, v.suburb, v.status, v.is_founding_partner ? 'founding' : 'standard']
+      .filter(Boolean).join(' ').toLowerCase();
+    return haystack.includes(q);
+  }).slice(0, 8);
+
+  if (matches.length === 0) {
+    list.innerHTML = `<div class="typeahead-empty">No venues match "${escapeHtml(VENUE_SEARCH)}"</div>`;
+  } else {
+    list.innerHTML = matches.map((v, i) => `
+      <div class="typeahead-item ${i === TYPEAHEAD_HIGHLIGHT ? 'highlighted' : ''}" data-typeahead-id="${v.venue_id}">
+        <div class="typeahead-item-icon">${initialsFromVenue(v.name)}</div>
+        <span class="typeahead-item-name">${escapeHtml(v.name)}</span>
+        <div class="typeahead-item-meta">
+          <span>${v.is_founding_partner ? 'Founding' : 'Standard'}</span>
+          ${v.suburb ? `<span>·</span><span>${escapeHtml(v.suburb)}</span>` : ''}
+          <span>·</span>
+          <span>${v.total_assessments} assess.</span>
+        </div>
+      </div>
+    `).join('');
+  }
+  wrap.style.display = '';
+
+  // Wire typeahead clicks
+  list.querySelectorAll('[data-typeahead-id]').forEach(el => {
+    el.addEventListener('click', () => {
+      SELECTED_VENUE_ID = el.dataset.typeaheadId;
+      $('venue-search').value = '';
+      VENUE_SEARCH = '';
+      renderTypeahead();
+      showVenueDrilldown(SELECTED_VENUE_ID);
+    });
+  });
+}
+
+// ═══ DRILL-DOWN ═══
+function showVenueDrilldown(venueId) {
+  $('venue-smart-list').style.display = 'none';
+  document.querySelector('.cmdbar').style.display = 'none';
+  $('venue-typeahead').style.display = 'none';
+  $('venue-drilldown').style.display = 'block';
+  renderVenueDrilldown(venueId);
+  // Scroll into view
+  $('venue-drilldown').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function hideVenueDrilldown() {
+  $('venue-drilldown').style.display = 'none';
+  $('venue-smart-list').style.display = '';
+  document.querySelector('.cmdbar').style.display = '';
+  SELECTED_VENUE_ID = null;
+}
+
+function renderVenueDrilldown(venueId) {
+  const v = PIPELINE_STUB.venueStats.find(x => x.venue_id === venueId);
+  if (!v) { hideVenueDrilldown(); return; }
+
+  $('drilldown-title').textContent = v.name;
+  $('drilldown-badge').textContent = v.is_founding_partner ? 'Founding partner' : 'Standard';
+  $('drilldown-badge').className = 'drilldown-badge';
+
+  // Pin button state
+  const isPinned = PINNED_VENUES.includes(venueId);
+  const pinBtn = $('drilldown-pin');
+  pinBtn.textContent = isPinned ? '★' : '☆';
+  pinBtn.classList.toggle('pinned', isPinned);
+  pinBtn.onclick = () => {
+    if (PINNED_VENUES.includes(venueId)) {
+      PINNED_VENUES = PINNED_VENUES.filter(id => id !== venueId);
+    } else {
+      PINNED_VENUES.push(venueId);
+    }
+    savePinned();
+    renderVenueDrilldown(venueId);
+    renderSmartList();
+    showToast(isPinned ? 'Unpinned ' + v.name : 'Pinned ' + v.name, 'success');
+  };
+
+  // Calibration verdict
+  const drift = v.avg_score - v.threshold;
+  const calibrationVal = drift > 5 ? 'Threshold low' : drift < -5 ? 'Over-filtering' : 'Aligned';
+  const calibrationClass = Math.abs(drift) <= 5 ? 'success' : Math.abs(drift) <= 15 ? 'warn' : 'danger';
+  const calibrationSub = drift > 5
+    ? `Avg sits ${drift.toFixed(1)} above threshold ${v.threshold}`
+    : drift < -5
+    ? `Avg sits ${Math.abs(drift).toFixed(1)} below threshold ${v.threshold}`
+    : `Within ±5 of avg score ${v.avg_score.toFixed(1)}`;
+
+  $('drilldown-stats').innerHTML = `
+    <div class="drilldown-stat">
+      <div class="drilldown-stat-label">Total assessments</div>
+      <div class="drilldown-stat-value accent">${v.total_assessments}</div>
+      <div class="drilldown-stat-sub">${v.suburb || ''}</div>
+    </div>
+    <div class="drilldown-stat">
+      <div class="drilldown-stat-label">Threshold</div>
+      <div class="drilldown-stat-value">${v.threshold}</div>
+      <div class="drilldown-stat-sub">Avg score: ${v.avg_score.toFixed(1)}</div>
+    </div>
+    <div class="drilldown-stat">
+      <div class="drilldown-stat-label">Calibration</div>
+      <div class="drilldown-stat-value ${calibrationClass}">${calibrationVal}</div>
+      <div class="drilldown-stat-sub">${calibrationSub}</div>
+    </div>
+    <div class="drilldown-stat">
+      <div class="drilldown-stat-label">Hires made</div>
+      <div class="drilldown-stat-value success">${v.hires_made}</div>
+      <div class="drilldown-stat-sub">Avg score of hires: ${v.avg_hired_score.toFixed(1)}</div>
+    </div>
+    <div class="drilldown-stat">
+      <div class="drilldown-stat-label">Conversion</div>
+      <div class="drilldown-stat-value">${(v.hires_made / v.total_assessments * 100).toFixed(0)}%</div>
+      <div class="drilldown-stat-sub">${v.interviews_run} interview${v.interviews_run === 1 ? '' : 's'} run</div>
+    </div>
+    <div class="drilldown-stat">
+      <div class="drilldown-stat-label">Pending pulses</div>
+      <div class="drilldown-stat-value ${v.pending_pulse > 0 ? 'warn' : ''}">${v.pending_pulse}</div>
+      <div class="drilldown-stat-sub">${v.integrity_flags_30d} integrity flag${v.integrity_flags_30d === 1 ? '' : 's'} last 30d</div>
+    </div>
+  `;
+
+  renderDrilldownCandidates(venueId);
+}
+
+function renderDrilldownCandidates(venueId) {
+  const all = PIPELINE_STUB.candidates.filter(c => c.venue_id === venueId);
+
   const counts = {
     all: all.length,
     assessed: all.filter(c => c.status === 'assessed').length,
@@ -1858,14 +2414,14 @@ function renderCandidatesTable() {
   Object.entries(counts).forEach(([k, v]) => {
     const el = $(`cf-${k}`); if (el) el.textContent = v;
   });
-  $('candidate-count-sub').textContent = `${all.length} candidates across ${PIPELINE_STUB.venueStats.length} venue${PIPELINE_STUB.venueStats.length === 1 ? '' : 's'}`;
+  $('drilldown-candidate-sub').textContent = `${all.length} candidates · names stay inside venue RLS`;
 
   let filtered;
   if (CANDIDATE_FILTER === 'flagged') filtered = all.filter(c => c.integrity_flag);
   else if (CANDIDATE_FILTER === 'all') filtered = all;
   else filtered = all.filter(c => c.status === CANDIDATE_FILTER);
 
-  const wrap = $('candidates-table-wrap');
+  const wrap = $('drilldown-candidates-wrap');
   if (!filtered.length) {
     wrap.innerHTML = `<div class="empty"><div class="empty-title">No candidates in this view</div><div class="empty-sub">Try a different filter.</div></div>`;
     return;
@@ -1874,7 +2430,6 @@ function renderCandidatesTable() {
     <table>
       <thead><tr>
         <th>Candidate ID</th>
-        <th>Venue</th>
         <th>Score</th>
         <th>Status</th>
         <th>Days since</th>
@@ -1884,7 +2439,6 @@ function renderCandidatesTable() {
         ${filtered.map(c => `
           <tr>
             <td><span class="cand-id">${escapeHtml(c.id)}</span></td>
-            <td style="color:var(--muted);font-size:12.5px">${escapeHtml(c.venue_name)}</td>
             <td><span class="score-pill ${scoreBand(c.score)}">${c.score}</span></td>
             <td><span class="cand-status ${c.status}">${c.status}</span></td>
             <td style="color:var(--muted);font-size:12px">${c.days_since}d</td>
@@ -1895,14 +2449,83 @@ function renderCandidatesTable() {
     </table>`;
 }
 
-// Wire candidate filter clicks (delegated, since table renders after DOM ready)
+// ═══ WIRE COMMAND BAR ═══
+(function wireCmdBar() {
+  const searchInput = document.getElementById('venue-search');
+  if (!searchInput) return;
+
+  searchInput.addEventListener('input', e => {
+    VENUE_SEARCH = e.target.value.trim();
+    TYPEAHEAD_HIGHLIGHT = -1;
+    renderTypeahead();
+    renderSmartList();
+  });
+
+  searchInput.addEventListener('keydown', e => {
+    const typeaheadVisible = $('venue-typeahead').style.display !== 'none';
+    if (!typeaheadVisible) return;
+    const items = document.querySelectorAll('#typeahead-list [data-typeahead-id]');
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      TYPEAHEAD_HIGHLIGHT = Math.min(items.length - 1, TYPEAHEAD_HIGHLIGHT + 1);
+      renderTypeahead();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      TYPEAHEAD_HIGHLIGHT = Math.max(-1, TYPEAHEAD_HIGHLIGHT - 1);
+      renderTypeahead();
+    } else if (e.key === 'Enter' && TYPEAHEAD_HIGHLIGHT >= 0 && items[TYPEAHEAD_HIGHLIGHT]) {
+      e.preventDefault();
+      items[TYPEAHEAD_HIGHLIGHT].click();
+    } else if (e.key === 'Escape') {
+      searchInput.value = '';
+      VENUE_SEARCH = '';
+      renderTypeahead();
+      renderSmartList();
+      searchInput.blur();
+    }
+  });
+
+  // Global ⌘K / Ctrl+K shortcut
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      // Only when on Pipeline tab
+      const pipelineTab = document.querySelector('.tab[data-tab="pipeline"]');
+      if (pipelineTab?.classList.contains('active')) {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+      }
+    }
+  });
+
+  // Detect Mac vs other, show appropriate kbd hint
+  const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
+  const kbd = document.getElementById('cmdbar-kbd');
+  if (kbd) kbd.textContent = isMac ? '⌘K' : 'Ctrl K';
+
+  // Sort + filter dropdowns
+  document.getElementById('venue-sort').addEventListener('change', e => {
+    VENUE_SORT = e.target.value; renderSmartList();
+  });
+  document.getElementById('venue-status-filter').addEventListener('change', e => {
+    VENUE_STATUS_FILTER = e.target.value; renderSmartList();
+  });
+  document.getElementById('venue-plan-filter').addEventListener('change', e => {
+    VENUE_PLAN_FILTER = e.target.value; renderSmartList();
+  });
+
+  // Drilldown back button
+  document.getElementById('drilldown-back').addEventListener('click', hideVenueDrilldown);
+})();
+
+// Wire candidate filter clicks (delegated)
 document.addEventListener('click', e => {
   const filter = e.target.closest('#candidate-filters .filter');
   if (!filter) return;
   document.querySelectorAll('#candidate-filters .filter').forEach(x => x.classList.remove('active'));
   filter.classList.add('active');
   CANDIDATE_FILTER = filter.dataset.cfilter;
-  renderCandidatesTable();
+  if (SELECTED_VENUE_ID) renderDrilldownCandidates(SELECTED_VENUE_ID);
 });
 
 // ═══════════════════════════════════════════════════════════════
