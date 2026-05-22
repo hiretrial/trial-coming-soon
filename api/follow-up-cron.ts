@@ -113,7 +113,7 @@ const TEMPLATES: Record<Temperature, Template> = {
           For most operators, the question is the same one: <em style="color:#c8a96e;">"What if a hire leaves at day 89?"</em> Short answer — you pay nothing. The ninety-day mechanic is built around the moment most hospitality hiring actually fails, not the moment a candidate walks in.
         </p>
         <p style="${pStyle}">
-          Founding Partner pricing is still locked for the first fifty venues. Worth a thirty-minute conversation if you're considering it — bring your specific situation and I'll map ${escapeHtml(venueName)} onto Trial. directly.
+          Founding Partner pricing is still locked for the first fifty venues. Worth a thirty-minute conversation if you're considering it — bring your specific questions and I'll show you how Trial. would actually work for ${escapeHtml(venueName)}.
         </p>
         ${ctaButton('Book a thirty-minute conversation')}
         <p style="${pSmall}">
@@ -168,7 +168,7 @@ const TEMPLATES: Record<Temperature, Template> = {
           You only pay for hires that stick. If a hire leaves at day eighty-nine, you've paid nothing for them. That's the part most operators want to ask about.
         </p>
         <p style="${pStyle}">
-          Founding Partner pricing — $99.99/month locked for life, $99 per retained hire — is still open for the first fifty venues. After that, standard pricing applies.
+          The Founding Partner cohort — still open for the first fifty venues — locks your rate for life regardless of how Trial. is priced in twelve months or three years. The trade-off: you give us your honest operational read while we're still building.
         </p>
         ${ctaButton('Take another look')}
         <p style="${pSmall}">
