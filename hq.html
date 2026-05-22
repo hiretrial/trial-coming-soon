@@ -1802,7 +1802,7 @@ async function updateEOI(id, patch, successMsg) {
 
 async function approveEOI(id, opts = {}) {
   // opts: { plan_size, is_founding_partner }
-  // Call the approve-eoi Edge Function which handles:
+  // Call the /api/approve-eoi Vercel route which handles:
   //  1. Create venues row (with plan_size + is_founding_partner pre-set)
   //  2. Generate setup_token + per-customer Stripe Checkout Session for the matched product
   //  3. Send branded setup email via Resend
@@ -1810,7 +1810,7 @@ async function approveEOI(id, opts = {}) {
   showToast('Approving and dispatching…');
   try {
     const { data: { session } } = await supabase.auth.getSession();
-    const resp = await fetch(`${SUPABASE_URL}/functions/v1/approve-eoi`, {
+    const resp = await fetch('/api/approve-eoi', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
