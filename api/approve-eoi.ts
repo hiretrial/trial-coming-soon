@@ -101,8 +101,10 @@ function slugify(name: string): string {
 }
 
 // ─── Generate a slug that doesn't collide with existing venues ────
+// Note: admin typed as `any` to avoid TS choking on the inferred
+// SupabaseClient generic when passed across module boundaries.
 async function generateUniqueSlug(
-  admin: ReturnType<typeof createClient>,
+  admin: any,
   name: string
 ): Promise<string> {
   const base = slugify(name) || 'venue';
@@ -128,9 +130,13 @@ function fmtAud(n: number | null): string {
 }
 
 // ─── Verify caller is is_trial_operator ───────────────────────────
+type OperatorAuthResult =
+  | { ok: true; userId: string; error?: undefined }
+  | { ok: false; userId?: undefined; error: string };
+
 async function verifyOperator(
   authHeader: string | undefined
-): Promise<{ ok: true; userId: string } | { ok: false; error: string }> {
+): Promise<OperatorAuthResult> {
   if (!authHeader) return { ok: false, error: 'Missing Authorization header' };
   const token = authHeader.replace(/^Bearer\s+/i, '');
   if (!token) return { ok: false, error: 'Empty bearer token' };
@@ -385,9 +391,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // ── 1. Auth ────────────────────────────────────────────────────────
   const authResult = await verifyOperator(req.headers.authorization);
-  if (!authResult.ok) {
-    console.warn('[approve-eoi] Auth failed:', authResult.error);
-    return res.status(401).json({ ok: false, error: authResult.error });
+  if (authResult.ok === false) {
+    const errMsg = authResult.error;
+    console.warn('[approve-eoi] Auth failed:', errMsg);
+    return res.status(401).json({ ok: false, error: errMsg });
   }
 
   // ── 2. Parse + validate body ──────────────────────────────────────
@@ -405,7 +412,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   // ── 3. Service-role client (bypasses RLS for backend ops) ─────────
-  const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const admin: any = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   // ── 4. Fetch the EOI ──────────────────────────────────────────────
   const { data: eoi, error: eoiErr } = await admin
