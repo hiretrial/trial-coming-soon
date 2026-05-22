@@ -1796,10 +1796,12 @@ footer .sep {
         // Calendly's official prefill API. This is the only reliable way to
         // get name + email auto-filled — rewriting data-url after Calendly
         // has already initialised does nothing.
-        initCalendlyWithPrefill({
+        const prefillData = {
           name:  data.contact_name || '',
           email: data.email        || ''
-        });
+        };
+        console.log('[trial] Calling Calendly init with prefill:', prefillData);
+        initCalendlyWithPrefill(prefillData);
 
         reveal.classList.add('show');
         reveal.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1857,12 +1859,35 @@ footer .sep {
     }
 
     // Calendly is ready — render the inline widget with prefill
+    // Belt-and-braces: pass prefill via both the prefill object AND URL params,
+    // because Calendly's behaviour around which one wins is inconsistent
+    // depending on event settings. URL params alone don't always populate
+    // the standard Name/Email fields, but combined with the prefill object
+    // they reliably do.
+    const firstName = (prefill.name || '').trim().split(/\s+/)[0] || '';
+    const lastName  = (prefill.name || '').trim().split(/\s+/).slice(1).join(' ') || '';
+
+    const urlParams = new URLSearchParams({
+      hide_gdpr_banner: '1',
+      background_color: '131313',
+      text_color:       'f8f6f0',
+      primary_color:    'c8a96e',
+      name:             prefill.name,
+      email:            prefill.email
+    });
+
+    console.log('[trial] Calendly init params:', {
+      firstName, lastName, email: prefill.email, fullUrl: 'https://calendly.com/anders-hiretrial/demo?' + urlParams.toString()
+    });
+
     window.Calendly.initInlineWidget({
-      url: 'https://calendly.com/anders-hiretrial/demo?hide_gdpr_banner=1&background_color=131313&text_color=f8f6f0&primary_color=c8a96e',
+      url: 'https://calendly.com/anders-hiretrial/demo?' + urlParams.toString(),
       parentElement: target,
       prefill: {
-        name:  prefill.name,
-        email: prefill.email
+        name:      prefill.name,
+        firstName: firstName,
+        lastName:  lastName,
+        email:     prefill.email
       }
     });
   }
