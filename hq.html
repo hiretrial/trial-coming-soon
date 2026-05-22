@@ -452,6 +452,28 @@ body.light .detail-frustration { background: rgba(0,0,0,0.03); }
   background: rgba(217,119,87,0.12); color: var(--danger); font-weight: 600;
 }
 
+/* ─── Lead Temperature pill (EOI table) ─── */
+/* Placeholder UI for now — shows "Pending Loom" until real Loom watch data
+   flows in via /api/loom-watch-event (Phase 2 build, when Loom is filmed).
+   Once Loom is live, this pill will reflect % watched:
+     HOT  = 90%+ AND booked
+     WARM = 75-90% OR booked-without-watching
+     COOL = 25-75% watched, not booked
+     COLD = <25% OR no watch event
+*/
+.temp-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 9px; font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase; border-radius: 12px;
+  font-weight: 700; border: 1px solid;
+}
+.temp-pill.hot      { color: #ff6b3d; background: rgba(255,107,61,0.10); border-color: rgba(255,107,61,0.4); }
+.temp-pill.warm     { color: var(--warning); background: rgba(212,160,74,0.10); border-color: rgba(212,160,74,0.4); }
+.temp-pill.cool     { color: #6db3e0; background: rgba(109,179,224,0.10); border-color: rgba(109,179,224,0.4); }
+.temp-pill.cold     { color: var(--dim); background: var(--bg3); border-color: var(--border2); }
+.temp-pill.pending  { color: var(--dim); background: transparent; border-color: var(--border2); border-style: dashed; font-weight: 500; }
+.temp-pill-icon { font-style: normal; }
+
 /* ═══════════════════════════════════════════════════════════════
    REVENUE TAB
    ═══════════════════════════════════════════════════════════════ */
@@ -1683,6 +1705,7 @@ function renderEOIsTable() {
         <th>Type</th>
         <th>Volume</th>
         <th>Timing</th>
+        <th>Lead temp</th>
         <th>Status</th>
         <th>Submitted</th>
       </tr></thead>
@@ -1713,6 +1736,7 @@ function renderEOIsTable() {
 
 function renderEOIRow(e) {
   const isExpanded = EXPANDED_EOI_ID === e.id;
+  const tempPill = renderTempPill(e);
   const row = `
     <tr class="clickable ${isExpanded ? 'expanded' : ''}" data-eoi-id="${e.id}">
       <td><div class="cell-name">
@@ -1725,23 +1749,27 @@ function renderEOIRow(e) {
       <td style="color:var(--muted);font-size:12.5px">${venueTypeLabel(e.venue_type)}</td>
       <td style="color:var(--muted);font-size:12.5px">${escapeHtml(e.hires_per_year || '—')} hires/yr</td>
       <td><span class="timing-pill ${e.timing === 'urgent' ? 'timing-urgent' : ''}">${timingLabel(e.timing)}</span></td>
+      <td>${tempPill}</td>
       <td><span class="stage stage-${e.status}">${e.status}</span></td>
       <td style="color:var(--muted);font-size:12px">${fmtRelative(e.created_at)}</td>
     </tr>
   `;
   if (!isExpanded) return row;
 
-  // Expanded detail row
+  // Expanded detail row — colspan must match the 7-column table above
   return row + `
-    <tr class="detail-row"><td colspan="6">
+    <tr class="detail-row"><td colspan="7">
       <div class="detail-wrap">
         <div class="detail-grid">
           <div class="detail-row-item"><div class="detail-label">Email</div><div class="detail-val"><a href="mailto:${escapeHtml(e.email)}">${escapeHtml(e.email || '—')}</a></div></div>
           <div class="detail-row-item"><div class="detail-label">Phone</div><div class="detail-val">${escapeHtml(e.phone || '—')}</div></div>
           <div class="detail-row-item"><div class="detail-label">Venue type</div><div class="detail-val">${venueTypeLabel(e.venue_type)}</div></div>
+          <div class="detail-row-item"><div class="detail-label">Location</div><div class="detail-val">${renderLocation(e)}</div></div>
           <div class="detail-row-item"><div class="detail-label">Hires per year</div><div class="detail-val">${escapeHtml(e.hires_per_year || '—')}</div></div>
           <div class="detail-row-item"><div class="detail-label">Applications per role</div><div class="detail-val">${escapeHtml(e.applications_per_role || '—')}</div></div>
           <div class="detail-row-item"><div class="detail-label">Timing</div><div class="detail-val">${timingLabel(e.timing)}</div></div>
+          <div class="detail-row-item"><div class="detail-label">Lead temperature</div><div class="detail-val">${tempPill} <span style="color:var(--dim);font-size:11.5px;margin-left:8px;font-style:italic">${tempExplanation(e)}</span></div></div>
+          <div class="detail-row-item"><div class="detail-label">Calendly booking</div><div class="detail-val">${renderBookingStatus(e)}</div></div>
           <div class="detail-row-item"><div class="detail-label">Source</div><div class="detail-val">${escapeHtml(e.source || 'eoi_form')}</div></div>
           <div class="detail-row-item"><div class="detail-label">Submitted</div><div class="detail-val">${fmtDate(e.created_at)} · ${fmtRelative(e.created_at)}</div></div>
         </div>
@@ -1769,6 +1797,52 @@ function renderEOIRow(e) {
         </div>
       </div>
     </td></tr>`;
+}
+
+// ─── Lead temperature pill (placeholder UI until Loom is filmed) ───
+// Real logic (Phase 2): join eoi_submissions → eoi_engagement on eoi_id,
+// sum watch_pct, factor in booking status from bookings table, compute pill.
+// For now: always returns "Pending Loom" so the column is visually populated
+// without misleading data.
+function renderTempPill(eoi) {
+  // Phase 2 wiring — once Loom watch data + booking data are flowing,
+  // uncomment this block and remove the placeholder return below.
+  /*
+  const pct = eoi.loom_watch_pct || 0;
+  const booked = !!eoi.calendly_booking_at;
+  if (pct >= 90 && booked) return `<span class="temp-pill hot"><span class="temp-pill-icon">🔥</span>Hot</span>`;
+  if (pct >= 75 || booked)  return `<span class="temp-pill warm"><span class="temp-pill-icon">◆</span>Warm</span>`;
+  if (pct >= 25)            return `<span class="temp-pill cool"><span class="temp-pill-icon">◇</span>Cool</span>`;
+  if (pct > 0 || eoi.loom_started_at) return `<span class="temp-pill cold"><span class="temp-pill-icon">❄</span>Cold</span>`;
+  return `<span class="temp-pill pending">Pending Loom</span>`;
+  */
+  return `<span class="temp-pill pending">Pending Loom</span>`;
+}
+
+function tempExplanation(eoi) {
+  // Phase 2: explain WHY they're hot/warm/cool/cold ("90% watched + booked")
+  return 'Lead scoring activates after Loom walkthrough goes live';
+}
+
+// ─── Location renderer (suburb / state / postcode from EOI form) ───
+function renderLocation(eoi) {
+  const parts = [eoi.suburb, eoi.state, eoi.postcode].filter(Boolean);
+  if (!parts.length) return '<span style="color:var(--dim)">—</span>';
+  return escapeHtml(parts.join(', '));
+}
+
+// ─── Calendly booking status renderer ───
+// Placeholder until /api/calendly-webhook + bookings table are wired (Phase 2).
+// When real data is flowing, this will read eoi.calendly_booking_at +
+// eoi.calendly_booking_at + the bookings join.
+function renderBookingStatus(eoi) {
+  if (eoi.calendly_booking_at) {
+    return `<span style="color:var(--success)">✓ Booked · ${fmtDate(eoi.calendly_booking_at)}</span>`;
+  }
+  if (eoi.status === 'converted') {
+    return `<span style="color:var(--dim)">N/A · already converted</span>`;
+  }
+  return `<span style="color:var(--dim);font-style:italic">Not booked yet</span>`;
 }
 
 // ═══ EOI ACTIONS ═══
