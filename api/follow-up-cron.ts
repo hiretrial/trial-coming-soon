@@ -301,7 +301,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ ok: false, error: 'Server misconfiguration' });
   }
 
-  const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const admin: any = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   const resend = new Resend(RESEND_API_KEY);
 
   // ── 1. Find eligible EOIs ──────────────────────────────────────
@@ -310,7 +310,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const { data: eois, error: queryErr } = await admin
     .from('eoi_submissions')
-    .select('id, email, contact_name, venue_name, created_at, status, calendly_booking_at, followup_sent_at, loom_watch_pct')
+    .select('id, email, contact_name, venue_name, created_at, status, calendly_booking_at, followup_sent_at, followup_attempts, loom_watch_pct')
     .eq('status', 'new')                         // hasn't booked
     .is('followup_sent_at', null)                // hasn't been sent yet
     .is('calendly_booking_at', null)             // belt-and-braces: not booked
