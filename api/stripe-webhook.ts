@@ -34,7 +34,7 @@
 //     double-log.
 //
 // Env vars required (set in Vercel dashboard):
-//   STRIPE_SECRET_KEY            (existing, live mode)
+//   STRIPE_SECRET_KEY_LIVE       (existing, live mode)
 //   STRIPE_WEBHOOK_SECRET        (NEW — set after creating webhook in Stripe)
 //   SUPABASE_URL                 (existing)
 //   SUPABASE_SERVICE_ROLE_KEY    (existing)
@@ -54,7 +54,7 @@ export const config = {
 };
 
 // ─── Config ───────────────────────────────────────────────────────
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY_LIVE;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
