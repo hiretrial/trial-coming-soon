@@ -1610,12 +1610,14 @@ footer .sep {
             have a clear yes or no on whether Trial. is right for you.
           </div>
 
-          <!-- Calendly inline widget container — data-url is updated by JS to
-               include prefill params after EOI submission completes. -->
+          <!-- Calendly inline widget container — data-url is SET by JS after
+               EOI submit completes (so the iframe initialises with prefill
+               params for name + email). Empty data-url here = Calendly won't
+               auto-init this div, which is what we want. -->
           <div
             class="calendly-inline-widget"
             id="calendly-embed"
-            data-url="https://calendly.com/anders-hiretrial/demo?hide_gdpr_banner=1&background_color=131313&text_color=f8f6f0&primary_color=c8a96e"
+            data-url=""
             style="min-width:320px;height:780px;"
           ></div>
         </div>
@@ -1773,23 +1775,16 @@ footer .sep {
           } catch (e) { /* private mode etc — ignore */ }
         }
 
-        // ─── Prefill Calendly with name + email so booker doesn't retype ───
-        // Calendly inline widget reads data-url at render time; we rewrite it
-        // BEFORE the reveal becomes visible (which is when Calendly initialises
-        // the iframe). URL params: name + email auto-fill the booking form.
-        const calendlyEmbed = document.getElementById('calendly-embed');
-        if (calendlyEmbed) {
-          const baseUrl = 'https://calendly.com/anders-hiretrial/demo';
-          const params = new URLSearchParams({
-            hide_gdpr_banner:  '1',
-            background_color:  '131313',
-            text_color:        'f8f6f0',
-            primary_color:     'c8a96e',
-            name:              data.contact_name || '',
-            email:             data.email        || ''
-          });
-          calendlyEmbed.setAttribute('data-url', `${baseUrl}?${params.toString()}`);
-        }
+        // ─── Initialise Calendly inline widget WITH prefill ───
+        // We deliberately didn't put a data-url on the div at page load time,
+        // so Calendly's auto-init skipped it. Now we render it manually using
+        // Calendly's official prefill API. This is the only reliable way to
+        // get name + email auto-filled — rewriting data-url after Calendly
+        // has already initialised does nothing.
+        initCalendlyWithPrefill({
+          name:  data.contact_name || '',
+          email: data.email        || ''
+        });
 
         reveal.classList.add('show');
         reveal.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1811,6 +1806,43 @@ footer .sep {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
+  }
+
+  // ─── Calendly inline widget init with prefill ────────────────────────
+  // Renders the Calendly booking widget with the booker's name + email
+  // already filled in. Handles the case where Calendly.js hasn't finished
+  // loading yet (script is async) by retrying briefly.
+  function initCalendlyWithPrefill(prefill, retries = 20) {
+    const target = document.getElementById('calendly-embed');
+    if (!target) return;
+
+    // If Calendly.js hasn't loaded yet, wait briefly and try again
+    if (typeof window.Calendly === 'undefined' || !window.Calendly.initInlineWidget) {
+      if (retries > 0) {
+        setTimeout(() => initCalendlyWithPrefill(prefill, retries - 1), 200);
+      } else {
+        // Calendly didn't load after 4 seconds — fall back to a plain link
+        // so the booker can still reach the booking page in a new tab.
+        console.warn('Calendly script failed to load; falling back to link.');
+        target.innerHTML = `
+          <a href="https://calendly.com/anders-hiretrial/demo?name=${encodeURIComponent(prefill.name)}&email=${encodeURIComponent(prefill.email)}"
+             target="_blank" rel="noopener"
+             style="display:inline-block;padding:18px 36px;background:#c8a96e;color:#0a0a0a;text-decoration:none;font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:500;letter-spacing:0.04em;">
+            Open booking page →
+          </a>`;
+      }
+      return;
+    }
+
+    // Calendly is ready — render the inline widget with prefill
+    window.Calendly.initInlineWidget({
+      url: 'https://calendly.com/anders-hiretrial/demo?hide_gdpr_banner=1&background_color=131313&text_color=f8f6f0&primary_color=c8a96e',
+      parentElement: target,
+      prefill: {
+        name:  prefill.name,
+        email: prefill.email
+      }
+    });
   }
 
   // Smooth focus when hero CTA clicked
