@@ -966,6 +966,19 @@ select option {
   border: 0;
 }
 
+/* ─── Force Calendly's injected iframe to fill its container ─── */
+/* Calendly's JS injects an iframe at its own default height (~640px) which
+   is way too short for our custom-questions intake screen. These rules force
+   it to fill the 1200px container we set below. */
+#calendly-embed,
+#calendly-embed > div,
+#calendly-embed iframe {
+  width: 100% !important;
+  height: 1200px !important;
+  min-height: 1200px !important;
+  border: 0 !important;
+}
+
 /* ─── Booking block ─── */
 .reveal-booking {
   margin: 64px 0 56px;
