@@ -1876,6 +1876,7 @@ function renderEOIRow(e) {
           <div class="detail-row-item"><div class="detail-label">Timing</div><div class="detail-val">${timingLabel(e.timing)}</div></div>
           <div class="detail-row-item"><div class="detail-label">Lead temperature</div><div class="detail-val">${tempPill} <span style="color:var(--dim);font-size:11.5px;margin-left:8px;font-style:italic">${tempExplanation(e)}</span></div></div>
           <div class="detail-row-item"><div class="detail-label">Calendly booking</div><div class="detail-val">${renderBookingStatus(e)}</div></div>
+          <div class="detail-row-item"><div class="detail-label">Day-3 follow-up</div><div class="detail-val">${renderFollowupStatus(e)}</div></div>
           <div class="detail-row-item"><div class="detail-label">Source</div><div class="detail-val">${escapeHtml(e.source || 'eoi_form')}</div></div>
           <div class="detail-row-item"><div class="detail-label">Submitted</div><div class="detail-val">${fmtDate(e.created_at)} · ${fmtRelative(e.created_at)}</div></div>
         </div>
@@ -1950,6 +1951,36 @@ function renderBookingStatus(eoi) {
     return `<span style="color:var(--dim)">N/A · already converted</span>`;
   }
   return `<span style="color:var(--dim);font-style:italic">Not booked yet</span>`;
+}
+
+// ─── Follow-up status renderer ─────────────────────────────────────
+// Shows whether the day-3 automated nudge has been sent, and which
+// template was used. Cron job (/api/follow-up-cron) sets these fields.
+function renderFollowupStatus(eoi) {
+  // Already booked or converted? Follow-up doesn't apply.
+  if (eoi.calendly_booking_at || eoi.status === 'converted' || eoi.status === 'declined') {
+    return `<span style="color:var(--dim)">N/A</span>`;
+  }
+  // Sent — show which template + when
+  if (eoi.followup_sent_at) {
+    const templateLabels = {
+      hot:  '🔥 Hot template',
+      warm: '◆ Warm template',
+      cool: '◇ Cool template',
+      cold: '❄ Cold template',
+    };
+    const label = templateLabels[eoi.followup_template] || 'Sent';
+    return `<span style="color:var(--success)">✓ ${label} · ${fmtRelative(eoi.followup_sent_at)}</span>`;
+  }
+  // Not sent yet — show when it will fire
+  const createdMs    = new Date(eoi.created_at).getTime();
+  const sendDueMs    = createdMs + 3 * 24 * 60 * 60 * 1000;
+  const nowMs        = Date.now();
+  if (sendDueMs > nowMs) {
+    const daysLeft = Math.ceil((sendDueMs - nowMs) / (24 * 60 * 60 * 1000));
+    return `<span style="color:var(--muted);font-style:italic">Scheduled · sends in ${daysLeft}d</span>`;
+  }
+  return `<span style="color:var(--warning);font-style:italic">Due · next cron run</span>`;
 }
 
 // ═══ BOOKINGS RENDER ═══
