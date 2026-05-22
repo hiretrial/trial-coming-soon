@@ -14,5 +14,11 @@
       "source": "/privacy",
       "destination": "/privacy.html"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/follow-up-cron",
+      "schedule": "0 23 * * *"
+    }
   ]
 }
