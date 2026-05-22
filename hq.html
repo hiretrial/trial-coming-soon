@@ -525,6 +525,16 @@ body.light .detail-frustration { background: rgba(0,0,0,0.03); }
 }
 .booking-qa-item .qa-a { font-size: 13.5px; color: var(--white); line-height: 1.45; }
 
+/* ─── Booking action button row ─── */
+.booking-actions {
+  margin-top: 22px; padding-top: 18px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+}
+.booking-actions .btn-primary[disabled] {
+  opacity: 0.5; cursor: not-allowed;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    REVENUE TAB
    ═══════════════════════════════════════════════════════════════ */
@@ -1183,10 +1193,10 @@ body.light .detail-frustration { background: rgba(0,0,0,0.03); }
             <div class="filters" id="eoi-filters">
               <div class="filter active" data-filter="all">All <span class="filter-count" id="f-all">0</span></div>
               <div class="filter" data-filter="new">New <span class="filter-count" id="f-new">0</span></div>
-              <div class="filter" data-filter="contacted">Contacted <span class="filter-count" id="f-contacted">0</span></div>
-              <div class="filter" data-filter="qualified">Qualified <span class="filter-count" id="f-qualified">0</span></div>
+              <div class="filter" data-filter="booked">Booked <span class="filter-count" id="f-booked">0</span></div>
               <div class="filter" data-filter="converted">Converted <span class="filter-count" id="f-converted">0</span></div>
-              <div class="filter" data-filter="declined">Declined <span class="filter-count" id="f-declined">0</span></div>
+              <div class="filter" data-filter="declined">Not a fit <span class="filter-count" id="f-declined">0</span></div>
+              <div class="filter" data-filter="no_show">No-show <span class="filter-count" id="f-no_show">0</span></div>
             </div>
           </div>
           <div id="eois-table-wrap"><div class="loader">Loading EOIs…</div></div>
@@ -1563,6 +1573,9 @@ let EOI_FILTER = 'all';
 let BOOKING_FILTER = 'upcoming';
 let EXPANDED_EOI_ID = null;
 let EXPANDED_BOOKING_ID = null;
+// When the approve modal is opened from a booking row, this holds the
+// booking_id so we can flip its status to 'approved' on successful approval.
+let PENDING_APPROVE_BOOKING_ID = null;
 
 // ─── Helpers ───
 const $ = id => document.getElementById(id);
@@ -1774,8 +1787,8 @@ function renderOverview() {
 
 // ═══ EOIS TABLE ═══
 function renderEOIsTable() {
-  // Filter counts
-  const counts = { all: EOIS.length, new: 0, contacted: 0, qualified: 0, converted: 0, declined: 0 };
+  // Filter counts (new workflow: new/booked/converted/declined/no_show)
+  const counts = { all: EOIS.length, new: 0, booked: 0, converted: 0, declined: 0, no_show: 0 };
   EOIS.forEach(e => { if (counts[e.status] !== undefined) counts[e.status]++; });
   Object.keys(counts).forEach(k => { const el = $(`f-${k}`); if (el) el.textContent = counts[k]; });
 
@@ -1871,21 +1884,23 @@ function renderEOIRow(e) {
           <div class="detail-frustration">${escapeHtml(e.frustration)}</div>
         ` : ''}
         <div class="detail-actions">
-          ${e.status === 'new' || e.status === 'contacted' ? `
-            <button class="btn btn-primary btn-sm" data-action="approve" data-eoi-id="${e.id}">Approve &amp; dispatch setup link</button>
-            <button class="btn btn-outline btn-sm" data-action="mark-contacted" data-eoi-id="${e.id}">Mark contacted</button>
-            <button class="btn btn-outline btn-sm" data-action="mark-qualified" data-eoi-id="${e.id}">Mark qualified</button>
-            <button class="btn btn-danger btn-sm" data-action="decline" data-eoi-id="${e.id}">Decline</button>
+          ${e.status === 'new' ? `
+            <span style="font-size:12px;color:var(--dim);font-style:italic">Awaiting booking — venue can self-qualify via the Calendly widget on hiretrial.com.au</span>
           ` : ''}
-          ${e.status === 'qualified' ? `
-            <button class="btn btn-primary btn-sm" data-action="approve" data-eoi-id="${e.id}">Approve &amp; dispatch setup link</button>
-            <button class="btn btn-danger btn-sm" data-action="decline" data-eoi-id="${e.id}">Decline</button>
+          ${e.status === 'booked' ? `
+            <span style="font-size:12px;color:var(--accent)">📅 Demo booked — manage from the Bookings tab</span>
           ` : ''}
           ${e.status === 'converted' && e.venue_id ? `
             <span style="font-size:12px;color:var(--success)">✓ Converted to venue · setup link dispatched</span>
           ` : ''}
           ${e.status === 'declined' ? `
-            <span style="font-size:12px;color:var(--danger)">✕ Declined ${e.declined_at ? '· ' + fmtRelative(e.declined_at) : ''}</span>
+            <span style="font-size:12px;color:var(--danger)">✕ Marked not a fit ${e.declined_at ? '· ' + fmtRelative(e.declined_at) : ''}</span>
+          ` : ''}
+          ${e.status === 'no_show' ? `
+            <span style="font-size:12px;color:var(--warning)">⚠ No-show ${e.declined_at ? '· ' + fmtRelative(e.declined_at) : ''}</span>
+          ` : ''}
+          ${(e.status === 'contacted' || e.status === 'qualified') ? `
+            <span style="font-size:12px;color:var(--dim);font-style:italic">(legacy status — actions moved to Bookings tab)</span>
           ` : ''}
         </div>
       </div>
@@ -1983,6 +1998,17 @@ function renderBookingsTable() {
       </tr></thead>
       <tbody>${filtered.map(renderBookingRow).join('')}</tbody>
     </table>`;
+
+  // Wire action buttons within booking detail rows
+  wrap.querySelectorAll('[data-action^="booking-"]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const action     = btn.dataset.action;
+      const bookingId  = btn.dataset.bookingId;
+      const eoiId      = btn.dataset.eoiId || null;
+      handleBookingAction(action, bookingId, eoiId);
+    });
+  });
 }
 
 function renderBookingRow(b) {
@@ -2064,8 +2090,86 @@ function renderBookingRow(b) {
             </div>
           </div>
         ` : ''}
+
+        ${renderBookingActions(b, matchedEOI)}
       </div>
     </td></tr>`;
+}
+
+// ─── Booking action buttons ────────────────────────────────────────
+// Renders the right action set based on booking status:
+//   scheduled         → Mark completed / Mark no-show / Mark not a fit
+//   completed         → Approve & dispatch setup link / Mark not a fit
+//   approved          → "✓ Converted" status display, no actions
+//   not_a_fit/no_show → status display only
+//   cancelled         → status display only
+function renderBookingActions(b, matchedEOI) {
+  const isPast = new Date(b.scheduled_at) < new Date();
+  const eoiId = matchedEOI?.id || '';
+
+  // No actions for cancelled bookings — Calendly already handled it
+  if (b.status === 'cancelled') {
+    return `<div class="booking-actions">
+      <span style="font-size:12px;color:var(--danger)">✕ Cancelled via Calendly</span>
+    </div>`;
+  }
+
+  // Approved bookings = converted to venue, show success state only
+  if (b.status === 'approved') {
+    return `<div class="booking-actions">
+      <span style="font-size:12px;color:var(--success)">✓ Approved · venue created · setup link dispatched</span>
+    </div>`;
+  }
+
+  // Not a fit / no-show = terminal states
+  if (b.status === 'not_a_fit') {
+    return `<div class="booking-actions">
+      <span style="font-size:12px;color:var(--danger)">✕ Marked not a fit</span>
+    </div>`;
+  }
+  if (b.status === 'no_show') {
+    return `<div class="booking-actions">
+      <span style="font-size:12px;color:var(--warning)">⚠ Marked no-show</span>
+    </div>`;
+  }
+
+  // Scheduled = upcoming or just-happened-but-no-action-taken-yet
+  if (b.status === 'scheduled') {
+    if (!isPast) {
+      // Future booking — show "join meeting" as primary action
+      return `<div class="booking-actions">
+        <span style="font-size:12px;color:var(--muted);font-style:italic">Upcoming · actions appear after the scheduled time</span>
+      </div>`;
+    }
+    // Past scheduled booking = call has happened but you haven't recorded the outcome yet
+    return `<div class="booking-actions">
+      <button class="btn btn-outline btn-sm" data-action="booking-mark-completed" data-booking-id="${b.id}">Mark completed</button>
+      <button class="btn btn-outline btn-sm" data-action="booking-mark-no-show" data-booking-id="${b.id}">Mark no-show</button>
+      <button class="btn btn-danger btn-sm" data-action="booking-mark-not-fit" data-booking-id="${b.id}">Mark not a fit</button>
+    </div>`;
+  }
+
+  // Completed — call happened, demo was decent. Decision time.
+  if (b.status === 'completed') {
+    if (!eoiId) {
+      return `<div class="booking-actions">
+        <button class="btn btn-primary btn-sm" disabled title="No EOI linked — cannot approve">Approve &amp; dispatch setup link</button>
+        <button class="btn btn-danger btn-sm" data-action="booking-mark-not-fit" data-booking-id="${b.id}">Mark not a fit</button>
+        <span style="font-size:11px;color:var(--dim);margin-left:8px;font-style:italic">Orphan booking — no linked EOI, approve disabled</span>
+      </div>`;
+    }
+    if (matchedEOI.status === 'converted') {
+      return `<div class="booking-actions">
+        <span style="font-size:12px;color:var(--success)">✓ Linked EOI already converted to venue</span>
+      </div>`;
+    }
+    return `<div class="booking-actions">
+      <button class="btn btn-primary btn-sm" data-action="booking-approve" data-booking-id="${b.id}" data-eoi-id="${eoiId}">Approve &amp; dispatch setup link</button>
+      <button class="btn btn-danger btn-sm" data-action="booking-mark-not-fit" data-booking-id="${b.id}">Mark not a fit</button>
+    </div>`;
+  }
+
+  return '';
 }
 
 // ═══ EOI ACTIONS ═══
@@ -2086,6 +2190,70 @@ async function handleEOIAction(action, id) {
   if (action === 'approve') {
     openApproveModal(eoi);
   }
+}
+
+// ═══ BOOKING ACTIONS ═══
+async function handleBookingAction(action, bookingId, eoiId) {
+  const booking = BOOKINGS.find(b => b.id === bookingId);
+  if (!booking) { showToast('Booking not found', 'error'); return; }
+
+  // Mark completed = call happened, you're considering. Move booking from
+  // 'scheduled' (auto, past) → 'completed' (manual, decision pending).
+  if (action === 'booking-mark-completed') {
+    return updateBooking(bookingId, { status: 'completed' }, 'Marked completed');
+  }
+
+  // Mark no-show = they didn't turn up. Also flips EOI to no_show.
+  if (action === 'booking-mark-no-show') {
+    if (!confirm(`Mark this booking as no-show?\n\n${booking.invitee_name || booking.invitee_email} (${fmtDate(booking.scheduled_at)})`)) return;
+    await updateBooking(bookingId, { status: 'no_show' }, 'Marked no-show');
+    if (eoiId) {
+      await supabase.from('eoi_submissions')
+        .update({ status: 'no_show', declined_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+        .eq('id', eoiId);
+      await loadEOIs();
+      renderEOIsTable();
+    }
+    return;
+  }
+
+  // Mark not a fit = demo happened, you said no. Flips EOI to declined too.
+  if (action === 'booking-mark-not-fit') {
+    if (!confirm(`Mark "not a fit" for ${booking.invitee_name || booking.invitee_email}?\n\nThis records the demo happened and you decided Trial. isn't right for them. Reversible.`)) return;
+    await updateBooking(bookingId, { status: 'not_a_fit' }, 'Marked not a fit');
+    if (eoiId) {
+      await supabase.from('eoi_submissions')
+        .update({ status: 'declined', declined_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+        .eq('id', eoiId);
+      await loadEOIs();
+      renderEOIsTable();
+    }
+    return;
+  }
+
+  // Approve = open the existing approve modal with the linked EOI pre-selected
+  if (action === 'booking-approve') {
+    if (!eoiId) { showToast('No linked EOI — cannot approve', 'error'); return; }
+    const eoi = EOIS.find(e => e.id === eoiId);
+    if (!eoi) { showToast('Linked EOI not found in cache — reloading', 'error'); await loadEOIs(); return; }
+    // Stash the booking_id on the modal so when approval succeeds we can
+    // flip the booking's status to 'approved' as well.
+    PENDING_APPROVE_BOOKING_ID = bookingId;
+    openApproveModal(eoi);
+    return;
+  }
+}
+
+async function updateBooking(id, patch, successMsg) {
+  const { error } = await supabase
+    .from('bookings')
+    .update({ ...patch, updated_at: new Date().toISOString() })
+    .eq('id', id);
+  if (error) { showToast('Update failed: ' + error.message, 'error'); return; }
+  showToast(successMsg, 'success');
+  await loadBookings();
+  renderOverview();
+  renderBookingsTable();
 }
 
 async function updateEOI(id, patch, successMsg) {
@@ -2124,12 +2292,26 @@ async function approveEOI(id, opts = {}) {
       throw new Error(data.error || `Approve failed (${resp.status})`);
     }
     showToast('Setup link dispatched to ' + data.email_sent_to, 'success');
+
+    // If this approve was kicked off from a booking row, flip the booking's
+    // status to 'approved' too so the lifecycle reads cleanly.
+    if (PENDING_APPROVE_BOOKING_ID) {
+      const { error: bErr } = await supabase
+        .from('bookings')
+        .update({ status: 'approved', updated_at: new Date().toISOString() })
+        .eq('id', PENDING_APPROVE_BOOKING_ID);
+      if (bErr) console.warn('Booking status update failed (non-fatal):', bErr);
+      PENDING_APPROVE_BOOKING_ID = null;
+    }
+
     await Promise.all([loadEOIs(), loadVenues(), loadBookings()]);
     renderOverview();
     renderEOIsTable();
     renderVenuesTable();
+    renderBookingsTable();
   } catch (err) {
     showToast('Approve failed: ' + err.message, 'error');
+    PENDING_APPROVE_BOOKING_ID = null;
   }
 }
 
@@ -3067,7 +3249,15 @@ function switchTab(name) {
     if (el) el.style.display = n === name ? 'block' : 'none';
   });
   if (name === 'eois' && EXPANDED_EOI_ID) renderEOIsTable();
-  if (name === 'bookings') renderBookingsTable();
+  if (name === 'bookings') {
+    // Refresh on every tab switch — handles the case where the user
+    // booked a demo (in another tab) and then switched here, OR the
+    // initial load hadn't completed when they first clicked the tab.
+    loadBookings().then(() => {
+      renderOverview();
+      renderBookingsTable();
+    });
+  }
   if (name === 'pipeline') renderPipelineTab();
   if (name === 'revenue') renderRevenueTab();
 }
