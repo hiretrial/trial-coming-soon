@@ -1796,9 +1796,17 @@ footer .sep {
         // Calendly's official prefill API. This is the only reliable way to
         // get name + email auto-filled — rewriting data-url after Calendly
         // has already initialised does nothing.
+        //
+        // Custom questions ("What's your venue called?", etc.) are filled via
+        // customAnswers.a1, a2, a3... where the number = question position in
+        // your Calendly event settings. Currently:
+        //   a1 = What's your venue called?  ← venue_name from EOI
+        // (We're only prefilling the venue name; the rest stay empty because
+        //  they're radio-button questions, not free text.)
         const prefillData = {
-          name:  data.contact_name || '',
-          email: data.email        || ''
+          name:       data.contact_name || '',
+          email:      data.email        || '',
+          venue_name: data.venue_name   || ''
         };
         console.log('[trial] Calling Calendly init with prefill:', prefillData);
         initCalendlyWithPrefill(prefillData);
@@ -1887,7 +1895,10 @@ footer .sep {
         name:      prefill.name,
         firstName: firstName,
         lastName:  lastName,
-        email:     prefill.email
+        email:     prefill.email,
+        customAnswers: {
+          a1: prefill.venue_name || ''
+        }
       }
     });
   }
