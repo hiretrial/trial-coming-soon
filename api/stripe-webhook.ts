@@ -60,7 +60,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const stripe = STRIPE_SECRET_KEY
-  ? new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' })
+  ? new Stripe(STRIPE_SECRET_KEY)
   : null;
 
 // ─── Helper: read raw body as Buffer (needed for sig verify) ──────
@@ -88,7 +88,7 @@ async function readRawBody(req: VercelRequest): Promise<Buffer> {
 //   venue_id, account_id    → resolved from stripe_customer_id
 //   metadata                → full Stripe event blob for forensics
 async function logEvent(
-  admin: ReturnType<typeof createClient>,
+  admin: any,
   payload: {
     stripe_event_id: string;
     event_type: string;
@@ -126,7 +126,7 @@ async function logEvent(
 // Subscription/checkout events reference stripe_customer_id. We map
 // that back to our internal account_id and venue_id for logging.
 async function resolveCustomer(
-  admin: ReturnType<typeof createClient>,
+  admin: any,
   stripeCustomerId: string | null
 ): Promise<{ account_id: string | null; venue_id: string | null }> {
   if (!stripeCustomerId) return { account_id: null, venue_id: null };
