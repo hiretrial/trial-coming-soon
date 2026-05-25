@@ -1798,16 +1798,24 @@ footer .sep {
       }
     });
 
-    // Once initInlineWidget has injected the iframe, add the official
-    // .calendly-inline-widget class. Calendly's widget.js scans for this
-    // class on its postMessage receivers to enable auto-height adjustment,
-    // so the iframe grows/shrinks with content (date picker → time slots
-    // → booking form) instead of needing a fixed min-height guess.
-    target.classList.add('calendly-inline-widget');
-    target.setAttribute(
-      'data-url',
-      'https://calendly.com/anders-hiretrial/demo?hide_gdpr_banner=1&background_color=131313&text_color=f8f6f0&primary_color=c8a96e'
-    );
+    // Force the iframe Calendly just created to be tall enough. Calendly's
+    // own auto-sizing is unreliable for programmatically-initialised inline
+    // widgets — it often paints the iframe at ~100px and never recovers.
+    // We just lock height directly on the iframe element. Belt and braces:
+    // also re-apply on resize, in case Calendly's runtime tries to "fix" it.
+    function forceCalendlyHeight() {
+      const iframe = target.querySelector('iframe');
+      if (iframe) {
+        iframe.style.height = '2400px';
+        iframe.style.minHeight = '2400px';
+        iframe.setAttribute('height', '2400');
+      }
+    }
+    // Run a few times to catch any late re-paints by Calendly's own script
+    setTimeout(forceCalendlyHeight, 100);
+    setTimeout(forceCalendlyHeight, 500);
+    setTimeout(forceCalendlyHeight, 1500);
+    setTimeout(forceCalendlyHeight, 3000);
   }
 
   // Smooth focus when hero CTA clicked
