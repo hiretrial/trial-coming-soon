@@ -13,9 +13,14 @@
 //
 // Form fields accepted (from index.html EOI form):
 //   venue_name, contact_name, email (required)
-//   phone, venue_type, hires_per_year, applications_per_role,
-//   frustration, timing
+//   state (optional — single dropdown on the minimal landing form)
 //   _gotcha (honeypot — silently ignore if filled)
+//
+// Note: full qualification data (venue_type, suburb, postcode,
+// hires_per_year, applications_per_role, frustration, timing) is now
+// collected on the post-Loom qualifier form, not at landing. This
+// endpoint accepts those fields if present (for backwards compatibility
+// or direct posts) but does not require them.
 // ═══════════════════════════════════════════════════════════════════
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
@@ -30,8 +35,13 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 // ─── Validation ───────────────────────────────────────────────────
 const REQUIRED_FIELDS = ['venue_name', 'contact_name', 'email'] as const;
 const ALLOWED_FIELDS = [
-  'venue_name', 'contact_name', 'email', 'phone',
-  'venue_type', 'hires_per_year', 'applications_per_role',
+  'venue_name', 'contact_name', 'email',
+  'state',
+  // Below are accepted but not collected on the minimal landing form.
+  // Retained for backwards compatibility and forward compat with the
+  // post-Loom qualifier form that will eventually write into this table.
+  'phone', 'venue_type', 'suburb', 'postcode',
+  'hires_per_year', 'applications_per_role',
   'frustration', 'timing',
 ];
 
@@ -65,8 +75,11 @@ function validateBody(body: any): { ok: boolean; error?: string; data?: any } {
     venue_name: 200,
     contact_name: 200,
     email: 254,
+    state: 10,
     phone: 50,
     venue_type: 100,
+    suburb: 100,
+    postcode: 10,
     hires_per_year: 50,
     applications_per_role: 50,
     frustration: 2000,
@@ -93,8 +106,6 @@ function validateBody(body: any): { ok: boolean; error?: string; data?: any } {
 }
 
 // ─── HTML escape helper ───────────────────────────────────────────
-// Stops any rogue characters in form input (e.g. < > & ") from
-// breaking the email layout or being interpreted as HTML.
 function esc(s: string | undefined | null): string {
   if (s == null) return '—';
   return String(s)
@@ -107,7 +118,6 @@ function esc(s: string | undefined | null): string {
 
 // ─── Resend email notification ─────────────────────────────────────
 // Sends Anders a branded notification email when an EOI lands.
-// Uses Resend with verified hiretrial.com.au domain.
 async function notifyAnders(eoi: any): Promise<void> {
   if (!RESEND_API_KEY) {
     console.log('[eoi] RESEND_API_KEY missing — skipping notification');
@@ -117,8 +127,6 @@ async function notifyAnders(eoi: any): Promise<void> {
     const subject = `New Trial. EOI — ${eoi.venue_name}`;
 
     // URL-encoded values for the mailto button
-    const contactNameUrl = encodeURIComponent(eoi.contact_name);
-    const venueNameUrl = encodeURIComponent(eoi.venue_name);
     const mailtoSubject = encodeURIComponent('Trial. — your founding venue enquiry');
     const mailtoBody = encodeURIComponent(
       `Hi ${eoi.contact_name},\n\nThanks for the EOI — great to hear from ${eoi.venue_name}.\n\n`
@@ -126,22 +134,17 @@ async function notifyAnders(eoi: any): Promise<void> {
 
     // Plain-text fallback (for clients that strip HTML)
     const textBody = [
-      `New Founding Venue EOI just landed.`,
+      `New EOI just landed — venue is now on the walkthrough path.`,
       ``,
       `Venue:        ${eoi.venue_name}`,
       `Contact:      ${eoi.contact_name}`,
       `Email:        ${eoi.email}`,
-      `Phone:        ${eoi.phone || '—'}`,
-      `Venue type:   ${eoi.venue_type || '—'}`,
-      `Hires/year:   ${eoi.hires_per_year || '—'}`,
-      `Apps/role:    ${eoi.applications_per_role || '—'}`,
-      `Timing:       ${eoi.timing || '—'}`,
-      ``,
-      `Frustration:`,
-      `${eoi.frustration || '(not provided)'}`,
+      `State:        ${eoi.state || '(not provided)'}`,
       ``,
       `—`,
-      `Reply within 24 hrs per the founding promise.`,
+      `Qualification data (venue type, hires/yr, frustration, etc.)`,
+      `will arrive separately if/when they fill the post-Loom qualifier.`,
+      ``,
       `Source of truth: Supabase eoi_submissions table.`,
     ].join('\n');
 
@@ -176,7 +179,7 @@ async function notifyAnders(eoi: any): Promise<void> {
         <tr>
           <td style="padding:36px 40px 8px 40px;">
             <div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#c8a96e;font-weight:500;">
-              New EOI &middot; Founding venue interest
+              New EOI &middot; Walkthrough sent
             </div>
           </td>
         </tr>
@@ -203,28 +206,8 @@ async function notifyAnders(eoi: any): Promise<void> {
               </tr>
 
               <tr>
-                <td style="padding:16px 0;border-top:1px solid rgba(248,246,240,0.08);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(248,246,240,0.48);vertical-align:top;">Phone</td>
-                <td style="padding:16px 0;border-top:1px solid rgba(248,246,240,0.08);font-size:15px;color:#f8f6f0;vertical-align:top;">${esc(eoi.phone)}</td>
-              </tr>
-
-              <tr>
-                <td style="padding:16px 0;border-top:1px solid rgba(248,246,240,0.08);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(248,246,240,0.48);vertical-align:top;">Venue type</td>
-                <td style="padding:16px 0;border-top:1px solid rgba(248,246,240,0.08);font-size:15px;color:#f8f6f0;vertical-align:top;">${esc(eoi.venue_type)}</td>
-              </tr>
-
-              <tr>
-                <td style="padding:16px 0;border-top:1px solid rgba(248,246,240,0.08);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(248,246,240,0.48);vertical-align:top;">Hires / year</td>
-                <td style="padding:16px 0;border-top:1px solid rgba(248,246,240,0.08);font-size:15px;color:#f8f6f0;vertical-align:top;">${esc(eoi.hires_per_year)}</td>
-              </tr>
-
-              <tr>
-                <td style="padding:16px 0;border-top:1px solid rgba(248,246,240,0.08);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(248,246,240,0.48);vertical-align:top;">Apps / role</td>
-                <td style="padding:16px 0;border-top:1px solid rgba(248,246,240,0.08);font-size:15px;color:#f8f6f0;vertical-align:top;">${esc(eoi.applications_per_role)}</td>
-              </tr>
-
-              <tr>
-                <td style="padding:16px 0;border-top:1px solid rgba(248,246,240,0.08);border-bottom:1px solid rgba(248,246,240,0.08);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(248,246,240,0.48);vertical-align:top;">Timing</td>
-                <td style="padding:16px 0;border-top:1px solid rgba(248,246,240,0.08);border-bottom:1px solid rgba(248,246,240,0.08);font-size:15px;color:#f8f6f0;vertical-align:top;">${esc(eoi.timing)}</td>
+                <td style="padding:16px 0;border-top:1px solid rgba(248,246,240,0.08);border-bottom:1px solid rgba(248,246,240,0.08);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(248,246,240,0.48);vertical-align:top;">State</td>
+                <td style="padding:16px 0;border-top:1px solid rgba(248,246,240,0.08);border-bottom:1px solid rgba(248,246,240,0.08);font-size:15px;color:#f8f6f0;vertical-align:top;">${esc(eoi.state)}</td>
               </tr>
 
             </table>
@@ -233,15 +216,15 @@ async function notifyAnders(eoi: any): Promise<void> {
 
         <tr>
           <td style="padding:32px 40px 0 40px;">
-            <div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#c8a96e;font-weight:500;margin-bottom:14px;">
-              Current frustration
-            </div>
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:rgba(200,169,110,0.06);border:1px solid rgba(200,169,110,0.18);border-radius:4px;">
               <tr>
-                <td style="border-left:3px solid #c8a96e;padding:4px 0 4px 20px;">
-                  <p style="margin:0;font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-style:italic;font-size:18px;line-height:1.55;color:#f8f6f0;font-weight:400;">
-                    &ldquo;${esc(eoi.frustration) === '—' ? '(not provided)' : esc(eoi.frustration)}&rdquo;
-                  </p>
+                <td style="padding:18px 22px;">
+                  <div style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(248,246,240,0.48);font-weight:500;margin-bottom:8px;">
+                    Funnel stage
+                  </div>
+                  <div style="font-size:14px;line-height:1.55;color:rgba(248,246,240,0.72);">
+                    Lead has registered. Walkthrough (Loom) is now visible to them. Qualification data &mdash; venue type, hires/year, current process, frustration &mdash; will arrive separately if they complete the post-Loom qualifier.
+                  </div>
                 </td>
               </tr>
             </table>
