@@ -89,7 +89,7 @@ body::after {
 }
 
 .container {
-  max-width: 1180px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 0 var(--gutter);
 }
@@ -491,13 +491,16 @@ section.block {
 /* ─── Timeline ─── */
 .timeline {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1px;
   background: var(--ink-line);
   border: 1px solid var(--ink-line);
   margin-top: 24px;
 }
-@media (max-width: 800px) {
+@media (max-width: 1100px) {
+  .timeline { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
   .timeline { grid-template-columns: 1fr; }
 }
 
@@ -1383,22 +1386,26 @@ footer .sep {
         <div class="timeline-stage-marker">Phase one · now → 14 jun</div>
         <h4>Pre-launch build</h4>
         <p>Final platform work, legal foundations, founding cohort preparation.
-        Landing page live for hospo operators who want to be first in line when
-        applications open on 15 June.</p>
+        Landing page live for operators who want to be first in line when applications
+        open on 15 June.</p>
       </div>
       <div class="timeline-stage">
         <div class="timeline-stage-marker">Phase two · 15 jun – 15 jul</div>
         <h4>Founding venue applications</h4>
         <p>One-month window. Operators register, watch the walkthrough, and tell us
-        about their venue. We approve and onboard the venues that are the right fit
-        for Trial. as they come in.</p>
+        about their venue. We approve the venues that are the right fit for Trial.</p>
       </div>
       <div class="timeline-stage">
-        <div class="timeline-stage-marker">Phase three · 16 jun – 17 aug</div>
-        <h4>Rolling onboarding &amp; launch</h4>
-        <p>Founding venues go live as they sign. Real workflows, real hires, real
-        feedback. Trial. opens to the public on 17 August — founding pricing closes,
-        standard pricing applies for new operators.</p>
+        <div class="timeline-stage-marker">Phase three · 16 jun – 16 aug</div>
+        <h4>Rolling onboarding</h4>
+        <p>Founding venues go live as they sign through to mid-August. Real workflows,
+        real hires, real feedback. The platform is pressure-tested in operating venues.</p>
+      </div>
+      <div class="timeline-stage">
+        <div class="timeline-stage-marker">Phase four · 17 aug</div>
+        <h4>Public launch</h4>
+        <p>Trial. opens to the public. Founding pricing closes; standard pricing
+        applies for new operators. Positioned ahead of the spring–summer hiring surge.</p>
       </div>
     </div>
   </div>
