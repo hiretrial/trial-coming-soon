@@ -9,8 +9,7 @@
 // the lambda before the request fires). Direct in-process call is faster,
 // cleaner, and reliable.
 
-const ANTHROPIC_MODEL = 'claude-haiku-4-5-20251001';
-const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
+import { callHaiku } from '../lib/anthropic-with-logging.js';
 
 const ROLE_LABELS = {
   'bartender': 'Bartender',
@@ -143,36 +142,27 @@ export async function scoreAssessment(supabase, assessmentId) {
       }
     });
 
-    // ─── 3. Anthropic API call ───
-    const anthropicKey = process.env.ANTHROPIC_API_KEY;
-    if (!anthropicKey) {
-      console.error('[score-core] ANTHROPIC_API_KEY missing');
-      return { ok: false, error: 'Scoring service unavailable', code: 'no_api_key' };
-    }
-
-    const apiResp = await fetch(ANTHROPIC_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': anthropicKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: ANTHROPIC_MODEL,
+    // ─── 3. Anthropic API call (via logging wrapper) ───
+    let responseText;
+    try {
+      const result = await callHaiku({
+        messages: [{ role: 'user', content: promptText }],
         max_tokens: 2000,
-        messages: [{ role: 'user', content: promptText }]
-      })
-    });
-
-    if (!apiResp.ok) {
-      const errText = await apiResp.text();
-      console.error('[score-core] Anthropic API error:', apiResp.status, errText.slice(0, 500));
-      await markScoringFailed(supabase, assessment.id, `API error ${apiResp.status}`);
+        endpoint: 'score-assessment/score',
+        context: {
+          assessment_id: assessment.id,
+          candidate_id: assessment.candidate_id,
+          venue_id: assessment.venue_id,
+          role: assessment.role,
+          question_count: qaPairs.length
+        }
+      });
+      responseText = result.content;
+    } catch (err) {
+      console.error('[score-core] Anthropic API error:', err?.status || '?', (err?.message || '').slice(0, 500));
+      await markScoringFailed(supabase, assessment.id, `API error ${err?.status || 'unknown'}`);
       return { ok: false, error: 'Scoring API call failed', code: 'api_error' };
     }
-
-    const apiData = await apiResp.json();
-    const responseText = apiData.content?.[0]?.text || '';
 
     // ─── 4. Parse JSON response ───
     const scoring = parseScoringResponse(responseText);
