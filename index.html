@@ -48,13 +48,22 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  font-size: 1.125rem;
+}
+@media (min-width: 1600px) {
+  html { font-size: 1.25rem; }
+}
+@media (min-width: 2200px) {
+  html { font-size: 1.375rem; }
+}
 
 body {
   font-family: var(--sans);
   background: var(--ink);
   color: var(--cream);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -116,7 +125,7 @@ nav {
 .wordmark {
   font-family: var(--serif);
   font-weight: 600;
-  font-size: 32px;
+  font-size: 2.5rem;
   letter-spacing: -0.02em;
   color: var(--cream);
   text-decoration: none;
@@ -125,12 +134,12 @@ nav {
 }
 .wordmark .dot {
   color: var(--gold);
-  font-size: 36px;
+  font-size: 2.8rem;
   margin-left: -2px;
 }
 
 .nav-status {
-  font-size: 13px;
+  font-size: 0.8125rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--cream-dim);
@@ -168,7 +177,7 @@ nav {
 }
 
 .hero-eyebrow {
-  font-size: 16px;
+  font-size: 1.0rem;
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--gold);
@@ -231,7 +240,7 @@ nav {
   color: var(--ink);
   border: none;
   font-family: var(--sans);
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 500;
   letter-spacing: 0.04em;
   padding: 22px 40px;
@@ -246,7 +255,7 @@ nav {
 }
 .btn-primary::after {
   content: '→';
-  font-size: 20px;
+  font-size: 1.25rem;
   transition: transform 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .btn-primary:hover {
@@ -257,7 +266,7 @@ nav {
 .btn-primary:hover::after { transform: translateX(4px); }
 
 .hero-side-note {
-  font-size: 16px;
+  font-size: 1.0rem;
   color: var(--cream-dim);
   letter-spacing: 0.04em;
   max-width: 32ch;
@@ -276,7 +285,7 @@ nav {
   color: var(--gold-faint);
   pointer-events: none;
   user-select: none;
-  font-weight: 300;
+  font-weight: 400;
 }
 .hero-mark-top {
   top: 140px;
@@ -296,7 +305,7 @@ section.block {
 }
 
 .section-eyebrow {
-  font-size: 16px;
+  font-size: 1.0rem;
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--gold);
@@ -363,7 +372,7 @@ section.block {
   font-family: var(--serif);
   font-style: italic;
   font-weight: 400;
-  font-size: 56px;
+  font-size: 3.5rem;
   line-height: 1;
   color: var(--gold);
 }
@@ -377,7 +386,7 @@ section.block {
   margin-bottom: 14px;
 }
 .how-content p {
-  font-size: 19px;
+  font-size: 1.1875rem;
   line-height: 1.65;
   color: var(--cream-soft);
   max-width: 60ch;
@@ -387,7 +396,7 @@ section.block {
 
 @media (max-width: 640px) {
   .how-step { grid-template-columns: 1fr; gap: 12px; }
-  .how-num { font-size: 44px; }
+  .how-num { font-size: 2.75rem; }
 }
 
 /* ─── Trust block (data handling) ─── */
@@ -413,7 +422,7 @@ section.block {
   pointer-events: none;
 }
 .trust-eyebrow {
-  font-size: 15px;
+  font-size: 0.9375rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--gold);
@@ -431,7 +440,7 @@ section.block {
 }
 .trust-title em { font-style: italic; color: var(--gold); }
 .trust p {
-  font-size: 20px;
+  font-size: 1.25rem;
   line-height: 1.7;
   color: var(--cream-soft);
   max-width: 64ch;
@@ -476,13 +485,13 @@ section.block {
   display: block;
   font-family: var(--serif);
   font-weight: 500;
-  font-size: 23px;
+  font-size: 1.4375rem;
   color: var(--cream);
   margin-bottom: 6px;
   letter-spacing: -0.005em;
 }
 .program-list span {
-  font-size: 18px;
+  font-size: 1.125rem;
   color: var(--cream-soft);
   line-height: 1.65;
   font-weight: 400;
@@ -514,7 +523,7 @@ section.block {
 }
 
 .timeline-stage-marker {
-  font-size: 15px;
+  font-size: 0.9375rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--cream-dim);
@@ -535,13 +544,13 @@ section.block {
 .timeline-stage h4 {
   font-family: var(--serif);
   font-weight: 500;
-  font-size: 28px;
+  font-size: 1.75rem;
   margin-bottom: 14px;
   letter-spacing: -0.01em;
   line-height: 1.15;
 }
 .timeline-stage p {
-  font-size: 19px;
+  font-size: 1.1875rem;
   color: var(--cream-soft);
   line-height: 1.65;
   font-weight: 400;
@@ -601,7 +610,7 @@ form.eoi {
 
 label {
   display: block;
-  font-size: 13px;
+  font-size: 0.8125rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--cream-dim);
@@ -624,8 +633,8 @@ textarea {
   border-bottom: 1px solid var(--ink-line-strong);
   color: var(--cream);
   font-family: var(--sans);
-  font-size: 18px;
-  font-weight: 300;
+  font-size: 1.125rem;
+  font-weight: 400;
   padding: 10px 0;
   transition: border-color 0.3s ease;
 }
@@ -639,7 +648,7 @@ textarea:focus {
 }
 input::placeholder, textarea::placeholder {
   color: var(--cream-faint);
-  font-weight: 300;
+  font-weight: 400;
 }
 textarea {
   resize: vertical;
@@ -672,7 +681,7 @@ select option {
 }
 .conviction-label {
   font-family: var(--serif);
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 400;
   letter-spacing: -0.005em;
   color: var(--cream);
@@ -695,9 +704,9 @@ select option {
   transition: all 0.25s ease;
   text-transform: none;
   letter-spacing: 0;
-  font-size: 16px;
+  font-size: 1.0rem;
   color: var(--cream-soft);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.5;
   margin: 0;
 }
@@ -741,7 +750,7 @@ select option {
   color: var(--ink);
   border: none;
   font-family: var(--sans);
-  font-size: 16px;
+  font-size: 1.0rem;
   font-weight: 500;
   letter-spacing: 0.06em;
   padding: 20px 56px;
@@ -765,14 +774,14 @@ select option {
   margin-top: 18px;
   text-align: center;
   font-family: var(--sans);
-  font-size: 13.5px;
+  font-size: 0.8438rem;
   line-height: 1.6;
   color: var(--cream-dim);
   letter-spacing: 0.01em;
   max-width: 420px;
   margin-left: auto;
   margin-right: auto;
-  font-weight: 300;
+  font-weight: 400;
 }
 .eoi-consent a {
   color: var(--gold);
@@ -785,12 +794,12 @@ select option {
   border-bottom-color: var(--gold-soft);
 }
 @media (max-width: 600px) {
-  .eoi-consent { font-size: 13px; padding: 0 10px; margin-top: 14px; }
+  .eoi-consent { font-size: 0.8125rem; padding: 0 10px; margin-top: 14px; }
 }
 
 .form-microcopy {
   text-align: center;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--cream-dim);
   margin-top: 20px;
   letter-spacing: 0.02em;
@@ -815,13 +824,13 @@ select option {
 }
 .form-message h3 {
   font-family: var(--serif);
-  font-size: 28px;
+  font-size: 1.75rem;
   font-weight: 500;
   margin-bottom: 12px;
   color: var(--cream);
 }
 .form-message p {
-  font-size: 17px;
+  font-size: 1.0625rem;
   color: var(--cream-soft);
   line-height: 1.6;
 }
@@ -868,7 +877,7 @@ select option {
 .reveal-note {
   font-family: var(--serif);
   font-size: clamp(17px, 2vw, 21px);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.55;
   color: var(--cream-soft);
   max-width: 56ch;
@@ -881,7 +890,7 @@ select option {
 .reveal-signature {
   font-family: var(--serif);
   font-style: italic;
-  font-size: 18px;
+  font-size: 1.125rem;
   color: var(--gold);
   margin-top: 28px;
 }
@@ -915,7 +924,7 @@ select option {
   pointer-events: none;
 }
 .reveal-loom-eyebrow {
-  font-size: 13px;
+  font-size: 0.8125rem;
   letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--gold);
@@ -938,10 +947,10 @@ select option {
   color: var(--gold);
 }
 .reveal-loom-sub {
-  font-size: 16px;
+  font-size: 1.0rem;
   line-height: 1.65;
   color: var(--cream-soft);
-  font-weight: 300;
+  font-weight: 400;
   max-width: 42ch;
   margin: 0 auto;
   position: relative;
@@ -950,7 +959,7 @@ select option {
   margin-top: 28px;
   font-family: var(--serif);
   font-style: italic;
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: var(--gold);
   letter-spacing: 0.04em;
   position: relative;
@@ -992,7 +1001,7 @@ select option {
   pointer-events: none;
 }
 .reveal-booking-eyebrow {
-  font-size: 13px;
+  font-size: 0.8125rem;
   letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--gold);
@@ -1013,17 +1022,17 @@ select option {
   color: var(--gold);
 }
 .reveal-booking-sub {
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 1.65;
   color: var(--cream-soft);
-  font-weight: 300;
+  font-weight: 400;
   max-width: 50ch;
   margin: 0 auto 28px;
 }
 .reveal-booking-coming {
   font-family: var(--serif);
   font-style: italic;
-  font-size: 16px;
+  font-size: 1.0rem;
   color: var(--cream-dim);
   letter-spacing: 0.02em;
 }
@@ -1036,7 +1045,7 @@ select option {
   background: var(--gold);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 16px;
+  font-size: 1.0rem;
   font-weight: 500;
   letter-spacing: 0.04em;
   padding: 18px 36px;
@@ -1081,7 +1090,7 @@ select option {
 .reveal-fp-lede {
   font-family: var(--serif);
   font-size: clamp(17px, 1.9vw, 20px);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.55;
   color: var(--cream-soft);
   max-width: 60ch;
@@ -1107,13 +1116,13 @@ select option {
   font-family: var(--serif);
   font-style: italic;
   font-weight: 500;
-  font-size: 24px;
+  font-size: 1.5rem;
   color: var(--gold);
   margin-bottom: 8px;
   letter-spacing: -0.005em;
 }
 .fp-tier-venues {
-  font-size: 13px;
+  font-size: 0.8125rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--cream-dim);
@@ -1123,21 +1132,21 @@ select option {
 .fp-tier-price {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: 32px;
+  font-size: 2.0rem;
   letter-spacing: -0.01em;
   color: var(--cream);
   margin-bottom: 4px;
   line-height: 1.1;
 }
 .fp-tier-price .small {
-  font-size: 16px;
+  font-size: 1.0rem;
   color: var(--cream-dim);
   font-style: italic;
 }
 .fp-tier-perhire {
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: var(--cream-soft);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.5;
   border-top: 1px dashed var(--ink-line);
   padding-top: 14px;
@@ -1157,7 +1166,7 @@ select option {
 .fp-mechanic h4 {
   font-family: var(--serif);
   font-weight: 500;
-  font-size: 24px;
+  font-size: 1.5rem;
   margin-bottom: 14px;
   letter-spacing: -0.005em;
 }
@@ -1166,15 +1175,15 @@ select option {
   color: var(--gold);
 }
 .fp-mechanic p {
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 1.65;
   color: var(--cream-soft);
-  font-weight: 300;
+  font-weight: 400;
 }
 .fp-mechanic p + p { margin-top: 10px; }
 
 .reveal-meta {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--cream-faint);
   letter-spacing: 0.04em;
   text-align: center;
@@ -1191,15 +1200,15 @@ footer {
   border-top: 1px solid var(--ink-line);
   text-align: center;
 }
-footer .wordmark { font-size: 30px; margin-bottom: 18px; }
+footer .wordmark { font-size: 1.875rem; margin-bottom: 18px; }
 footer .footer-tag {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--cream-dim);
   letter-spacing: 0.06em;
   margin-bottom: 32px;
 }
 footer .footer-meta {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--cream-faint);
   letter-spacing: 0.08em;
   text-transform: uppercase;
