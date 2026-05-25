@@ -1565,7 +1565,7 @@ footer .sep {
                with prefill data after EOI submit. -->
           <div
             id="calendly-embed"
-            style="min-width:320px;min-height:1800px;"
+            style="min-width:320px;min-height:2200px;"
           ></div>
         </div>
 
@@ -1783,12 +1783,12 @@ footer .sep {
         });
         target.innerHTML =
           '<iframe src="https://calendly.com/anders-hiretrial/demo?' + params.toString() + '"' +
-          ' width="100%" height="1800" frameborder="0" style="border:none;"></iframe>';
+          ' width="100%" height="2200" frameborder="0" style="border:none;"></iframe>';
       }
       return;
     }
 
-    // Calendly is ready — render the inline widget with prefill
+    // Calendly is ready — render the inline widget with prefill.
     window.Calendly.initInlineWidget({
       url: 'https://calendly.com/anders-hiretrial/demo?hide_gdpr_banner=1&background_color=131313&text_color=f8f6f0&primary_color=c8a96e',
       parentElement: target,
@@ -1797,28 +1797,18 @@ footer .sep {
         email: prefill.email
       }
     });
-  }
 
-  // ─── Listen for Calendly's height-change events ─────────────────────
-  // Calendly's iframe posts height updates as the user interacts (date
-  // picker → time slots → booking form). Resize the iframe to match so
-  // we never get an internal scrollbar regardless of viewport width.
-  window.addEventListener('message', function(e) {
-    if (e.origin !== 'https://calendly.com') return;
-    if (!e.data || typeof e.data !== 'object') return;
-    if (e.data.event && e.data.event.indexOf('calendly') === 0) {
-      const target = document.getElementById('calendly-embed');
-      if (!target) return;
-      const iframe = target.querySelector('iframe');
-      if (!iframe) return;
-      // Calendly sometimes sends height in payload; fall back to scroll height
-      const h = (e.data.payload && e.data.payload.height) || null;
-      if (h && Number(h) > 600) {
-        iframe.style.height = (Number(h) + 40) + 'px';
-        target.style.minHeight = (Number(h) + 40) + 'px';
-      }
-    }
-  });
+    // Once initInlineWidget has injected the iframe, add the official
+    // .calendly-inline-widget class. Calendly's widget.js scans for this
+    // class on its postMessage receivers to enable auto-height adjustment,
+    // so the iframe grows/shrinks with content (date picker → time slots
+    // → booking form) instead of needing a fixed min-height guess.
+    target.classList.add('calendly-inline-widget');
+    target.setAttribute(
+      'data-url',
+      'https://calendly.com/anders-hiretrial/demo?hide_gdpr_banner=1&background_color=131313&text_color=f8f6f0&primary_color=c8a96e'
+    );
+  }
 
   // Smooth focus when hero CTA clicked
   document.querySelectorAll('a[href="#eoi"]').forEach(link => {
