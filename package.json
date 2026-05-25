@@ -4,6 +4,7 @@
   "private": true,
   "description": "Trial. EOI landing page + API endpoints",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.0",
     "@supabase/supabase-js": "^2.45.0",
     "@vercel/node": "^3.2.0",
     "mammoth": "^1.8.0",
