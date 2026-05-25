@@ -3,6 +3,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import crypto from 'crypto';
+import { callHaiku } from '../lib/anthropic-with-logging.js';
 
 const ROLE_KEYWORDS = [
   { role: 'restaurant-manager', patterns: ['restaurant manager', 'venue manager', 'general manager'] },
@@ -128,12 +129,6 @@ async function fetchAttachmentBuffer(emailId, attachmentMetadata) {
 }
 
 async function extractNameFromCV(cvBuffer, contentType, filename) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    console.error('[extractNameFromCV] No ANTHROPIC_API_KEY');
-    return null;
-  }
-
   const isPDF = contentType?.includes('pdf') || filename?.toLowerCase().endsWith('.pdf');
   const isDOCX = contentType?.includes('wordprocessingml') || filename?.toLowerCase().endsWith('.docx');
 
@@ -143,30 +138,26 @@ async function extractNameFromCV(cvBuffer, contentType, filename) {
   }
 
   try {
-    let messagePayload;
+    let messages;
 
     if (isPDF) {
-      messagePayload = {
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 200,
-        messages: [{
-          role: 'user',
-          content: [
-            {
-              type: 'document',
-              source: {
-                type: 'base64',
-                media_type: 'application/pdf',
-                data: cvBuffer.toString('base64')
-              }
-            },
-            {
-              type: 'text',
-              text: 'What is the candidate\'s full name in this CV? Respond with ONLY a JSON object: {"first_name": "X", "last_name": "Y"}. No other text, no markdown. If unsure, use empty strings.'
+      messages = [{
+        role: 'user',
+        content: [
+          {
+            type: 'document',
+            source: {
+              type: 'base64',
+              media_type: 'application/pdf',
+              data: cvBuffer.toString('base64')
             }
-          ]
-        }]
-      };
+          },
+          {
+            type: 'text',
+            text: 'What is the candidate\'s full name in this CV? Respond with ONLY a JSON object: {"first_name": "X", "last_name": "Y"}. No other text, no markdown. If unsure, use empty strings.'
+          }
+        ]
+      }];
     } else {
       const mammoth = (await import('mammoth')).default;
       const result = await mammoth.extractRawText({ buffer: cvBuffer });
@@ -179,34 +170,19 @@ async function extractNameFromCV(cvBuffer, contentType, filename) {
 
       const snippet = cvText.substring(0, 2000);
 
-      messagePayload = {
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 200,
-        messages: [{
-          role: 'user',
-          content: `Below is the text content of a candidate's CV. What is the candidate's full name? Respond with ONLY a JSON object: {"first_name": "X", "last_name": "Y"}. No other text, no markdown. If unsure, use empty strings.\n\nCV text:\n${snippet}`
-        }]
-      };
+      messages = [{
+        role: 'user',
+        content: `Below is the text content of a candidate's CV. What is the candidate's full name? Respond with ONLY a JSON object: {"first_name": "X", "last_name": "Y"}. No other text, no markdown. If unsure, use empty strings.\n\nCV text:\n${snippet}`
+      }];
     }
 
-    const messagesResp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify(messagePayload)
+    const { content: responseText } = await callHaiku({
+      messages,
+      max_tokens: 200,
+      endpoint: 'inbound-email/extract-name',
+      context: { filename, content_type: contentType, file_type: isPDF ? 'pdf' : 'docx' }
     });
 
-    if (!messagesResp.ok) {
-      const err = await messagesResp.text();
-      console.error('[extractNameFromCV] Claude API error:', messagesResp.status, err);
-      return null;
-    }
-
-    const data = await messagesResp.json();
-    const responseText = data.content?.[0]?.text || '';
     const cleaned = responseText.trim()
       .replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '');
 
