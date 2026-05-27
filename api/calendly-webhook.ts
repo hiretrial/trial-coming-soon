@@ -271,11 +271,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ ok: false, error: `Booking upsert failed: ${bErr.message}` });
   }
 
-  // ── 8. Update EOI cache (so TrialHQ list shows booking inline) ─
+// ── 8. Update EOI cache + flip status to 'booked' ─────────────
+  // When a booking lands, the EOI leaves the EOIs tab and appears in Bookings.
+  // If the booking gets cancelled, EOI returns to 'new' so it shows up again.
   if (matchedEoiId) {
+    const newStatus = booking.status === 'cancelled' ? 'new' : 'booked';
     const { error: updErr } = await admin
       .from('eoi_submissions')
       .update({
+        status:                  newStatus,
         calendly_booking_id:     bookingRow.id,
         calendly_booking_at:     booking.scheduled_at,
         calendly_booking_status: booking.status,
