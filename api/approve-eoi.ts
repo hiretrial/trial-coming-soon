@@ -245,10 +245,10 @@ async function sendWelcomeEmail(opts: {
         </tr>
         <tr>
           <td style="padding:0 40px 32px 40px;">
-            <h1 style="margin:0;font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-weight:500;font-size:42px;line-height:1.15;letter-spacing:-0.01em;color:#f8f6f0;">
+            <h1 style="margin:0;font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;font-weight:500;font-size:56px;line-height:1.1;letter-spacing:-0.015em;color:#f8f6f0;">
               ${esc(firstName)}, ${esc(venueName)} is in.
             </h1>
-            <div style="margin-top:16px;font-size:17px;line-height:1.6;color:rgba(248,246,240,0.78);">
+            <div style="margin-top:20px;font-size:19px;line-height:1.6;color:rgba(248,246,240,0.78);">
               Thanks for your interest in Trial. We've reviewed your venue and you're approved on the <strong style="color:#f8f6f0;">${esc(planLabel)}</strong> plan${isFounding ? ' as a <strong style="color:#c8a96e;">Founding Partner</strong>' : ''}.
             </div>
           </td>
@@ -280,7 +280,7 @@ async function sendWelcomeEmail(opts: {
             <div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#c8a96e;font-weight:500;margin-bottom:14px;">
               Next: 3-minute setup
             </div>
-            <div style="font-size:16px;line-height:1.65;color:rgba(248,246,240,0.78);">
+            <div style="font-size:17px;line-height:1.65;color:rgba(248,246,240,0.78);">
               You'll confirm a few details, choose how candidates reach you, and we'll spin up your venue's dashboard and your private forwarding inbox.
             </div>
           </td>
