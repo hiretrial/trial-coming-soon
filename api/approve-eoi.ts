@@ -228,7 +228,7 @@ async function sendWelcomeEmail(opts: {
   <tr>
     <td align="center">
 
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#131313;border:1px solid rgba(248,246,240,0.08);border-radius:4px;">
+      <table role="presentation" width="680" cellpadding="0" cellspacing="0" border="0" style="max-width:680px;background:#131313;border:1px solid rgba(248,246,240,0.08);border-radius:4px;">
 
         <tr>
           <td style="padding:40px 40px 24px 40px;border-bottom:1px solid rgba(248,246,240,0.08);">
