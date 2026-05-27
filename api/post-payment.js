@@ -1,15 +1,11 @@
 // api/post-payment.js
 //
-// Stripe redirect handler. Either:
-// 1. Token already exists (TrialHQ created it before payment) → mark it paid
-// 2. No token yet (static link / today's testing) → create one, mark it paid
+// Stripe redirects here after Checkout completes.
+// Looks up the venue via client_reference_id (setup_token), flips the
+// account to 'active', stores Stripe IDs, then redirects to setup.html.
 
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
-
-const PLAN_BY_PRICE = {
-  // Fill in real Stripe price IDs later
-};
 
 export default async function handler(req, res) {
   try {
@@ -25,12 +21,16 @@ export default async function handler(req, res) {
 
     const stripe = new Stripe(stripeKey, { apiVersion: '2024-11-20.acacia' });
 
-    const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ['customer', 'line_items', 'line_items.data.price']
-    });
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     if (session.payment_status !== 'paid') {
       return res.status(400).send('Payment not completed');
+    }
+
+    const setupToken = session.client_reference_id;
+    if (!setupToken) {
+      console.error('[post-payment] No client_reference_id on session', sessionId);
+      return res.status(400).send('Missing setup token reference');
     }
 
     const supabase = createClient(
@@ -38,77 +38,70 @@ export default async function handler(req, res) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    // ─── Scenario 1: token already exists (TrialHQ flow) ───
-    if (session.client_reference_id) {
-      const { data: existingToken } = await supabase
-        .from('setup_tokens')
-        .select('token, paid_at')
-        .eq('token', session.client_reference_id)
-        .maybeSingle();
-
-      if (existingToken) {
-        if (!existingToken.paid_at) {
-          await supabase
-            .from('setup_tokens')
-            .update({
-              paid_at: new Date().toISOString(),
-              stripe_session_id_paid: sessionId
-            })
-            .eq('token', existingToken.token);
-        }
-        return res.redirect(302, `/setup.html?token=${existingToken.token}`);
-      }
-    }
-
-    // ─── Scenario 2: no token yet — create one (today's static-link flow) ───
-    const customerEmail = session.customer_details?.email || session.customer?.email;
-    const customerName = session.customer_details?.name || '';
-    const businessName = session.custom_fields?.find(f => f.key === 'business_name')?.text?.value
-                       || session.customer_details?.name || '';
-    const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id;
-    const subscriptionId = session.subscription;
-
-    const lineItem = session.line_items?.data?.[0];
-    const priceId = lineItem?.price?.id;
-    let plan = PLAN_BY_PRICE[priceId] || { tier: 'solo', venue_count: 1, monthly: 99.99, per_hire: 99 };
-
-    // Idempotency — don't double-create if same session redirects twice
-    const { data: existingBySession } = await supabase
-      .from('setup_tokens')
-      .select('token')
-      .eq('stripe_session_id', sessionId)
+    // Lookup venue + account by setup_token
+    const { data: venue, error: vErr } = await supabase
+      .from('venues')
+      .select('id, account_id, accounts(id, subscription_status)')
+      .eq('setup_token', setupToken)
       .maybeSingle();
 
-    let token;
-    if (existingBySession) {
-      token = existingBySession.token;
-    } else {
-      const { data: inserted, error: insertErr } = await supabase
-        .from('setup_tokens')
-        .insert({
-          stripe_session_id: sessionId,
-          stripe_customer_id: customerId,
-          stripe_subscription_id: subscriptionId,
-          plan_tier: plan.tier,
-          venue_count: plan.venue_count,
-          monthly_price: plan.monthly,
-          per_hire_fee: plan.per_hire,
-          phase: 'founding',
-          business_name: businessName,
-          group_owner_email: customerEmail,
-          group_owner_name: customerName,
-          type: 'master',
-          paid_at: new Date().toISOString(),
-          stripe_session_id_paid: sessionId
-        })
-        .select('token')
-        .single();
-
-      if (insertErr) return res.status(500).send('Setup token creation failed');
-      token = inserted.token;
+    if (vErr || !venue) {
+      console.error('[post-payment] Venue lookup failed:', vErr);
+      return res.status(404).send('Venue not found for this session');
+    }
+    if (!venue.accounts) {
+      return res.status(500).send('Venue missing account link');
     }
 
-    return res.redirect(302, `/setup.html?token=${token}`);
+    // Idempotency — if account is already active, just redirect
+    if (venue.accounts.subscription_status === 'active') {
+      return res.redirect(302, `/setup.html?token=${setupToken}`);
+    }
+
+    const customerId = typeof session.customer === 'string'
+      ? session.customer
+      : session.customer?.id;
+    const subscriptionId = typeof session.subscription === 'string'
+      ? session.subscription
+      : session.subscription?.id;
+
+    const nowIso = new Date().toISOString();
+
+    // Update account → active
+    const { error: accErr } = await supabase
+      .from('accounts')
+      .update({
+        subscription_status: 'active',
+        subscription_started_at: nowIso,
+        stripe_customer_id: customerId,
+        stripe_subscription_id: subscriptionId,
+        updated_at: nowIso,
+      })
+      .eq('id', venue.account_id);
+
+    if (accErr) {
+      console.error('[post-payment] Account update failed:', accErr);
+      return res.status(500).send('Account activation failed');
+    }
+
+    // Mirror Stripe IDs onto the venue row (handy for venue-level views)
+    const { error: vUpdErr } = await supabase
+      .from('venues')
+      .update({
+        stripe_customer_id: customerId,
+        stripe_subscription_id: subscriptionId,
+        updated_at: nowIso,
+      })
+      .eq('id', venue.id);
+
+    if (vUpdErr) {
+      console.warn('[post-payment] Venue mirror update failed (account already active):', vUpdErr);
+      // Non-fatal — account is active, venue mirror is bonus
+    }
+
+    console.log(`[post-payment] ✅ Activated account ${venue.account_id} via token ${setupToken}`);
+
+    return res.redirect(302, `/setup.html?token=${setupToken}`);
 
   } catch (err) {
     console.error('[post-payment] Error:', err);
