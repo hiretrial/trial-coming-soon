@@ -1789,18 +1789,47 @@ function wireSectionToggles() {
 /* ───────────────────────────────────────────────────────────
    Handlers
    ─────────────────────────────────────────────────────────── */
-function onPayClick() {
-  // PRODUCTION: redirect to Stripe Checkout for this token's price.
-  // For dev: simulate payment success after a delay.
+async function onPayClick() {
   const btn = $('pay-btn');
   btn.disabled = true;
   btn.textContent = 'Redirecting to Stripe…';
-  setTimeout(() => {
-    progress.paid = true;
-    saveProgress();
-    showToast(`Payment confirmed — $${session.monthly.toFixed(2)} + GST. Receipt sent to ${session.groupOwnerEmail}.`, 3200);
-    setActiveSection();
-  }, 1200);
+
+  // Dev tokens (master_solo, etc) skip the real checkout — simulate success
+  if (MOCK_TOKENS[getToken()]) {
+    setTimeout(() => {
+      progress.paid = true;
+      saveProgress();
+      showToast(`Payment confirmed — $${session.monthly.toFixed(2)} + GST. Receipt sent to ${session.groupOwnerEmail}.`, 3200);
+      setActiveSection();
+    }, 1200);
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: getToken() }),
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.checkout_url) {
+      console.error('[onPayClick] Checkout creation failed:', data);
+      btn.disabled = false;
+      btn.textContent = `Pay $${session.monthly.toFixed(2)} + GST →`;
+      showToast(data.error || 'Could not start checkout. Please try again.');
+      return;
+    }
+
+    // Hand off to Stripe — they'll redirect to /api/post-payment on success
+    window.location.href = data.checkout_url;
+
+  } catch (err) {
+    console.error('[onPayClick] Network error:', err);
+    btn.disabled = false;
+    btn.textContent = `Pay $${session.monthly.toFixed(2)} + GST →`;
+    showToast('Network error — please try again.');
+  }
 }
 
 function onDispatchClick() {
