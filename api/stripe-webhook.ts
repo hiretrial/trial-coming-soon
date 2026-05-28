@@ -58,6 +58,7 @@ const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY_LIVE;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
 const stripe = STRIPE_SECRET_KEY
   ? new Stripe(STRIPE_SECRET_KEY)
@@ -283,6 +284,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             .eq('id', account_id);
         }
 
+        // Send the post-payment welcome email. Idempotent + failure-isolated:
+        // never throws, won't double-send on a Stripe retry, and a failure
+        // here does not affect the 200 ACK below.
+        await sendWelcomeEmail(admin, venue_id, { eventId: event.id });
+
         break;
       }
 
@@ -396,4 +402,424 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // ── 4. ACK ────────────────────────────────────────────────────
   return res.status(200).json({ ok: true, received: event.type, event_id: event.id });
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// WELCOME EMAIL (post-payment)
+//
+// Fires on checkout.session.completed — the moment payment confirms and
+// the venue goes live. Distinct from the approve-eoi email (which is the
+// pre-payment "you're approved, here's your setup link"). This one says
+// "you're live, here's your one setup step + how it all works".
+//
+// Sent via the same Resend pattern as approve-eoi.ts (raw fetch, same
+// from/reply-to). Idempotent: guarded on venues.welcome_email_sent_at so
+// a Stripe retry of the same event can't double-send. Failure-isolated:
+// a Resend or fetch error is logged and swallowed so the payment webhook
+// still 200s — worst case the venue just doesn't get the welcome (logged
+// for manual resend from TrialHQ), exactly like approve-eoi's fallback.
+//
+// Requires migration:
+//   alter table venues add column if not exists welcome_email_sent_at timestamptz;
+// ═══════════════════════════════════════════════════════════════════
+
+const WELCOME_FROM_EMAIL = 'Trial. <hello@hiretrial.com.au>';
+const WELCOME_REPLY_TO_EMAIL = 'hello@hiretrial.com.au';
+const DASHBOARD_URL = 'https://dashboard.hiretrial.com.au';
+
+// Plan label, mirroring approve-eoi.ts so the two emails agree.
+const WELCOME_PLAN_LABELS: Record<string, string> = {
+  solo: 'Solo',
+  starter: 'Starter',
+  growth: 'Growth',
+  enterprise: 'Enterprise',
+};
+
+function welcomePlanLabel(phase: string | null, tier: string | null): string {
+  const tierLabel = WELCOME_PLAN_LABELS[(tier || '').toLowerCase()] || (tier || 'Solo');
+  const isFounding = (phase || 'founding') === 'founding';
+  return isFounding ? `Founding Partner \u00b7 ${tierLabel}` : tierLabel;
+}
+
+const WELCOME_HTML_TEMPLATE = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Welcome to Trial.</title></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#f8f6f0;-webkit-font-smoothing:antialiased;">
+<!--
+  ════════════════════════════════════════════════════════════════
+  Trial. — Welcome email (fires on checkout.session.completed)
+  Merge fields (set when dispatching via Resend):
+    {{venue_name}}       e.g. "Hotel Sweeneys"
+    {{contact_name}}     e.g. "Sarah"  (first name)
+    {{inbound_address}}  e.g. "sweeneys@inbound.hiretrial.com.au"
+    {{dashboard_url}}    e.g. "https://hq... or the venue dashboard URL"
+    {{plan_label}}       e.g. "Founding Partner · Solo"
+  ════════════════════════════════════════════════════════════════
+-->
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#0a0a0a;padding:40px 20px;">
+  <tr><td align="center">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width:600px;">
+
+      <!-- Wordmark -->
+      <tr><td align="center" style="padding-bottom:36px;">
+        <div style="font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:34px;letter-spacing:-0.5px;color:#f8f6f0;line-height:1;">
+          Trial<span style="color:#c8a96e;font-size:40px;">.</span>
+        </div>
+      </td></tr>
+
+      <!-- Hero -->
+      <tr><td style="padding:0 8px 30px 8px;">
+        <div style="font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:14px;">
+          You're live · {{plan_label}}
+        </div>
+        <h1 style="font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:32px;line-height:1.18;letter-spacing:-0.4px;color:#f8f6f0;margin:0 0 16px 0;">
+          Welcome to Trial., {{contact_name}}.
+        </h1>
+        <p style="font-size:15.5px;line-height:1.65;color:rgba(248,246,240,0.78);margin:0;">
+          {{venue_name}} is set up and ready. Your pricing is locked for the life of your subscription — that doesn't change as we grow. There's <strong style="color:#f8f6f0;font-weight:600;">one thing</strong> to do to start screening candidates, and it takes about two minutes. Everything after that is automatic.
+        </p>
+      </td></tr>
+
+      <!-- THE ONE ACTION -->
+      <tr><td style="padding:0 8px 14px 8px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background:linear-gradient(135deg,rgba(200,169,110,0.10),rgba(200,169,110,0.04));border:1px solid rgba(200,169,110,0.32);border-radius:10px;">
+          <tr><td style="padding:24px 24px 22px 24px;">
+            <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:10px;">The one setup step</div>
+            <div style="font-family:Georgia,'Times New Roman',serif;font-weight:600;font-size:19px;color:#f8f6f0;line-height:1.3;margin-bottom:12px;">
+              Point your job ads at your Trial. address
+            </div>
+            <p style="font-size:14.5px;line-height:1.6;color:rgba(248,246,240,0.74);margin:0 0 16px 0;">
+              On Seek, Indeed, LinkedIn, or wherever you advertise, change the email that receives applications to your unique Trial. forwarding address below. From then on, every application lands with us first — we screen it, score it, and send the candidate straight into your dashboard. You don't change how you advertise or where you post.
+            </p>
+            <p style="font-size:13.5px;line-height:1.6;color:rgba(248,246,240,0.62);margin:0 0 16px 0;">
+              And you still get every application in your own inbox — we forward the original on to you, untouched, exactly as you'd normally receive it. Nothing is intercepted or hidden. Trial. just adds the screened, scored version alongside it.
+            </p>
+            <div style="background:#0a0a0a;border:1px solid rgba(248,246,240,0.12);border-radius:8px;padding:14px 16px;text-align:center;">
+              <div style="font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(248,246,240,0.42);font-weight:600;margin-bottom:6px;">Your forwarding address</div>
+              <div style="font-family:'SF Mono',Monaco,Consolas,monospace;font-size:15px;color:#c8a96e;font-weight:500;word-break:break-all;">{{inbound_address}}</div>
+            </div>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- Dashboard button -->
+      <tr><td align="center" style="padding:18px 8px 36px 8px;">
+        <a href="{{dashboard_url}}" style="display:inline-block;padding:15px 38px;background:#c8a96e;color:#0a0a0a;font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:600;letter-spacing:0.02em;text-decoration:none;border-radius:8px;">
+          Open your dashboard
+        </a>
+        <div style="font-size:12px;color:rgba(248,246,240,0.42);margin-top:12px;">Bookmark it — it's where your scored candidates appear.</div>
+      </td></tr>
+
+      <!-- What happens next -->
+      <tr><td style="padding:0 8px 10px 8px;border-top:1px solid rgba(248,246,240,0.08);padding-top:30px;">
+        <div style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:16px;">What happens next</div>
+      </td></tr>
+      <tr><td style="padding:0 8px 30px 8px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+          <tr><td style="padding:0 0 16px 0;vertical-align:top;width:34px;">
+            <div style="width:26px;height:26px;border-radius:50%;background:rgba(200,169,110,0.12);color:#c8a96e;font-family:Georgia,serif;font-weight:700;font-size:13px;text-align:center;line-height:26px;">1</div>
+          </td><td style="padding:0 0 16px 8px;">
+            <div style="font-size:14.5px;color:#f8f6f0;font-weight:500;margin-bottom:2px;">An application arrives</div>
+            <div style="font-size:13.5px;color:rgba(248,246,240,0.6);line-height:1.55;">A candidate applies through your job ad. It hits your Trial. address automatically — no action from you.</div>
+          </td></tr>
+          <tr><td style="padding:0 0 16px 0;vertical-align:top;width:34px;">
+            <div style="width:26px;height:26px;border-radius:50%;background:rgba(200,169,110,0.12);color:#c8a96e;font-family:Georgia,serif;font-weight:700;font-size:13px;text-align:center;line-height:26px;">2</div>
+          </td><td style="padding:0 0 16px 8px;">
+            <div style="font-size:14.5px;color:#f8f6f0;font-weight:500;margin-bottom:2px;">We screen and score</div>
+            <div style="font-size:13.5px;color:rgba(248,246,240,0.6);line-height:1.55;">The candidate completes a short, role-specific scenario assessment. Our AI scores it and writes a plain-English summary.</div>
+          </td></tr>
+          <tr><td style="padding:0 0 16px 0;vertical-align:top;width:34px;">
+            <div style="width:26px;height:26px;border-radius:50%;background:rgba(200,169,110,0.12);color:#c8a96e;font-family:Georgia,serif;font-weight:700;font-size:13px;text-align:center;line-height:26px;">3</div>
+          </td><td style="padding:0 0 16px 8px;">
+            <div style="font-size:14.5px;color:#f8f6f0;font-weight:500;margin-bottom:2px;">You see ranked candidates — and their actual answers</div>
+            <div style="font-size:13.5px;color:rgba(248,246,240,0.6);line-height:1.55;">Scored and ranked in your dashboard, with a plain-English summary. Open any candidate and you'll see every question they were asked and exactly how they answered it — not just a number. You decide who to interview and trial; Trial. never makes the call for you.</div>
+          </td></tr>
+          <tr><td style="padding:0 0 0 0;vertical-align:top;width:34px;">
+            <div style="width:26px;height:26px;border-radius:50%;background:rgba(200,169,110,0.12);color:#c8a96e;font-family:Georgia,serif;font-weight:700;font-size:13px;text-align:center;line-height:26px;">4</div>
+          </td><td style="padding:0 0 0 8px;">
+            <div style="font-size:14.5px;color:#f8f6f0;font-weight:500;margin-bottom:2px;">You only pay when one sticks</div>
+            <div style="font-size:13.5px;color:rgba(248,246,240,0.6);line-height:1.55;">Your monthly fee covers the platform. The per-hire fee only applies when a candidate you hired through Trial. stays 90 days. No retention, no fee.</div>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- FAQs -->
+      <tr><td style="padding:0 8px 10px 8px;border-top:1px solid rgba(248,246,240,0.08);padding-top:30px;">
+        <div style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:16px;">Quick answers</div>
+      </td></tr>
+      <tr><td style="padding:0 8px 30px 8px;">
+
+        <div style="margin-bottom:18px;">
+          <div style="font-size:14.5px;color:#f8f6f0;font-weight:600;margin-bottom:4px;">Do I have to change how I post jobs?</div>
+          <div style="font-size:13.5px;color:rgba(248,246,240,0.65);line-height:1.55;">No. Post on the same platforms exactly as you do now. The only change is the address that receives applications — point it at your Trial. address above.</div>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <div style="font-size:14.5px;color:#f8f6f0;font-weight:600;margin-bottom:4px;">Do I still get the application in my own inbox?</div>
+          <div style="font-size:13.5px;color:rgba(248,246,240,0.65);line-height:1.55;">Yes — every time. We receive the application, pull what we need to send the assessment, then forward the original on to you, untouched, exactly as you'd normally get it. Nothing is intercepted or held back. You keep your usual inbox; Trial. just adds the screened candidate on top.</div>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <div style="font-size:14.5px;color:#f8f6f0;font-weight:600;margin-bottom:4px;">Does the candidate know they're being assessed?</div>
+          <div style="font-size:13.5px;color:rgba(248,246,240,0.65);line-height:1.55;">Yes. They're invited to complete a short scenario assessment and consent before starting. It's a fair, transparent step — not a hidden test.</div>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <div style="font-size:14.5px;color:#f8f6f0;font-weight:600;margin-bottom:4px;">Do I see their actual answers, or just a score?</div>
+          <div style="font-size:13.5px;color:rgba(248,246,240,0.65);line-height:1.55;">You see everything. Open any candidate and you'll find every question they were asked and their full written answer to each — alongside the score and summary. We even flag any answer that looks copy-pasted, so you can read with full context. The score helps you sort; the answers help you decide.</div>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <div style="font-size:14.5px;color:#f8f6f0;font-weight:600;margin-bottom:4px;">What roles does Trial. cover?</div>
+          <div style="font-size:13.5px;color:rgba(248,246,240,0.65);line-height:1.55;">Front-of-house roles — bartenders, baristas, floor staff, hosts, duty and venue managers, and more. Kitchen and back-of-house are coming in a later release.</div>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <div style="font-size:14.5px;color:#f8f6f0;font-weight:600;margin-bottom:4px;">When exactly am I charged the per-hire fee?</div>
+          <div style="font-size:13.5px;color:rgba(248,246,240,0.65);line-height:1.55;">Only when a candidate you hired through Trial. completes 90 days with you. We check in at the 90-day mark and confirm before anything is invoiced. If they don't stay, there's no fee.</div>
+        </div>
+
+        <div style="margin-bottom:0;">
+          <div style="font-size:14.5px;color:#f8f6f0;font-weight:600;margin-bottom:4px;">Is the AI score the final decision?</div>
+          <div style="font-size:13.5px;color:rgba(248,246,240,0.65);line-height:1.55;">Never. Scores and summaries are there to save you time reading CVs — the hiring decision is always yours. Trial. is built to protect your judgement, not replace it.</div>
+        </div>
+
+      </td></tr>
+
+      <!-- Tips to get the most out of it -->
+      <tr><td style="padding:0 8px 30px 8px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background:rgba(255,255,255,0.03);border-left:2px solid #c8a96e;border-radius:6px;">
+          <tr><td style="padding:18px 20px;">
+            <div style="font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:10px;">Get the most out of it</div>
+            <p style="font-size:13.5px;color:rgba(248,246,240,0.72);line-height:1.6;margin:0 0 10px 0;">
+              <strong style="color:#f8f6f0;">Read their answers, not just the score.</strong> The number sorts your list — but opening a candidate to read how they actually answered (and the summary) is where the real signal is. Pasted answers are flagged so you know what you're reading.
+            </p>
+            <p style="font-size:13.5px;color:rgba(248,246,240,0.72);line-height:1.6;margin:0 0 10px 0;">
+              <strong style="color:#f8f6f0;">Still trial them.</strong> Trial. gets the right people in front of you faster — a real trial shift is still the best final check.
+            </p>
+            <p style="font-size:13.5px;color:rgba(248,246,240,0.72);line-height:1.6;margin:0;">
+              <strong style="color:#f8f6f0;">Reply to this email with anything.</strong> Genuinely — it comes straight to me.
+            </p>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- Personal sign-off -->
+      <tr><td style="padding:0 8px 36px 8px;border-top:1px solid rgba(248,246,240,0.08);padding-top:28px;">
+        <p style="font-size:14.5px;color:rgba(248,246,240,0.78);line-height:1.65;margin:0 0 14px 0;">
+          You're one of the first venues on Trial., and that means a lot. If something's confusing or you want a hand setting up your job-ad forwarding, just reply — I answer every founding partner personally.
+        </p>
+        <div style="font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#f8f6f0;font-weight:600;">Anders</div>
+        <div style="font-size:12.5px;color:rgba(248,246,240,0.5);margin-top:2px;">Founder, Trial.</div>
+      </td></tr>
+
+      <!-- Footer -->
+      <tr><td align="center" style="padding-top:24px;border-top:1px solid rgba(248,246,240,0.06);">
+        <p style="font-size:11px;line-height:1.6;color:rgba(248,246,240,0.32);margin:0 0 6px 0;letter-spacing:0.02em;">
+          Trial. is a hospitality hiring platform — <a href="https://hiretrial.com.au" style="color:rgba(248,246,240,0.42);text-decoration:none;">hiretrial.com.au</a>
+        </p>
+        <p style="font-size:11px;line-height:1.6;color:rgba(248,246,240,0.28);margin:0;">
+          Operated by Anders Berggren · ABN 71 441 417 792 · Newcastle NSW<br>
+          Questions: <a href="mailto:hello@hiretrial.com.au" style="color:rgba(248,246,240,0.38);text-decoration:none;">hello@hiretrial.com.au</a>
+        </p>
+      </td></tr>
+
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>
+`;
+
+const WELCOME_TEXT_TEMPLATE = `Welcome to Trial., {{contact_name}}.
+
+You're live — {{plan_label}}. {{venue_name}} is set up and ready, and your
+pricing is locked for the life of your subscription.
+
+There's ONE thing to do to start screening candidates. It takes about two
+minutes. Everything after that is automatic.
+
+─────────────────────────────────────────────
+THE ONE SETUP STEP — point your job ads at your Trial. address
+
+On Seek, Indeed, LinkedIn, or wherever you advertise, change the email that
+receives applications to your unique Trial. forwarding address:
+
+    {{inbound_address}}
+
+From then on, every application lands with us first — we screen it, score it,
+and send the candidate straight into your dashboard. You don't change how or
+where you post.
+
+And you still get every application in your own inbox — we forward the original
+on to you, untouched, exactly as you'd normally receive it. Nothing is
+intercepted or hidden. Trial. just adds the screened version alongside it.
+
+Open your dashboard: {{dashboard_url}}
+(Bookmark it — it's where your scored candidates appear.)
+─────────────────────────────────────────────
+
+WHAT HAPPENS NEXT
+
+1. An application arrives — it hits your Trial. address automatically.
+2. We screen and score — the candidate completes a short, role-specific
+   scenario assessment; our AI scores it and writes a plain-English summary.
+3. You see ranked candidates AND their actual answers — scored and ranked in
+   your dashboard with a plain-English summary. Open any candidate to see every
+   question they were asked and exactly how they answered. You decide who to
+   interview and trial. Trial. never makes the call for you.
+4. You only pay when one sticks — your monthly fee covers the platform; the
+   per-hire fee only applies when a candidate you hired stays 90 days.
+
+QUICK ANSWERS
+
+Do I have to change how I post jobs?
+No. Same platforms, same process. Only the application-receiving address changes.
+
+Do I still get the application in my own inbox?
+Yes — every time. We receive it, pull what we need to send the assessment, then
+forward the original on to you, untouched, exactly as you'd normally get it.
+Nothing is intercepted. Trial. just adds the screened candidate on top.
+
+Does the candidate know they're being assessed?
+Yes — they're invited and consent before starting. Transparent, not hidden.
+
+Do I see their actual answers, or just a score?
+You see everything — every question and their full written answer to each,
+alongside the score and summary. Pasted answers are flagged. The score sorts;
+the answers decide.
+
+What roles does Trial. cover?
+Front-of-house — bartenders, baristas, floor staff, hosts, duty and venue
+managers, and more. Back-of-house comes in a later release.
+
+When am I charged the per-hire fee?
+Only when a candidate you hired through Trial. completes 90 days. We confirm
+with you first. No retention, no fee.
+
+Is the AI score the final decision?
+Never. It saves you time reading CVs — the hiring decision is always yours.
+
+GET THE MOST OUT OF IT
+- Read their answers, not just the score — open a candidate to see how they
+  actually answered. Pasted answers are flagged.
+- Still run a trial shift — it's the best final check.
+- Reply to this email with anything. It comes straight to me.
+
+You're one of the first venues on Trial., and that means a lot. If anything's
+confusing or you want a hand setting up your job-ad forwarding, just reply — I
+answer every founding partner personally.
+
+Anders
+Founder, Trial.
+
+—
+Trial. is a hospitality hiring platform — hiretrial.com.au
+Operated by Anders Berggren · ABN 71 441 417 792 · Newcastle NSW
+Questions: hello@hiretrial.com.au
+`;
+
+function fillWelcomeTemplate(
+  tpl: string,
+  fields: { venue_name: string; contact_name: string; inbound_address: string; dashboard_url: string; plan_label: string }
+): string {
+  return tpl
+    .split('{{venue_name}}').join(fields.venue_name)
+    .split('{{contact_name}}').join(fields.contact_name)
+    .split('{{inbound_address}}').join(fields.inbound_address)
+    .split('{{dashboard_url}}').join(fields.dashboard_url)
+    .split('{{plan_label}}').join(fields.plan_label);
+}
+
+// Send the post-payment welcome email. Never throws.
+async function sendWelcomeEmail(
+  admin: any,
+  venueId: string | null,
+  ctx: { eventId: string }
+): Promise<void> {
+  if (!venueId) return;
+  if (!RESEND_API_KEY) {
+    console.error(`[stripe-webhook] welcome email skipped (${ctx.eventId}): RESEND_API_KEY missing`);
+    return;
+  }
+
+  try {
+    // Fetch the venue row. We need name, contact, forwarding address, plan.
+    const { data: venue, error: vErr } = await admin
+      .from('venues')
+      .select('id, name, manager_name, contact_email, inbound_address, subscription_phase, subscription_tier, welcome_email_sent_at')
+      .eq('id', venueId)
+      .maybeSingle();
+
+    if (vErr || !venue) {
+      console.error(`[stripe-webhook] welcome email skipped (${ctx.eventId}): venue ${venueId} not found${vErr ? ' — ' + vErr.message : ''}`);
+      return;
+    }
+
+    // Idempotency guard — already sent, don't send again on a Stripe retry.
+    if (venue.welcome_email_sent_at) {
+      return;
+    }
+
+    // Recipient: the venue's contact email.
+    const to = venue.contact_email;
+    if (!to) {
+      console.error(`[stripe-webhook] welcome email skipped (${ctx.eventId}): venue ${venueId} has no contact_email`);
+      return;
+    }
+
+    // First name only for the greeting, from manager_name.
+    const contactName = (venue.manager_name || '').trim().split(/\s+/)[0] || 'there';
+    const planLabel = welcomePlanLabel(venue.subscription_phase, venue.subscription_tier);
+
+    const fields = {
+      venue_name: venue.name || 'your venue',
+      contact_name: contactName,
+      inbound_address: venue.inbound_address || '',
+      dashboard_url: DASHBOARD_URL,
+      plan_label: planLabel,
+    };
+
+    const htmlBody = fillWelcomeTemplate(WELCOME_HTML_TEMPLATE, fields);
+    const textBody = fillWelcomeTemplate(WELCOME_TEXT_TEMPLATE, fields);
+    const subject = `You're live on Trial., ${fields.venue_name}`;
+
+    const resp = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: WELCOME_FROM_EMAIL,
+        to: [to],
+        reply_to: WELCOME_REPLY_TO_EMAIL,
+        subject,
+        text: textBody,
+        html: htmlBody,
+        tags: [
+          { name: 'category', value: 'post-payment-welcome' },
+        ],
+      }),
+    });
+
+    if (!resp.ok) {
+      const body = await resp.text();
+      console.error(`[stripe-webhook] welcome email Resend ${resp.status} (${ctx.eventId}): ${body.slice(0, 200)}`);
+      return; // don't stamp sent — leaves it eligible for manual resend
+    }
+
+    // Stamp sent so retries don't double-send.
+    const { error: stampErr } = await admin
+      .from('venues')
+      .update({ welcome_email_sent_at: new Date().toISOString() })
+      .eq('id', venueId);
+    if (stampErr) {
+      console.error(`[stripe-webhook] welcome email sent but stamp failed (${ctx.eventId}): ${stampErr.message}`);
+    }
+  } catch (e: any) {
+    // Never let an email problem break the payment webhook.
+    console.error(`[stripe-webhook] welcome email threw (${ctx.eventId}): ${e?.message || 'unknown'}`);
+  }
 }
