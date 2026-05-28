@@ -13,6 +13,22 @@
     {
       "source": "/privacy",
       "destination": "/privacy.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
+    },
+    {
+      "source": "/candidate-terms",
+      "destination": "/candidate-terms.html"
+    },
+    {
+      "source": "/ai-notice",
+      "destination": "/ai-notice.html"
+    },
+    {
+      "source": "/acceptable-use",
+      "destination": "/acceptable-use.html"
     }
   ],
   "crons": [
