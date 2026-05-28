@@ -122,6 +122,26 @@ async function logEvent(
   return { ok: true };
 }
 
+// ─── Helper: logEvent + surface failures ──────────────────────────
+// logEvent never throws (Supabase returns errors, doesn't throw), so a
+// failed insert would otherwise pass silently and the handler would
+// still 200 — leaving subscription_events empty with no trail. This
+// wrapper console.errors the failure with full context so a silent
+// insert rejection (RLS change, schema drift) is visible in Vercel logs.
+async function logEventChecked(
+  admin: any,
+  payload: Parameters<typeof logEvent>[1],
+  ctx: { eventId: string; eventType: string }
+): Promise<void> {
+  const result = await logEvent(admin, payload);
+  if (!result.ok) {
+    console.error(
+      `[stripe-webhook] logEvent FAILED for ${ctx.eventType} (${ctx.eventId}) ` +
+      `→ event_type='${payload.event_type}': ${result.error}`
+    );
+  }
+}
+
 // ─── Helper: find venue + account from a Stripe customer ID ───────
 // Subscription/checkout events reference stripe_customer_id. We map
 // that back to our internal account_id and venue_id for logging.
@@ -222,7 +242,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // Log regardless of whether we matched a venue — worst case
         // it's an orphan we reconcile manually from the dashboard.
-        await logEvent(admin, {
+        await logEventChecked(admin, {
           stripe_event_id: event.id,
           event_type: 'subscription_started',
           venue_id,
@@ -232,7 +252,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           stripe_invoice_id: asString(session.invoice),
           stripe_payment_intent_id: asString(session.payment_intent),
           metadata: event,
-        });
+        }, { eventId: event.id, eventType: event.type });
 
         // Promote venue to active. Idempotent: only flips if currently
         // 'onboarding', so re-running this event won't unset later
@@ -284,7 +304,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           ? 'subscription_renewed'
           : 'success_fee_paid';
 
-        await logEvent(admin, {
+        await logEventChecked(admin, {
           stripe_event_id: event.id,
           event_type: eventType,
           venue_id,
@@ -294,7 +314,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           stripe_invoice_id: invoice.id || null,
           stripe_payment_intent_id: asString(invoice.payment_intent),
           metadata: event,
-        });
+        }, { eventId: event.id, eventType: event.type });
 
         // For subscription renewals, ensure account stays in 'active'
         // state (clears any prior 'past_due' if dunning recovered).
@@ -323,7 +343,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const customerId = asString(invoice.customer);
         const { account_id, venue_id } = await resolveCustomer(admin, customerId);
 
-        await logEvent(admin, {
+        await logEventChecked(admin, {
           stripe_event_id: event.id,
           event_type: 'payment_failed',
           venue_id,
@@ -333,7 +353,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           stripe_invoice_id: invoice.id || null,
           stripe_payment_intent_id: asString(invoice.payment_intent),
           metadata: event,
-        });
+        }, { eventId: event.id, eventType: event.type });
 
         // Only subscription-invoice failures put the account in
         // arrears. A failed one-off Success Fee invoice doesn't
