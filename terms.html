@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — Trial.</title>
+<meta name="description" content="Trial. Terms of Service for venue customers. Australian SaaS hospitality hiring platform.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:       #0a0a0a;
+  --bg2:      #111;
+  --bg3:      #161616;
+  --card:     #131313;
+
+  --border:        rgba(255,255,255,0.06);
+  --border2:       rgba(255,255,255,0.10);
+  --border-strong: rgba(255,255,255,0.18);
+
+  --white: #f8f6f0;
+  --muted: rgba(248,246,240,0.62);
+  --dim:   rgba(248,246,240,0.38);
+  --faint: rgba(248,246,240,0.22);
+
+  --accent:        #c8a96e;
+  --accent2:       #d4b887;
+  --accent-dim:    rgba(200,169,110,0.5);
+  --accent-bg:     rgba(200,169,110,0.06);
+  --accent-bg-strong: rgba(200,169,110,0.12);
+  --accent-line:   rgba(200,169,110,0.32);
+
+  --warning:      #d4a04a;
+  --warning-bg:   rgba(212,160,74,0.10);
+
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans:  'DM Sans', system-ui, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--white);
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(200,169,110,0.05), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 90%, rgba(200,169,110,0.025), transparent);
+  background-attachment: fixed;
+}
+
+a { color: var(--accent); text-decoration: none; transition: color 0.15s ease; }
+a:hover { color: var(--accent2); }
+
+.site-header { padding: 28px 0; border-bottom: 1px solid var(--border); }
+.site-header-inner { max-width: 880px; margin: 0 auto; padding: 0 32px; display: flex; justify-content: space-between; align-items: center; }
+.wordmark { font-family: var(--serif); font-weight: 800; font-size: 28px; letter-spacing: -0.4px; color: var(--white); display: inline-flex; align-items: baseline; }
+.wordmark .dot { color: var(--accent); font-size: 32px; margin-left: -2px; }
+.back-link { font-size: 13px; letter-spacing: 0.04em; color: var(--muted); font-weight: 400; }
+.back-link:hover { color: var(--accent); }
+
+.policy { max-width: 740px; margin: 0 auto; padding: 72px 32px 96px; }
+
+.eyebrow { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 16px; }
+
+h1 { font-family: var(--serif); font-weight: 800; font-size: clamp(36px, 5vw, 52px); line-height: 1.05; letter-spacing: -1px; margin-bottom: 18px; }
+h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
+
+.meta { font-size: 13px; color: var(--dim); margin-bottom: 48px; display: flex; flex-wrap: wrap; gap: 22px; }
+.meta-item { display: inline-flex; align-items: center; gap: 8px; }
+.meta-item-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--faint); font-weight: 600; }
+.meta-item-value { color: var(--muted); }
+
+.intro { font-size: 16px; color: var(--muted); line-height: 1.65; padding-bottom: 28px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.intro a { border-bottom: 1px solid var(--accent-dim); }
+
+.scope-note { background: linear-gradient(135deg, var(--accent-bg-strong), var(--accent-bg)); border: 1px solid var(--accent-dim); border-left: 3px solid var(--accent); border-radius: 8px; padding: 22px 26px; margin: 32px 0 48px; font-size: 14.5px; color: var(--white); line-height: 1.65; }
+.scope-note strong { color: var(--accent); font-weight: 600; font-family: var(--serif); font-style: italic; font-size: 16px; }
+
+h2 { font-family: var(--serif); font-weight: 700; font-size: 26px; letter-spacing: -0.4px; line-height: 1.2; margin: 56px 0 18px; color: var(--white); }
+h2 .num { color: var(--accent); font-style: italic; font-weight: 400; margin-right: 12px; }
+
+h3 { font-family: var(--serif); font-weight: 600; font-size: 20px; letter-spacing: -0.2px; line-height: 1.25; margin: 36px 0 14px; color: var(--white); }
+
+p { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 16px; }
+p strong { color: var(--white); font-weight: 500; }
+
+ul { list-style: none; padding: 0; margin: 16px 0 24px; }
+ul li { position: relative; padding-left: 22px; font-size: 15px; color: var(--muted); line-height: 1.65; margin-bottom: 10px; }
+ul li::before { content: '·'; position: absolute; left: 6px; color: var(--accent); font-weight: 700; font-size: 18px; line-height: 1.4; }
+ul li strong { color: var(--white); font-weight: 500; }
+
+ol { padding: 0; margin: 16px 0 24px; counter-reset: legal-list; }
+ol li { position: relative; padding-left: 28px; font-size: 15px; color: var(--muted); line-height: 1.65; margin-bottom: 10px; list-style: none; counter-increment: legal-list; }
+ol li::before { content: counter(legal-list) '.'; position: absolute; left: 0; color: var(--accent); font-weight: 600; font-family: var(--serif); }
+ol li strong { color: var(--white); font-weight: 500; }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+.contact-card { background: var(--card); border: 1px solid var(--border2); border-radius: 10px; padding: 26px 28px; margin: 24px 0; }
+.contact-card-name { font-family: var(--serif); font-weight: 700; font-size: 19px; letter-spacing: -0.3px; margin-bottom: 8px; color: var(--white); }
+.contact-card-abn { font-size: 12px; color: var(--dim); margin-bottom: 16px; letter-spacing: 0.04em; }
+.contact-card-line { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+.contact-card-line a { font-weight: 500; }
+
+.legal-nav { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 18px 22px; margin: 48px 0 0; }
+.legal-nav-title { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--faint); font-weight: 600; margin-bottom: 12px; }
+.legal-nav-links { display: flex; flex-wrap: wrap; gap: 18px; }
+.legal-nav-links a { font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+.legal-nav-links a:hover { color: var(--accent); border-color: var(--accent-dim); }
+.legal-nav-links a.current { color: var(--accent); border-color: var(--accent); }
+
+@media (max-width: 600px) {
+  .site-header { padding: 22px 0; }
+  .site-header-inner { padding: 0 22px; }
+  .wordmark { font-size: 24px; }
+  .wordmark .dot { font-size: 28px; }
+
+  .policy { padding: 48px 22px 72px; }
+  h1 { font-size: 32px; letter-spacing: -0.6px; }
+  h2 { font-size: 22px; margin-top: 44px; }
+  h3 { font-size: 18px; margin-top: 28px; }
+  .meta { gap: 14px; font-size: 12.5px; }
+  .scope-note { padding: 18px 20px; font-size: 14px; }
+  p, ul li, ol li { font-size: 14.5px; }
+  .contact-card { padding: 22px 22px; }
+  .legal-nav { padding: 16px 18px; }
+  .legal-nav-links { gap: 14px; }
+  .legal-nav-links a { font-size: 12.5px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a href="/" class="wordmark">Trial<span class="dot">.</span></a>
+    <a href="/" class="back-link">&larr; Back home</a>
+  </div>
+</header>
+
+<main class="policy">
+
+  <div class="eyebrow">Legal</div>
+  <h1>Terms <em>of Service</em>.</h1>
+
+  <div class="meta">
+    <div class="meta-item">
+      <span class="meta-item-label">Last updated</span>
+      <span class="meta-item-value">28 May 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-item-label">Effective from</span>
+      <span class="meta-item-value">28 May 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-item-label">Version</span>
+      <span class="meta-item-value">v2.5</span>
+    </div>
+  </div>
+
+  <p class="intro">These Terms govern your use of the <strong>Trial.</strong> platform as a paying venue customer. They form a binding contract between you and Anders Berggren (ABN 71 441 417 792), trading as Hire Trial.</p>
+
+  <p><em>Operated by Anders Berggren, ABN 71 441 417 792, trading as Hire Trial (the <strong>“</strong>Brand<strong>“</strong>: Trial.)</em></p>
+  <h2><span class="num">1.</span>About these Terms</h2>
+  <p>These Terms of Service (“Terms”) form a binding contract between you, the venue or business entity using the Trial. platform (“you”, “Venue”, “Customer”), and Anders Berggren, ABN 71 441 417 792, trading as Hire Trial (“we”, “us”, “Trial.”, the “Operator”). The Trial. brand is operated by the Operator and may, in accordance with clause 26 (Assignment and Successor Entities), be transferred to or operated by a successor corporate entity, including Berggren Holdings Pty Ltd or a wholly-owned subsidiary.</p>
+  <p>By creating an account, accessing the Platform, paying a Subscription Fee, or otherwise using the Services, you accept these Terms. If you accept these Terms on behalf of a company, partnership, or other entity, you warrant that you have authority to bind that entity.</p>
+  <p>These Terms should be read together with our Privacy Policy, AI Transparency Notice, Acceptable Use Policy, and the published Pricing Schedule (collectively, the “Agreement”). To the extent of any inconsistency, these Terms prevail, except that the Privacy Policy prevails on matters of personal information handling.</p>
+  <h2><span class="num">2.</span>Definitions</h2>
+  <p><strong>“Assessment”</strong> means a structured, scenario-based screening exercise generated by the Platform and completed by a Candidate, including AI-assisted scoring and summary outputs.</p>
+  <p><strong>“Candidate”</strong> means a natural person, 18 years or older, who applies to a Venue role and completes (or is invited to complete) an Assessment.</p>
+  <p><strong>“Founding Partner”</strong> means any active paying Venue that submitted an Expression of Interest on or before 15 July 2026 and completed its product demonstration on or before 16 August 2026, and which subsequently subscribed under the Founding Partner pricing structure described in Schedule 1.</p>
+  <p><strong>“Platform”</strong> means the Trial. software-as-a-service platform, including the venue dashboard, candidate assessment system, AI-assisted scoring, and any associated APIs, emails, and tools.</p>
+  <p><strong>“Retained Hire”</strong> means a Candidate introduced through the Platform who is engaged by the Venue and remains continuously engaged for 90 days following the engagement start date.</p>
+  <p><strong>“Services”</strong> means the Platform and all related services provided by the Operator under this Agreement.</p>
+  <p><strong>“Subscription Fee”</strong> means the recurring monthly fee payable by the Venue for access to the Platform, as set out in the Pricing Schedule.</p>
+  <p><strong>“Success Fee”</strong> (also “Retained Hire Fee”) means the per-hire fee payable on a Retained Hire, as set out in the Pricing Schedule.</p>
+  <h2><span class="num">3.</span>The Services</h2>
+  <p>Trial. is a software platform that assists hospitality venues to screen candidates for front-of-house (“FOH”) roles through structured, scenario-based assessments and AI-assisted scoring and summary generation. The Platform currently supports the following FOH roles only: Bar Back, Bar Manager, Barista, Bartender, Cafe All-Rounder, Cafe Kitchen Hand, Cafe Manager, Duty Manager, Expediter, Floor Staff, Food Runner, Host, Restaurant Manager, and Supervisor. The Operator may add, remove, or modify supported roles from time to time on notice. Back-of-house roles are not currently supported and will be added in a future release.</p>
+  <h3>3.1 Software platform only</h3>
+  <p>The Operator provides software functionality only. The Operator is not, and does not hold itself out as, a recruitment agency, employment agency, labour-hire provider, staffing company, or automated hiring system. Without limitation, the Operator:</p>
+  <ul>
+    <li>does not recruit employees on behalf of Venues;</li>
+    <li>does not source, supply, employ, engage, direct, supervise, roster, manage, or pay Candidates;</li>
+    <li>does not negotiate employment terms;</li>
+    <li>does not recommend or endorse any Candidate;</li>
+    <li>does not guarantee any Candidate’s suitability, reliability, honesty, skill, availability, or legal work rights; and</li>
+    <li>does not participate in the final hiring decision.</li>
+</ul>
+  <h3>3.2 No relationship</h3>
+  <p>Nothing in the Platform, this Agreement, or the Services creates an employment relationship, a labour-hire arrangement, an agency relationship, a partnership, or a joint venture between the Operator and any Candidate or Venue. All employment-related obligations remain solely with the Venue.</p>
+  <h3>3.3 Advisory only</h3>
+  <p>AI-generated scores, summaries, and screening insights are advisory and informational only, are probabilistic in nature, and must not be relied upon as the sole or substantial basis for any hiring decision. The Venue’s obligations in this regard are set out in clause 11 (Automated Decision-Making Disclaimer and Human Accountability) and in the AI Transparency Notice.</p>
+  <h3>3.4 Single-venue use</h3>
+  <p>Each Assessment is completed by a Candidate for a single Venue and a single role. Trial. does not maintain a cross-venue Candidate profile, does not retain Candidate data beyond the period set out in the Privacy Policy, and does not make Candidate information available to other Venues. If the Operator launches a separate product offering cross-venue functionality in future (for example, a job-matching platform), that product will have its own terms, its own consent flow, and is not part of these Terms.</p>
+  <h2><span class="num">4.</span>Eligibility and Account</h2>
+  <p>You must be at least 18 years of age, have legal authority to contract on behalf of the Venue, hold an Australian Business Number (“ABN”), and operate a lawful Australian hospitality business in order to register.</p>
+  <p>You agree to provide accurate, current, and complete information at registration and to keep that information up to date. You are responsible for all activity that occurs under your account, including the acts and omissions of any person you authorise to use the Platform on your behalf.</p>
+  <p>You must maintain appropriate security over your account credentials and notify us promptly at <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a> of any suspected unauthorised access.</p>
+  <h3>4.1 Candidate age</h3>
+  <p>You acknowledge that the Platform is designed for Candidates 18 years or older. Candidates are required to confirm their age at the start of every Assessment. You should not invite or attempt to assess any Candidate you know to be under 18. Where a Candidate has misrepresented their age, neither party is liable to the other for the misrepresentation.</p>
+  <h2><span class="num">5.</span>Subscription Tiers and Fees</h2>
+  <p>The Platform is offered on a subscription basis. Current pricing is set out in Schedule 1 (Pricing Schedule) and is also published at the Pricing URL referenced in Schedule 1. The Pricing Schedule forms part of this Agreement.</p>
+  <h3>5.1 Founding Partner Pricing</h3>
+  <p>Venues that submit an Expression of Interest on or before 15 July 2026 and complete a product demonstration on or before 16 August 2026 (the “Founding Partner Window”) will be offered Founding Partner pricing across three tiers (Solo, Starter, Growth) plus a custom Enterprise option. Founding Partner pricing is locked for the lifetime of the subscription, provided the Venue remains continuously subscribed and in good standing. If the subscription is cancelled, lapses due to non-payment, or is otherwise terminated, any subsequent reactivation will be at the then-current standard pricing.</p>
+  <h3>5.2 Tier Assignment</h3>
+  <p>We reserve the right to assign you to a tier based on the number of distinct venue locations operated by your group, to reassign you to an appropriate tier if your venue count materially changes, and to approve, decline, or defer upgrade or downgrade requests. Reassignment will be on reasonable notice except where required immediately to address misuse.</p>
+  <h3>5.3 Standard Pricing (Phase 2)</h3>
+  <p>After Founding Partner allocation closes, standard pricing applies. Standard pricing currently includes Solo, Starter, Growth, Enterprise, and Pay-Per-Hire options. The published Pricing Schedule is the binding statement of current fees.</p>
+  <h3>5.4 Price Changes</h3>
+  <p>Other than for Founding Partners (whose locked pricing is preserved under clause 5.1), we may change Subscription Fees and Success Fees on at least 30 days’ written notice. If you do not accept a change, you may cancel your subscription before the change takes effect without penalty (other than fees already accrued).</p>
+  <h3>5.5 GST</h3>
+  <p>Unless stated otherwise, fees are expressed exclusive of Goods and Services Tax (“GST”). GST will be added at the prevailing rate and shown on tax invoices. The Operator is GST-registered and will provide compliant tax invoices.</p>
+  <h2><span class="num">6.</span>Payment and Stripe Authorisation</h2>
+  <p>All payments are processed by Stripe Payments Australia Pty Ltd. By providing payment details you authorise the Operator (through Stripe) to charge your nominated payment method for: (a) recurring Subscription Fees in advance each month; (b) any applicable tax; and (c) any other fees properly payable under this Agreement once confirmed by you or invoiced in accordance with clause 7.</p>
+  <p><strong>Off-session charging consent for subscriptions.</strong></p>
+  <p>You expressly authorise the Operator to initiate off-session charges to your saved payment method for recurring Subscription Fees. This authorisation operates as a “merchant-initiated transaction” under applicable card scheme rules. You may withdraw this authorisation only by terminating the Agreement under clause 22, subject to your obligation to pay accrued fees.</p>
+  <p><strong>Success Fees — invoice-based.</strong></p>
+  <p>Success Fees are not charged off-session. Success Fees are invoiced in accordance with clause 7 below and are payable as set out in that clause.</p>
+  <p>Failed subscription payments will be retried in accordance with Stripe’s standard dunning logic. If a subscription payment remains outstanding for more than seven (7) days, the Operator may suspend access to the Platform without further notice. If outstanding for 30 days, the Operator may terminate the Agreement for cause under clause 22.</p>
+  <h2><span class="num">7.</span>Success Fee (Retained Hire Fee)</h2>
+  <h3>7.1 When the Success Fee is payable</h3>
+  <p>A Success Fee is payable for each Retained Hire — that is, where a Candidate introduced through the Platform is engaged by you and remains continuously engaged for at least 90 days from the engagement start date. The Success Fee applies regardless of whether the engagement is employment, casual, contractor, or any other lawful working arrangement.</p>
+  <h3>7.2 Day 90 confirmation workflow</h3>
+  <p>From Day 90 onward, the Operator will use the following workflow to confirm whether a Success Fee is payable:</p>
+  <ul>
+    <li>Day 90: dashboard prompt and email asking you to confirm whether the Candidate has been retained. Two options: “Retained — invoice me” or “Not retained — no invoice”.</li>
+    <li>Day 97: reminder if no response.</li>
+    <li>Day 104: second reminder if no response.</li>
+    <li>Day 111: final notice that an invoice will be issued on Day 120 unless you respond.</li>
+    <li>Day 120: if you have confirmed retention, or if you have not responded across the four-step prompt sequence, a Success Fee tax invoice is issued with 14-day payment terms. The invoice is payable via the saved payment method (one-click) or by bank transfer.</li>
+    <li>Day 134: payment reminder if invoice unpaid.</li>
+    <li>Day 144: final reminder.</li>
+    <li>Day 158: where the invoice remains unpaid and no dispute has been lodged, the Operator may suspend access to the Platform. The outstanding invoice remains payable.</li>
+</ul>
+  <p>Issuing an invoice on Day 120 in the absence of a response is not an automatic charge against your card. It is a standard commercial invoice with payment terms. You retain ordinary rights to pay, query, or dispute the invoice.</p>
+  <h3>7.3 Departure on or after Day 91</h3>
+  <p>Where the Candidate departs the role on or after Day 91, the Success Fee remains payable in full and no refund is owed. The 90-day threshold is the sole point of measurement.</p>
+  <h3>7.4 Disputes</h3>
+  <p>You may dispute a Success Fee invoice within 30 days of the invoice being issued. Disputes must be lodged through the dashboard or by email to <a href="mailto:billing@hiretrial.com.au">billing@hiretrial.com.au</a> and must include documentary evidence (for example, payroll records, termination correspondence, or rostering documents) demonstrating that the Candidate was not engaged for the qualifying period. We will assess disputes within 14 business days and, where the dispute is upheld, cancel or credit the invoice.</p>
+  <h3>7.5 Attribution within 90 days</h3>
+  <p>If we showed you a Candidate through Trial., and you hire that Candidate within 90 days of the Assessment being presented to you, the Success Fee applies if the Candidate stays 90 days. This rule applies whether you hired the Candidate directly, through a labour-hire arrangement, through a related entity, or through any other structure. The intent of this clause is straightforward — to ensure the Success Fee covers genuine Trial.-attributed hires and is not avoided through restructuring of the engagement. The 90-day attribution window starts from the date the Assessment is presented to you in the dashboard.</p>
+  <p>If the Candidate is first hired by you more than 90 days after the Assessment was presented, this clause does not apply, and no Success Fee is owed for that hire.</p>
+  <h2><span class="num">8.</span>Free Trials, Promotions and Credits</h2>
+  <p>We may offer free trials, promotional discounts, or platform credits from time to time. Specific terms (including duration, eligibility, and conversion to paid subscription) will be set out in the offer. Promotional terms prevail over inconsistent provisions of these Terms only to the extent expressly stated in the offer.</p>
+  <h2><span class="num">9.</span>Your Use of the Platform</h2>
+  <p>You agree to use the Platform only for the lawful purpose of screening Candidates for hospitality roles within your own Venue(s). You must not:</p>
+  <ul>
+    <li>on-sell, resell, sublicense, or redistribute access to the Platform or its outputs;</li>
+    <li>share Candidate data, Assessment outputs, or AI-generated summaries with third parties outside your Venue group, except as required by law;</li>
+    <li>use the Platform to screen candidates for roles outside hospitality, or for roles not currently supported by the Platform, without our prior written consent;</li>
+    <li>copy, scrape, reverse engineer, or attempt to derive the underlying logic of assessment questions, prompts, scoring models, or any AI workflow;</li>
+    <li>use the Platform to engage in any unlawful discrimination or any conduct prohibited by the Acceptable Use Policy; or</li>
+    <li>treat AI-generated outputs as the sole basis for any hiring decision (see clause 11).</li>
+</ul>
+  <h2><span class="num">10.</span>Candidate Data Handling Obligations</h2>
+  <p>When you receive Candidate data through the Platform (including names, contact details, postcode, resume content, Assessment responses, scores, and summaries), you become an independent controller of that data for your hiring purposes. You agree to:</p>
+  <ul>
+    <li>comply with the Privacy Act 1988 (Cth) and the Australian Privacy Principles, including where you are not otherwise an “APP entity” (you accept these obligations contractually);</li>
+    <li>use Candidate data only for the purpose of assessing the specific role at your Venue for which the Candidate applied;</li>
+    <li>not redistribute, on-sell, license, or commercially exploit Candidate data or AI-generated summaries;</li>
+    <li>hold Candidate data securely, with access limited to personnel who have a legitimate hiring need;</li>
+    <li>respond to Candidate requests for access or correction in accordance with the Australian Privacy Principles;</li>
+    <li>notify the Operator promptly at <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a> of any actual or suspected data breach affecting Candidate data received through the Platform; and</li>
+    <li>cooperate with the Operator on any Notifiable Data Breaches Scheme assessment under Part IIIC of the Privacy Act.</li>
+</ul>
+  <h3>10.1 Retention is the Venue's responsibility</h3>
+  <p>Trial. retains Candidate data, Assessment outputs, and Venue dashboard access to those records for the period set out in the Privacy Policy (currently six months from Last Activity). Venues are responsible for exporting or retaining any records, Candidate information, or Assessment outputs they may require for their own HR, compliance, or record-keeping purposes before expiry of the applicable retention period. Trial. is not a long-term HR record system and does not undertake to preserve Candidate records beyond the published retention period.</p>
+  <h2><span class="num">11.</span>Automated Decision-Making Disclaimer and Human Accountability</h2>
+  <h3>11.1 Platform does not make decisions</h3>
+  <p>The Platform does not make employment decisions, recommendations, rankings, or suitability determinations. Any AI-generated score, summary, insight, commentary, assessment output, or screening assistance generated through the Platform:</p>
+  <ul>
+    <li>is informational only;</li>
+    <li>is probabilistic in nature;</li>
+    <li>may contain inaccuracies, omissions, contextual failures, or unintended bias;</li>
+    <li>is not determinative;</li>
+    <li>must not be treated as an instruction, recommendation, or directive to hire, reject, deprioritise, interview, trial, or otherwise assess a Candidate; and</li>
+    <li>must not be relied upon as the sole or substantial basis for any employment-related decision.</li>
+</ul>
+  <h3>11.2 Venue acknowledgements</h3>
+  <p>The Venue acknowledges and agrees that:</p>
+  <ul>
+    <li>all recruitment, engagement, trial-shift, interview, hiring, rejection, rostering, promotion, disciplinary, and termination decisions are made independently by the Venue;</li>
+    <li>the Venue is solely responsible for ensuring compliance with all applicable anti-discrimination, employment, privacy, workplace, work health and safety, and human-rights laws, including the Fair Work Act 2009 (Cth), the Sex Discrimination Act 1984 (Cth), the Race Discrimination Act 1975 (Cth), the Age Discrimination Act 2004 (Cth), the Disability Discrimination Act 1992 (Cth), and applicable State and Territory legislation;</li>
+    <li>the Operator does not warrant any Candidate, score, summary, or AI-generated output as accurate, complete, or fit for any particular hiring decision; and</li>
+    <li>the Venue must apply independent human judgement to every hiring decision.</li>
+</ul>
+  <h3>11.3 Anti-discrimination compliance</h3>
+  <p>The Venue must not use AI outputs in any manner that contravenes anti-discrimination law. Where the Venue would not lawfully be permitted to make a particular hiring decision without AI assistance, the use of AI outputs does not authorise that decision. Where the Venue informs Candidates of the use of AI-assisted screening (as required or recommended in the relevant jurisdiction), it remains the Venue’s responsibility to do so accurately.</p>
+  <h3>11.4 Release and indemnity</h3>
+  <p>To the maximum extent permitted by law, the Venue releases and indemnifies the Operator and the Indemnified Parties (defined in clause 20) against any claim arising from:</p>
+  <ul>
+    <li>a hiring or rejection decision made by the Venue, whether or not informed by AI outputs;</li>
+    <li>discriminatory treatment by the Venue;</li>
+    <li>alleged over-reliance by the Venue on AI-generated outputs; or</li>
+    <li>any employment-related action taken (or not taken) by the Venue.</li>
+</ul>
+  <p>This clause 11.4 operates in addition to clause 20 (Indemnity) and is subject to clause 19 (Liability — Consumer Law Carve-Out).</p>
+  <h2><span class="num">12.</span>Intellectual Property</h2>
+  <p>As between the parties, the Operator owns and retains all right, title, and interest (including all intellectual property rights) in and to the Platform, including: the assessment questions, prompts, scoring systems, scoring rubrics, candidate summary templates, workflows, dashboard UI, brand assets, and any aggregate or derived data created by the Platform. You receive a limited, non-exclusive, non-transferable, revocable licence to access and use the Platform for the duration of this Agreement, solely for your internal hiring purposes.</p>
+  <p>You retain ownership of any data you submit to the Platform that originates from your Venue (for example, your own role descriptions or branding), but grant the Operator a non-exclusive, royalty-free licence to use that data to provide the Services and to improve the Platform on an aggregated and de-identified basis. Candidate-submitted data is governed by the Candidate Terms of Use and the Privacy Policy.</p>
+  <p>Feedback and suggestions you provide may be used by the Operator without restriction and without compensation, provided the Operator does not attribute the feedback to you publicly without your consent.</p>
+  <h2><span class="num">13.</span>Service Availability and Maintenance</h2>
+  <p>We aim to provide a reliable Platform but do not guarantee uninterrupted access. The Platform may be unavailable from time to time for planned maintenance, emergency maintenance, third-party service failures (including those of Supabase, Vercel, Stripe, Resend, and Anthropic), force majeure events, or other reasons beyond our reasonable control. Where reasonably practicable we will provide advance notice of planned maintenance.</p>
+  <p>To the extent permitted by law, the Platform is provided on an “as is” and “as available” basis. We do not warrant that the Platform will be error-free, secure against all threats, or fit for any particular purpose beyond the general purpose described in clause 3.</p>
+  <h2><span class="num">14.</span>No Legal, HR or Recruitment Advice</h2>
+  <p>Trial. provides software functionality only. The Platform does not provide legal, human resources, employment-law, workplace-relations, or recruitment advice. The AI-generated outputs the Platform produces are informational only and do not constitute legal advice, HR advice, compliance certification, or any guarantee of compliance with the Fair Work Act 2009 (Cth), anti-discrimination legislation, immigration law, or workplace health and safety law.</p>
+  <h3>14.1 Human judgement remains with the Venue</h3>
+  <p>Nothing in the Platform is intended to replace lawful workplace processes, managerial judgement, human supervision, or workplace obligations imposed by law, award, or industrial instrument. The broader work of recruiting, managing, supervising, and developing employees remains a human responsibility resting with the Venue.</p>
+  <h2><span class="num">15.</span>No Verification; No Authenticity Warranty</h2>
+  <h3>15.1 No verification</h3>
+  <p>Unless expressly stated in the Pricing Schedule or a separate written agreement, the Operator does not:</p>
+  <ul>
+    <li>independently verify Candidate identities;</li>
+    <li>conduct police, criminal-history, or working-with-children checks;</li>
+    <li>conduct visa or right-to-work checks;</li>
+    <li>verify qualifications, licences, or certifications (including Responsible Service of Alcohol, food safety, or barista certifications);</li>
+    <li>verify work history, references, or referees; or</li>
+    <li>conduct any other form of background screening.</li>
+</ul>
+  <h3>15.2 No authenticity warranty</h3>
+  <p>The Operator does not warrant, represent, or guarantee that any Candidate response, resume, cover letter, qualification claim, work-history claim, referee detail, or other Candidate-submitted information is truthful, accurate, authentic, current, complete, or independently authored by the Candidate. AI-generated outputs operate on the inputs provided and inherit any inaccuracies, omissions, or fabrications in those inputs.</p>
+  <h3>15.3 Venue responsibility for verification</h3>
+  <p>Verification of Candidate-supplied information remains the Venue’s responsibility. The Venue must, where appropriate to the role and lawful in the circumstances, conduct its own:</p>
+  <ul>
+    <li>interviews;</li>
+    <li>reference checks;</li>
+    <li>right-to-work checks (including under the Migration Act 1958 (Cth));</li>
+    <li>visa-condition verification;</li>
+    <li>qualification and licence verification;</li>
+    <li>trial shifts; and</li>
+    <li>any other employment screening reasonably required.</li>
+</ul>
+  <h2><span class="num">16.</span>No General Duty to Monitor</h2>
+  <p>The Operator is not under a general or proactive duty to monitor all Venue behaviour, all Candidate conduct, all messages, all assessment responses, or all platform activity. The Operator’s moderation systems are reactive and risk-based. The Operator may, but is not required to, monitor or investigate any specific user, account, assessment, or activity.</p>
+  <p>The Operator does not guarantee detection of unlawful conduct, discrimination, fraud, misrepresentation, sock-puppet activity, account misuse, or other policy breaches. Any failure by the Operator to detect, act on, or intervene in particular conduct does not give rise to any liability and does not constitute a waiver of any right.</p>
+  <p>The Operator may, acting reasonably and in good faith, investigate, intervene, suspend, restrict, or terminate access for legitimate platform-protection purposes, including to address suspected misuse or to protect Candidates, Venues, or the integrity of the Platform. Any action taken will be proportionate to the matter being addressed. This clause does not exclude any statutory obligation that cannot lawfully be excluded, restricted, or modified.</p>
+  <h2><span class="num">17.</span>Platform Bans</h2>
+  <p>Platform Bans are imposed by the Operator and address platform misconduct. Reasons for a Platform Ban may include fraud, harassment, sock-puppet accounts, abuse, threats, unlawful discrimination, or any other material breach of the Acceptable Use Policy.</p>
+  <p>We may impose a permanent ban, temporary suspension, or limited product access. The Operator will act reasonably and in good faith, and the response chosen will be proportionate to the seriousness, frequency, and intent of the conduct. Bans may extend across the Trial. brand family, including any future products operated by the Operator or its successor entities under clause 26.</p>
+  <p>You may appeal a Ban within 30 days of imposition by writing to <a href="mailto:appeals@hiretrial.com.au">appeals@hiretrial.com.au</a>. The Operator will respond within 14 business days of receiving a complete appeal.</p>
+  <h2><span class="num">18.</span>Liability — Consumer Law Carve-Out</h2>
+  <p>Nothing in these Terms excludes, restricts, or modifies any consumer guarantee, right, or remedy conferred by the Australian Consumer Law (“ACL”) or any other law that cannot lawfully be excluded, restricted, or modified.</p>
+  <p>Where the Services are supplied to a Venue that is not a “consumer” within the meaning of the ACL (or where the goods or services supplied are not of a kind ordinarily acquired for personal, domestic or household use or consumption), the Operator’s liability for breach of a non-excludable consumer guarantee is limited (at the Operator’s election) to: (a) supplying the Services again; or (b) the cost of having the Services supplied again.</p>
+  <h3>18.1 Exclusion of indirect loss</h3>
+  <p>Subject to clause 18, neither party is liable to the other for any indirect, consequential, special, or punitive loss, or for loss of profits, revenue, business opportunity, goodwill, anticipated savings, or data, however arising (including in contract, tort, equity, or under statute).</p>
+  <h3>18.2 Cap on liability</h3>
+  <p>Subject to clause 18, the Operator’s aggregate liability to you arising out of or in connection with the Agreement (whether in contract, tort, equity, statute, or otherwise) in any 12-month period is capped at the total amount of Subscription Fees and Success Fees actually paid by you to the Operator in the 12 months immediately preceding the event giving rise to the liability.</p>
+  <h3>18.3 Hiring decisions and worker conduct</h3>
+  <p>The Operator is not liable for any loss arising from: (a) any hiring decision made by you, including a decision based in whole or part on AI outputs; (b) the conduct, performance, or non-performance of any Candidate, worker, or hire; or (c) any failure by you to comply with employment law, work health and safety law, or anti-discrimination law.</p>
+  <h2><span class="num">19.</span>Indemnity</h2>
+  <p>You indemnify the Operator and its officers, employees, and contractors (“Indemnified Parties”) against all loss, damage, cost, expense (including reasonable legal costs), liability, and claim suffered or incurred by the Indemnified Parties arising out of or in connection with:</p>
+  <ul>
+    <li>your breach of this Agreement or any policy forming part of the Agreement;</li>
+    <li>your handling of Candidate data, including any breach of the Privacy Act 1988 (Cth);</li>
+    <li>your hiring decisions, employment practices, or the conduct of any worker you engage;</li>
+    <li>your unlawful discrimination, harassment, or other unlawful conduct in connection with the Platform; and</li>
+    <li>any claim by a Candidate, worker, regulator, or third party arising from any of the matters in this clause 19.</li>
+</ul>
+  <p>This indemnity does not apply to the extent any loss arises from the gross negligence or wilful misconduct of the Operator. Where this Agreement is assigned under clause 26, the protection under this indemnity follows the contract and accrues for the benefit of the assignee Operator.</p>
+  <h2><span class="num">20.</span>Suspension</h2>
+  <p>The Operator may suspend your access to the Platform (in whole or in part), acting reasonably and in good faith, where: (a) payment is overdue; (b) the Operator reasonably suspects fraud, security risk, or material breach of this Agreement; (c) required by law or regulator direction; or (d) necessary to prevent harm to a Candidate or to other Venues. The scope and duration of any suspension will be proportionate to the matter the Operator is addressing. Where the matter can reasonably be addressed by partial rather than full suspension, the Operator will prefer the lesser measure. The Operator may suspend without prior notice where the circumstances reasonably require immediate action (for example, suspected fraud, security incident, or safety risk); otherwise the Operator will provide reasonable prior notice. Suspension does not relieve you of accrued fees.</p>
+  <h2><span class="num">21.</span>Term and Termination</h2>
+  <h3>21.1 Term</h3>
+  <p>The Agreement commences on account creation and continues on a rolling monthly basis until terminated under this clause.</p>
+  <h3>21.2 Termination by you</h3>
+  <p>You may terminate your subscription at any time through the dashboard. Termination takes effect at the end of the current paid billing cycle. Fees paid for the current cycle are not refundable except where required by law.</p>
+  <h3>21.3 Termination by us</h3>
+  <p>The Operator may terminate the Agreement immediately on written notice if: (a) you materially breach the Agreement and do not remedy the breach within 14 days of notice (or, for unremediable breaches, immediately); (b) you fail to pay any amount when due and the failure persists for 30 days; (c) you become insolvent, enter administration, or have a receiver, liquidator, or controller appointed; (d) the Operator reasonably believes you have used the Platform in a manner that contravenes anti-discrimination law, the Acceptable Use Policy, or any other material conduct standard under this Agreement; or (e) your continued use of the Platform presents a material legal, platform-integrity, or safety risk. Where the Operator terminates under sub-clause (d), it is not required to disclose detailed reasoning beyond identifying the breach relied on.</p>
+  <h3>21.4 Consequences of termination</h3>
+  <p>On termination: (a) your right to access the Platform ceases; (b) outstanding fees and outstanding Success Fee invoices become immediately payable; (c) Success Fees in respect of any Candidate whose 90-day attribution window has not yet closed remain payable in accordance with clause 7 if the conditions of clause 7.1 are subsequently met; (d) Venue account data will be deleted 30 days after termination, save for de-identified financial records and other records the Operator is required by law to retain; and (e) clauses that by their nature survive termination (including clauses 7.5, 10, 11, 12, 14, 15, 16, 18, 19, 21.4, 22, 23, 24, 25, 26 and 27) survive.</p>
+  <h2><span class="num">22.</span>Confidentiality</h2>
+  <p>Each party must keep confidential, and not use except for purposes of the Agreement, any non-public information disclosed to it by the other party that is identified as confidential or that a reasonable person would understand to be confidential. This obligation does not apply to information that is or becomes public other than through breach, was lawfully known prior to disclosure, is independently developed without reference to the disclosing party’s information, or is required to be disclosed by law (with notice where practicable).</p>
+  <h2><span class="num">23.</span>Dispute Resolution</h2>
+  <p>Before commencing any court proceedings, the parties must attempt to resolve any dispute as follows: (a) notification in writing to the other party setting out the nature of the dispute; (b) good-faith negotiation between authorised representatives for at least 14 days; (c) if unresolved, referral to mediation under the Resolution Institute Mediation Rules, with the mediator and place agreed between the parties (or, failing agreement, appointed by the President of the Resolution Institute). This clause does not prevent a party from seeking urgent injunctive relief.</p>
+  <h2><span class="num">24.</span>Notices</h2>
+  <p>Notices to the Operator must be sent to <a href="mailto:legal@hiretrial.com.au">legal@hiretrial.com.au</a>. Notices to you will be sent to the email address registered to your account. Notices are deemed received on the day of sending (if a business day) or the next business day.</p>
+  <h2><span class="num">25.</span>Governing Law and Jurisdiction</h2>
+  <p>The Agreement is governed by the laws of New South Wales, Australia. Each party submits to the exclusive jurisdiction of the courts of New South Wales and the courts of appeal from them, except where exclusive jurisdiction is conferred on a different court by law.</p>
+  <h2><span class="num">26.</span>Assignment and Successor Entities</h2>
+  <p>You may not assign or novate this Agreement without the Operator’s prior written consent. The Operator may assign, novate, or otherwise transfer all or any of its rights and obligations under this Agreement to:</p>
+  <ul>
+    <li>a successor entity owned or controlled by Anders Berggren, including Berggren Holdings Pty Ltd;</li>
+    <li>a wholly-owned subsidiary of any such holding entity;</li>
+    <li>any entity that acquires substantially all of the business or assets of the Operator in connection with a corporate restructure, sale, merger, or acquisition; or</li>
+    <li>any entity to which the Trial. brand is transferred.</li>
+</ul>
+  <h3>26.1 Notice and venue objection right</h3>
+  <p>The Operator will provide at least 30 days’ written notice of any assignment, novation, or transfer through the dashboard or by email. If you do not agree to the assignment, you may terminate this Agreement at no cost within 30 days of receiving the notice, with effect from the assignment date. If you do not exercise this right of objection-and-termination within that 30-day window, you are deemed to consent to the assignment, and the Agreement continues in force with the successor entity in place of the Operator on the same terms. Founding Partner pricing under clause 5.1 carries through to the successor entity unchanged.</p>
+  <h2><span class="num">27.</span>Unfair Contract Terms and Small Business Provisions</h2>
+  <p>The parties intend these Terms to comply with the unfair contract terms regime in the Australian Consumer Law and Australian Securities and Investments Commission Act 2001 (Cth), including the November 2023 reforms. Where any term would otherwise be void as an unfair contract term in a “small business contract” or “consumer contract”, that term is to be read down to the minimum extent necessary to make it not unfair, and otherwise is severed.</p>
+  <h2><span class="num">28.</span>Regulatory Change and AI Compliance</h2>
+  <p>The Operator may modify, suspend, restrict, or discontinue any AI-assisted feature, scoring methodology, prompt, rubric, model selection, or automated process where reasonably necessary to:</p>
+  <ul>
+    <li>comply with applicable law (including any law enacted or amended after the Effective Date);</li>
+    <li>respond to regulatory guidance issued by the Office of the Australian Information Commissioner, the Australian Human Rights Commission, the Fair Work Ombudsman, or any other competent regulator or industry body;</li>
+    <li>address legal, ethical, or discrimination-related concerns;</li>
+    <li>reduce systemic bias risk identified through monitoring under the AI Transparency Notice;</li>
+    <li>comply with any direction, recommendation, or expectation of a regulator, government authority, court, or industry body; or</li>
+    <li>preserve the integrity, safety, or lawful operation of the Platform.</li>
+</ul>
+  <p>Such changes may occur without liability to the Operator, provided the Operator acts reasonably and in good faith. Where a change materially affects the Services received by you, the Operator will provide reasonable prior notice (or, if prior notice is not practicable, prompt notice after the change) through the dashboard or by email. Your statutory rights under the Australian Consumer Law are unaffected.</p>
+  <h3>28.1 Continuity of remaining Services</h3>
+  <p>If any AI-assisted feature, workflow, scoring method, or automated process becomes unlawful, prohibited, unenforceable, or restricted by regulation, court order, or regulator direction, the remainder of the Agreement and the remaining Platform functionality continue in force to the maximum extent permitted by law. The withdrawal or restriction of a specific feature under this clause 28 does not, of itself, give rise to a right of refund, a right of set-off, or a claim of frustration; clause 27 (Unfair Contract Terms) and your statutory rights under the Australian Consumer Law are unaffected.</p>
+  <h2><span class="num">29.</span>General</h2>
+  <ul>
+    <li>Entire agreement: the Agreement is the entire agreement between the parties on its subject matter.</li>
+    <li>Variation: the Operator may vary the Terms on at least 30 days’ notice; continued use after the effective date constitutes acceptance.</li>
+    <li>Severance: if any provision is void or unenforceable, it is severed without affecting the remainder.</li>
+    <li>Waiver: no waiver is effective unless in writing; a single or partial exercise of a right does not preclude further exercise.</li>
+    <li>Counterparts and electronic acceptance: acceptance by clicking, checking, or any other electronic means is binding.</li>
+    <li>Relationship: the parties are independent contractors; nothing creates a partnership, joint venture, agency, or employment.</li>
+</ul>
+  <h2>Schedule 1 — Pricing Schedule (incorporated by reference)</h2>
+  <p>Current pricing is published at: <a href="https://hiretrial.com.au/pricing">https://hiretrial.com.au/pricing</a> (the “Pricing URL”). The Pricing Schedule at the Pricing URL is incorporated into and forms part of these Terms. At the time of this version, the Founding Partner pricing tiers are:</p>
+  <ul>
+    <li>Solo (1 venue): A$99.99 per month + A$99 per Retained Hire (plus GST).</li>
+    <li>Starter (2–3 venues): A$199 per month + A$89 per Retained Hire (plus GST).</li>
+    <li>Growth (4–5 venues): A$349 per month + A$79 per Retained Hire (plus GST).</li>
+    <li>Enterprise (custom): pricing on application.</li>
+</ul>
+  <p>Founding Partner pricing is available to Venues that submit an Expression of Interest on or before 15 July 2026 and complete a product demonstration on or before 16 August 2026 (the “Founding Partner Window”), and is locked for the lifetime of the subscription subject to clauses 5.1 and 5.2. Standard Phase 2 pricing will apply to Venues that subscribe after the Founding Partner Window closes and is published at the Pricing URL.</p>
+
+  <div class="contact-card">
+    <div class="contact-card-name">Trial<span style="color:var(--accent)">.</span></div>
+    <div class="contact-card-abn">ABN 71 441 417 792</div>
+    <div class="contact-card-line">General: <a href="mailto:hello@hiretrial.com.au">hello@hiretrial.com.au</a></div>
+    <div class="contact-card-line">Privacy: <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a></div>
+    <div class="contact-card-line">Billing: <a href="mailto:billing@hiretrial.com.au">billing@hiretrial.com.au</a></div>
+    <div class="contact-card-line">Appeals: <a href="mailto:appeals@hiretrial.com.au">appeals@hiretrial.com.au</a></div>
+  </div>
+
+  <div class="legal-nav">
+    <div class="legal-nav-title">Legal — full suite</div>
+    <div class="legal-nav-links">
+      <a href="/terms" class="current">Terms of Service</a>
+      <a href="/candidate-terms" >Candidate Terms</a>
+      <a href="/privacy" >Privacy Policy</a>
+      <a href="/ai-notice" >AI Transparency</a>
+      <a href="/acceptable-use" >Acceptable Use</a>
+    </div>
+  </div>
+
+</main>
+
+<div id="trial-footer"></div>
+<script>
+  fetch('/footer.html').then(r => r.text()).then(html => {
+    document.getElementById('trial-footer').innerHTML = html;
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acceptable Use Policy — Trial.</title>
+<meta name="description" content="Trial. Acceptable Use Policy. What’s prohibited on the platform and how enforcement works.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:       #0a0a0a;
+  --bg2:      #111;
+  --bg3:      #161616;
+  --card:     #131313;
+
+  --border:        rgba(255,255,255,0.06);
+  --border2:       rgba(255,255,255,0.10);
+  --border-strong: rgba(255,255,255,0.18);
+
+  --white: #f8f6f0;
+  --muted: rgba(248,246,240,0.62);
+  --dim:   rgba(248,246,240,0.38);
+  --faint: rgba(248,246,240,0.22);
+
+  --accent:        #c8a96e;
+  --accent2:       #d4b887;
+  --accent-dim:    rgba(200,169,110,0.5);
+  --accent-bg:     rgba(200,169,110,0.06);
+  --accent-bg-strong: rgba(200,169,110,0.12);
+  --accent-line:   rgba(200,169,110,0.32);
+
+  --warning:      #d4a04a;
+  --warning-bg:   rgba(212,160,74,0.10);
+
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans:  'DM Sans', system-ui, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--white);
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(200,169,110,0.05), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 90%, rgba(200,169,110,0.025), transparent);
+  background-attachment: fixed;
+}
+
+a { color: var(--accent); text-decoration: none; transition: color 0.15s ease; }
+a:hover { color: var(--accent2); }
+
+.site-header { padding: 28px 0; border-bottom: 1px solid var(--border); }
+.site-header-inner { max-width: 880px; margin: 0 auto; padding: 0 32px; display: flex; justify-content: space-between; align-items: center; }
+.wordmark { font-family: var(--serif); font-weight: 800; font-size: 28px; letter-spacing: -0.4px; color: var(--white); display: inline-flex; align-items: baseline; }
+.wordmark .dot { color: var(--accent); font-size: 32px; margin-left: -2px; }
+.back-link { font-size: 13px; letter-spacing: 0.04em; color: var(--muted); font-weight: 400; }
+.back-link:hover { color: var(--accent); }
+
+.policy { max-width: 740px; margin: 0 auto; padding: 72px 32px 96px; }
+
+.eyebrow { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 16px; }
+
+h1 { font-family: var(--serif); font-weight: 800; font-size: clamp(36px, 5vw, 52px); line-height: 1.05; letter-spacing: -1px; margin-bottom: 18px; }
+h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
+
+.meta { font-size: 13px; color: var(--dim); margin-bottom: 48px; display: flex; flex-wrap: wrap; gap: 22px; }
+.meta-item { display: inline-flex; align-items: center; gap: 8px; }
+.meta-item-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--faint); font-weight: 600; }
+.meta-item-value { color: var(--muted); }
+
+.intro { font-size: 16px; color: var(--muted); line-height: 1.65; padding-bottom: 28px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.intro a { border-bottom: 1px solid var(--accent-dim); }
+
+.scope-note { background: linear-gradient(135deg, var(--accent-bg-strong), var(--accent-bg)); border: 1px solid var(--accent-dim); border-left: 3px solid var(--accent); border-radius: 8px; padding: 22px 26px; margin: 32px 0 48px; font-size: 14.5px; color: var(--white); line-height: 1.65; }
+.scope-note strong { color: var(--accent); font-weight: 600; font-family: var(--serif); font-style: italic; font-size: 16px; }
+
+h2 { font-family: var(--serif); font-weight: 700; font-size: 26px; letter-spacing: -0.4px; line-height: 1.2; margin: 56px 0 18px; color: var(--white); }
+h2 .num { color: var(--accent); font-style: italic; font-weight: 400; margin-right: 12px; }
+
+h3 { font-family: var(--serif); font-weight: 600; font-size: 20px; letter-spacing: -0.2px; line-height: 1.25; margin: 36px 0 14px; color: var(--white); }
+
+p { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 16px; }
+p strong { color: var(--white); font-weight: 500; }
+
+ul { list-style: none; padding: 0; margin: 16px 0 24px; }
+ul li { position: relative; padding-left: 22px; font-size: 15px; color: var(--muted); line-height: 1.65; margin-bottom: 10px; }
+ul li::before { content: '·'; position: absolute; left: 6px; color: var(--accent); font-weight: 700; font-size: 18px; line-height: 1.4; }
+ul li strong { color: var(--white); font-weight: 500; }
+
+ol { padding: 0; margin: 16px 0 24px; counter-reset: legal-list; }
+ol li { position: relative; padding-left: 28px; font-size: 15px; color: var(--muted); line-height: 1.65; margin-bottom: 10px; list-style: none; counter-increment: legal-list; }
+ol li::before { content: counter(legal-list) '.'; position: absolute; left: 0; color: var(--accent); font-weight: 600; font-family: var(--serif); }
+ol li strong { color: var(--white); font-weight: 500; }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+.contact-card { background: var(--card); border: 1px solid var(--border2); border-radius: 10px; padding: 26px 28px; margin: 24px 0; }
+.contact-card-name { font-family: var(--serif); font-weight: 700; font-size: 19px; letter-spacing: -0.3px; margin-bottom: 8px; color: var(--white); }
+.contact-card-abn { font-size: 12px; color: var(--dim); margin-bottom: 16px; letter-spacing: 0.04em; }
+.contact-card-line { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+.contact-card-line a { font-weight: 500; }
+
+.legal-nav { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 18px 22px; margin: 48px 0 0; }
+.legal-nav-title { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--faint); font-weight: 600; margin-bottom: 12px; }
+.legal-nav-links { display: flex; flex-wrap: wrap; gap: 18px; }
+.legal-nav-links a { font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+.legal-nav-links a:hover { color: var(--accent); border-color: var(--accent-dim); }
+.legal-nav-links a.current { color: var(--accent); border-color: var(--accent); }
+
+@media (max-width: 600px) {
+  .site-header { padding: 22px 0; }
+  .site-header-inner { padding: 0 22px; }
+  .wordmark { font-size: 24px; }
+  .wordmark .dot { font-size: 28px; }
+
+  .policy { padding: 48px 22px 72px; }
+  h1 { font-size: 32px; letter-spacing: -0.6px; }
+  h2 { font-size: 22px; margin-top: 44px; }
+  h3 { font-size: 18px; margin-top: 28px; }
+  .meta { gap: 14px; font-size: 12.5px; }
+  .scope-note { padding: 18px 20px; font-size: 14px; }
+  p, ul li, ol li { font-size: 14.5px; }
+  .contact-card { padding: 22px 22px; }
+  .legal-nav { padding: 16px 18px; }
+  .legal-nav-links { gap: 14px; }
+  .legal-nav-links a { font-size: 12.5px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a href="/" class="wordmark">Trial<span class="dot">.</span></a>
+    <a href="/" class="back-link">&larr; Back home</a>
+  </div>
+</header>
+
+<main class="policy">
+
+  <div class="eyebrow">Legal</div>
+  <h1>Acceptable <em>Use</em> Policy.</h1>
+
+  <div class="meta">
+    <div class="meta-item">
+      <span class="meta-item-label">Last updated</span>
+      <span class="meta-item-value">28 May 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-item-label">Effective from</span>
+      <span class="meta-item-value">28 May 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-item-label">Version</span>
+      <span class="meta-item-value">v2.5</span>
+    </div>
+  </div>
+
+  <p class="intro">This Acceptable Use Policy sets out the behaviour we expect from everyone using Trial. — venues, candidates, and anyone else interacting with the Platform. Breaches may result in suspension, bans, or termination.</p>
+
+  <p><em>Operated by Anders Berggren, ABN 71 441 417 792, trading as Hire Trial (the <strong>“</strong>Brand<strong>“</strong>: Trial.)</em></p>
+  <p>This Acceptable Use Policy (“AUP”) applies to all users of Trial. — both Venues and Candidates — and forms part of the Agreement. By accessing the Platform, you agree to comply with this AUP.</p>
+  <h2><span class="num">1.</span>Purpose</h2>
+  <p>Trial. provides software tooling that helps hospitality venues apply a more structured and more consistent process to early-stage screening. The conduct standards in this AUP are designed to keep the Platform safe, honest, and useful for everyone.</p>
+  <h2><span class="num">2.</span>Prohibited conduct — applies to all users</h2>
+  <p>You must not, when using the Platform, do any of the following:</p>
+  <h3>2.1 Fraud and dishonesty</h3>
+  <ul>
+    <li>Impersonate another person, business, or venue.</li>
+    <li>Submit false, misleading, or deceptive information.</li>
+    <li>Create sock-puppet, duplicate, or fake accounts.</li>
+    <li>Engage in chargeback fraud, payment fraud, or any other deceptive financial conduct.</li>
+    <li>Fabricate, manipulate, or alter assessment responses (for example, having another person complete an assessment on your behalf, or scripting answers).</li>
+</ul>
+  <h3>2.2 Harassment, threats and abuse</h3>
+  <ul>
+    <li>Send threatening, abusive, harassing, intimidating, or grossly offensive messages or content.</li>
+    <li>Stalk, dox, or harass any individual.</li>
+    <li>Engage in any sexual harassment or sexually explicit conduct.</li>
+</ul>
+  <h3>2.3 Discrimination</h3>
+  <ul>
+    <li>Engage in any conduct that constitutes unlawful discrimination under Australian law, including on the basis of race, sex, age, disability, sexuality, gender identity, pregnancy, marital status, religious belief, political opinion, or any other protected attribute.</li>
+    <li>Use the Platform to express, publish, or solicit discriminatory hiring preferences.</li>
+</ul>
+  <h3>2.4 Platform misuse</h3>
+  <ul>
+    <li>Reverse engineer, scrape, harvest, decompile, or attempt to derive source code, model weights, prompts, or rubrics from the Platform.</li>
+    <li>Bypass or attempt to bypass authentication, access controls, rate limits, or paywalls.</li>
+    <li>Use any automated tool (bot, scraper, headless browser, etc.) without our prior written permission.</li>
+    <li>Introduce malware, viruses, or any malicious code.</li>
+    <li>Interfere with the integrity or performance of the Platform.</li>
+    <li>Use the Platform in a way that imposes a disproportionate load on infrastructure.</li>
+    <li>Resell, sublicense, or commercially redistribute access to the Platform or its outputs.</li>
+</ul>
+  <h3>2.5 Misuse of AI outputs (Venues)</h3>
+  <ul>
+    <li>Treat AI-generated scores or summaries as the sole basis for any hiring decision.</li>
+    <li>Apply AI outputs in any way that contravenes anti-discrimination law.</li>
+    <li>Share AI outputs with third parties outside your Venue group except as required by law.</li>
+</ul>
+  <h3>2.6 Confidentiality and IP</h3>
+  <ul>
+    <li>Copy, distribute, or publish assessment questions, prompts, or rubrics.</li>
+    <li>Use confidential or proprietary information of Trial. for any purpose outside the Agreement.</li>
+</ul>
+  <h3>2.7 Legal compliance</h3>
+  <ul>
+    <li>Use the Platform for any unlawful purpose or in breach of any Australian law, including the Fair Work Act 2009 (Cth), Privacy Act 1988 (Cth), Spam Act 2003 (Cth), Australian Consumer Law, or applicable State or Territory laws.</li>
+</ul>
+  <h2><span class="num">3.</span>Special standards for Candidates</h2>
+  <ul>
+    <li>Your assessment responses must be your own work. Don’t have someone else write them for you. Don’t paste a chatbot’s answer.</li>
+    <li>You may use ordinary writing tools (spellcheck, grammar suggestions) — but the substance of your answers must be yours.</li>
+    <li>Don’t apply through Trial. for roles you have no genuine intention of taking up.</li>
+    <li>Treat venues respectfully in any communications.</li>
+</ul>
+  <h2><span class="num">4.</span>Special standards for Venues</h2>
+  <ul>
+    <li>Use Candidate data only for the genuine hiring purpose at your own Venue.</li>
+    <li>Comply with the Privacy Act 1988 (Cth) and the Australian Privacy Principles, whether or not you would otherwise be an “APP entity”.</li>
+    <li>Do not disclose AI outputs or assessment responses to third parties outside your Venue group except as required by law.</li>
+    <li>Always apply your own independent human judgement to hiring decisions. AI outputs are informational and probabilistic; they are not determinative and must not be treated as a recommendation, instruction, or directive (see Venue Terms of Service clause 11).</li>
+    <li>Do not use AI outputs in any way that contravenes anti-discrimination law, including the Sex Discrimination Act 1984 (Cth), Race Discrimination Act 1975 (Cth), Age Discrimination Act 2004 (Cth), Disability Discrimination Act 1992 (Cth), Fair Work Act 2009 (Cth), and applicable State or Territory laws.</li>
+    <li>Conduct your own independent assessment of every Candidate, including (where appropriate) interview, trial shift, reference checks, and right-to-work verification.</li>
+    <li>Where you operate a trial shift, comply with all applicable Fair Work, work health and safety, and minimum-wage obligations.</li>
+    <li>Confirm that Candidates you invite or process through the Platform are 18 years or older.</li>
+    <li>Pay Success Fees in accordance with the Terms of Service.</li>
+</ul>
+  <h2><span class="num">5.</span>Enforcement</h2>
+  <p>We enforce this AUP proportionately based on the seriousness, frequency, and intent of the breach.</p>
+  <h3>5.1 Responses available to the Operator</h3>
+  <ul>
+    <li>Warning.</li>
+    <li>Removal of offending content.</li>
+    <li>Temporary suspension of account or specific features.</li>
+    <li>Permanent ban from the Platform.</li>
+    <li>Reversal or withholding of any payment owed (where lawful).</li>
+    <li>Termination of the Agreement.</li>
+    <li>Referral to law enforcement or regulators where appropriate.</li>
+    <li>Civil action to recover loss, including under the indemnity at clause 19 of the Terms of Service.</li>
+</ul>
+  <h3>5.2 Cross-product effect</h3>
+  <p>A Platform Ban under this AUP may extend across the Trial. brand family — including any current or future related products operated by the Operator or its successor entities. This is necessary to prevent users who have been removed for serious misconduct from immediately reappearing under a related brand.</p>
+  <h2><span class="num">6.</span>Appeals</h2>
+  <p>If you are subject to a suspension, ban, or other enforcement action, you may appeal within 30 days by writing to <a href="mailto:appeals@hiretrial.com.au">appeals@hiretrial.com.au</a>. Your appeal should explain:</p>
+  <ul>
+    <li>What action you are appealing.</li>
+    <li>Why you believe it was wrong, disproportionate, or based on incorrect facts.</li>
+    <li>Any evidence supporting your appeal.</li>
+</ul>
+  <p>We will respond within 14 business days of a complete appeal. Outcomes can include: upholding the action, reducing the action (for example, converting a ban to a suspension), or overturning the action. Appeal outcomes are final, subject to your statutory rights.</p>
+  <h2><span class="num">7.</span>Reporting</h2>
+  <p>If you witness or experience conduct that breaches this AUP, report it to <a href="mailto:safety@hiretrial.com.au">safety@hiretrial.com.au</a>. Reports are reviewed promptly and we will not retaliate against good-faith reporters.</p>
+  <h2><span class="num">8.</span>Changes</h2>
+  <p>We may update this AUP from time to time. Material changes will be communicated as set out in the Terms of Service. Continued use of the Platform after the effective date constitutes acceptance.</p>
+  <h2><span class="num">9.</span>Severability and reading down</h2>
+  <p>Where any part of this AUP would otherwise be inconsistent with the Australian Consumer Law unfair contract terms regime, that part is to be read down to the minimum extent necessary, and otherwise severed.</p>
+
+  <div class="contact-card">
+    <div class="contact-card-name">Trial<span style="color:var(--accent)">.</span></div>
+    <div class="contact-card-abn">ABN 71 441 417 792</div>
+    <div class="contact-card-line">General: <a href="mailto:hello@hiretrial.com.au">hello@hiretrial.com.au</a></div>
+    <div class="contact-card-line">Privacy: <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a></div>
+    <div class="contact-card-line">Billing: <a href="mailto:billing@hiretrial.com.au">billing@hiretrial.com.au</a></div>
+    <div class="contact-card-line">Appeals: <a href="mailto:appeals@hiretrial.com.au">appeals@hiretrial.com.au</a></div>
+  </div>
+
+  <div class="legal-nav">
+    <div class="legal-nav-title">Legal — full suite</div>
+    <div class="legal-nav-links">
+      <a href="/terms" >Terms of Service</a>
+      <a href="/candidate-terms" >Candidate Terms</a>
+      <a href="/privacy" >Privacy Policy</a>
+      <a href="/ai-notice" >AI Transparency</a>
+      <a href="/acceptable-use" class="current">Acceptable Use</a>
+    </div>
+  </div>
+
+</main>
+
+<div id="trial-footer"></div>
+<script>
+  fetch('/footer.html').then(r => r.text()).then(html => {
+    document.getElementById('trial-footer').innerHTML = html;
+  });
+</script>
+
+</body>
+</html>

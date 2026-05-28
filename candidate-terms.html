@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Candidate Terms of Use — Trial.</title>
+<meta name="description" content="Trial. Candidate Terms of Use. What you agree to when completing an assessment.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:       #0a0a0a;
+  --bg2:      #111;
+  --bg3:      #161616;
+  --card:     #131313;
+
+  --border:        rgba(255,255,255,0.06);
+  --border2:       rgba(255,255,255,0.10);
+  --border-strong: rgba(255,255,255,0.18);
+
+  --white: #f8f6f0;
+  --muted: rgba(248,246,240,0.62);
+  --dim:   rgba(248,246,240,0.38);
+  --faint: rgba(248,246,240,0.22);
+
+  --accent:        #c8a96e;
+  --accent2:       #d4b887;
+  --accent-dim:    rgba(200,169,110,0.5);
+  --accent-bg:     rgba(200,169,110,0.06);
+  --accent-bg-strong: rgba(200,169,110,0.12);
+  --accent-line:   rgba(200,169,110,0.32);
+
+  --warning:      #d4a04a;
+  --warning-bg:   rgba(212,160,74,0.10);
+
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans:  'DM Sans', system-ui, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--white);
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(200,169,110,0.05), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 90%, rgba(200,169,110,0.025), transparent);
+  background-attachment: fixed;
+}
+
+a { color: var(--accent); text-decoration: none; transition: color 0.15s ease; }
+a:hover { color: var(--accent2); }
+
+.site-header { padding: 28px 0; border-bottom: 1px solid var(--border); }
+.site-header-inner { max-width: 880px; margin: 0 auto; padding: 0 32px; display: flex; justify-content: space-between; align-items: center; }
+.wordmark { font-family: var(--serif); font-weight: 800; font-size: 28px; letter-spacing: -0.4px; color: var(--white); display: inline-flex; align-items: baseline; }
+.wordmark .dot { color: var(--accent); font-size: 32px; margin-left: -2px; }
+.back-link { font-size: 13px; letter-spacing: 0.04em; color: var(--muted); font-weight: 400; }
+.back-link:hover { color: var(--accent); }
+
+.policy { max-width: 740px; margin: 0 auto; padding: 72px 32px 96px; }
+
+.eyebrow { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 16px; }
+
+h1 { font-family: var(--serif); font-weight: 800; font-size: clamp(36px, 5vw, 52px); line-height: 1.05; letter-spacing: -1px; margin-bottom: 18px; }
+h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
+
+.meta { font-size: 13px; color: var(--dim); margin-bottom: 48px; display: flex; flex-wrap: wrap; gap: 22px; }
+.meta-item { display: inline-flex; align-items: center; gap: 8px; }
+.meta-item-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--faint); font-weight: 600; }
+.meta-item-value { color: var(--muted); }
+
+.intro { font-size: 16px; color: var(--muted); line-height: 1.65; padding-bottom: 28px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.intro a { border-bottom: 1px solid var(--accent-dim); }
+
+.scope-note { background: linear-gradient(135deg, var(--accent-bg-strong), var(--accent-bg)); border: 1px solid var(--accent-dim); border-left: 3px solid var(--accent); border-radius: 8px; padding: 22px 26px; margin: 32px 0 48px; font-size: 14.5px; color: var(--white); line-height: 1.65; }
+.scope-note strong { color: var(--accent); font-weight: 600; font-family: var(--serif); font-style: italic; font-size: 16px; }
+
+h2 { font-family: var(--serif); font-weight: 700; font-size: 26px; letter-spacing: -0.4px; line-height: 1.2; margin: 56px 0 18px; color: var(--white); }
+h2 .num { color: var(--accent); font-style: italic; font-weight: 400; margin-right: 12px; }
+
+h3 { font-family: var(--serif); font-weight: 600; font-size: 20px; letter-spacing: -0.2px; line-height: 1.25; margin: 36px 0 14px; color: var(--white); }
+
+p { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 16px; }
+p strong { color: var(--white); font-weight: 500; }
+
+ul { list-style: none; padding: 0; margin: 16px 0 24px; }
+ul li { position: relative; padding-left: 22px; font-size: 15px; color: var(--muted); line-height: 1.65; margin-bottom: 10px; }
+ul li::before { content: '·'; position: absolute; left: 6px; color: var(--accent); font-weight: 700; font-size: 18px; line-height: 1.4; }
+ul li strong { color: var(--white); font-weight: 500; }
+
+ol { padding: 0; margin: 16px 0 24px; counter-reset: legal-list; }
+ol li { position: relative; padding-left: 28px; font-size: 15px; color: var(--muted); line-height: 1.65; margin-bottom: 10px; list-style: none; counter-increment: legal-list; }
+ol li::before { content: counter(legal-list) '.'; position: absolute; left: 0; color: var(--accent); font-weight: 600; font-family: var(--serif); }
+ol li strong { color: var(--white); font-weight: 500; }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+.contact-card { background: var(--card); border: 1px solid var(--border2); border-radius: 10px; padding: 26px 28px; margin: 24px 0; }
+.contact-card-name { font-family: var(--serif); font-weight: 700; font-size: 19px; letter-spacing: -0.3px; margin-bottom: 8px; color: var(--white); }
+.contact-card-abn { font-size: 12px; color: var(--dim); margin-bottom: 16px; letter-spacing: 0.04em; }
+.contact-card-line { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+.contact-card-line a { font-weight: 500; }
+
+.legal-nav { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 18px 22px; margin: 48px 0 0; }
+.legal-nav-title { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--faint); font-weight: 600; margin-bottom: 12px; }
+.legal-nav-links { display: flex; flex-wrap: wrap; gap: 18px; }
+.legal-nav-links a { font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+.legal-nav-links a:hover { color: var(--accent); border-color: var(--accent-dim); }
+.legal-nav-links a.current { color: var(--accent); border-color: var(--accent); }
+
+@media (max-width: 600px) {
+  .site-header { padding: 22px 0; }
+  .site-header-inner { padding: 0 22px; }
+  .wordmark { font-size: 24px; }
+  .wordmark .dot { font-size: 28px; }
+
+  .policy { padding: 48px 22px 72px; }
+  h1 { font-size: 32px; letter-spacing: -0.6px; }
+  h2 { font-size: 22px; margin-top: 44px; }
+  h3 { font-size: 18px; margin-top: 28px; }
+  .meta { gap: 14px; font-size: 12.5px; }
+  .scope-note { padding: 18px 20px; font-size: 14px; }
+  p, ul li, ol li { font-size: 14.5px; }
+  .contact-card { padding: 22px 22px; }
+  .legal-nav { padding: 16px 18px; }
+  .legal-nav-links { gap: 14px; }
+  .legal-nav-links a { font-size: 12.5px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a href="/" class="wordmark">Trial<span class="dot">.</span></a>
+    <a href="/" class="back-link">&larr; Back home</a>
+  </div>
+</header>
+
+<main class="policy">
+
+  <div class="eyebrow">Legal</div>
+  <h1>Candidate <em>Terms of Use</em>.</h1>
+
+  <div class="meta">
+    <div class="meta-item">
+      <span class="meta-item-label">Last updated</span>
+      <span class="meta-item-value">28 May 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-item-label">Effective from</span>
+      <span class="meta-item-value">28 May 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-item-label">Version</span>
+      <span class="meta-item-value">v2.5</span>
+    </div>
+  </div>
+
+  <p class="intro">These Terms apply when you complete a <strong>Trial. assessment</strong> as a candidate applying for a hospitality role. By starting an assessment, you agree to these terms.</p>
+
+  <p><em>Operated by Anders Berggren, ABN 71 441 417 792, trading as Hire Trial (the <strong>“</strong>Brand<strong>“</strong>: Trial.)</em></p>
+  <p><strong>Quick summary (this is plain English, not the legal bit).</strong></p>
+  <p>Trial. is a tool that hospitality venues use to help screen people applying for jobs. If you’re reading this, a venue you applied to has asked you to do a short scenario-based assessment. An AI helps score your answers, but a real person at the venue makes the hiring decision — not the AI, and not us. You can ask to see your data, or ask us to delete you, any time. Email <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a>. Your data is automatically deleted six months after your last activity.</p>
+  <h2><span class="num">1.</span>Who we are</h2>
+  <p>Trial. is operated by Anders Berggren, ABN 71 441 417 792, trading as Hire Trial (the “Operator”). The brand “Trial.” is used publicly. From time to time the platform may be operated by a successor company (see section 12).</p>
+  <h2><span class="num">2.</span>What Trial. is — and isn't</h2>
+  <p>Trial. is a software platform. It helps hospitality venues run short, structured assessments to learn about candidates applying for front-of-house roles like waiting, bartending, hosting, or barista work.</p>
+  <p>Trial. is not a recruitment agency. We are not an employment agency, a labour-hire provider, or an automated hiring system. We don’t employ you, engage you, supervise you, roster you, manage you, pay you, recommend you, endorse you, or guarantee your suitability. The venue who invited you decides who to interview, trial, or hire — that decision is theirs, not ours, and not the AI’s.</p>
+  <p>Each assessment is for a specific venue and a specific role. We do not maintain a profile of you across venues. We do not show your information to other venues. Your data is deleted six months after your last activity (see section 8).</p>
+  <h2><span class="num">3.</span>Accepting these terms</h2>
+  <p>By starting an assessment, you accept these Terms of Use, our Privacy Policy, and our AI Transparency Notice. If you don’t want to accept, simply don’t start the assessment. Nothing bad happens — you just won’t be assessed through Trial.</p>
+  <p>You confirm that you are at least 18 years old, that you have the legal right to work in Australia (or are applying in good faith on that basis), and that the information you provide is true and your own. Hospitality FOH roles in Australia generally require the ability to hold a Responsible Service of Alcohol (RSA) certificate, which requires you to be 18 or older.</p>
+  <h2><span class="num">4.</span>How the assessment works</h2>
+  <ul>
+    <li>A venue invites you by email or SMS with a link to your assessment, sent through Trial.</li>
+    <li>You answer a series of scenario-based, text-only questions on the role you applied for.</li>
+    <li>There is no video, no audio recording, no facial recognition, no biometric processing, and no personality test.</li>
+    <li>An AI system (currently Anthropic’s Claude Haiku 4.5) reads your written answers and produces a numerical score and a short summary.</li>
+    <li>Your responses, score, and summary are shared with the venue you applied to.</li>
+    <li>A real human at the venue decides whether to interview, trial, or hire you. The AI score is not a hire/reject recommendation — it’s just one input the venue may consider.</li>
+    <li>We don’t guarantee that the AI score or summary is perfect. AI can be wrong. A written assessment is one narrow window into a person — things like real-world workplace performance, how you actually work with people, your growth potential, and whether you’re right for a specific venue often don’t show up in writing. That’s for the venue to figure out through interview and trial shifts.</li>
+    <li>Completion of an Assessment does not guarantee an interview, trial shift, engagement, offer of employment, or ongoing work opportunity. Hiring decisions are made by the venue and are subject to the venue’s own processes.</li>
+</ul>
+  <h2><span class="num">5.</span>What you're agreeing to</h2>
+  <p>To complete the assessment, you agree to the following — these are the things we ask you to expressly confirm at the start of the assessment, with an unticked checkbox that you actively tick before continuing:</p>
+  <ul>
+    <li>you are 18 years or older;</li>
+    <li>an AI system can read and score your answers;</li>
+    <li>your responses, score and summary will be shared with the venue you applied to;</li>
+    <li>the information you submit during the assessment — including your name, the role and venue you applied to, and your written responses — may be processed by our third-party AI provider in the United States for the purpose of generating your score, summary, and assessment insights (see Privacy Policy section 6).</li>
+</ul>
+  <p>There is no separate cross-venue consent. Your assessment is for the one venue you applied to. Your data is not made available to other venues.</p>
+  <h2><span class="num">6.</span>Your rights</h2>
+  <p><strong>Access to your data.</strong></p>
+  <p>You can ask us what data we hold about you. We’ll respond within 30 days. Email <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a>.</p>
+  <p><strong>Correction.</strong></p>
+  <p>You can ask us to fix anything that’s wrong.</p>
+  <p><strong>Deletion.</strong></p>
+  <p>You can ask us to delete your data. We will, unless we’re required to keep it for legal or financial reasons (for example, de-identified financial records for tax purposes).</p>
+  <p><strong>Complaints.</strong></p>
+  <p>If we don’t resolve a privacy concern to your satisfaction, you can complain to the Office of the Australian Information Commissioner (OAIC) at oaic.gov.au.</p>
+  <p><strong>Hiring decisions.</strong></p>
+  <p>Trial. does not make hiring decisions. If you have questions about why you were or weren’t hired, those questions are for the venue, not for us. We don’t have visibility into the venue’s decision-making.</p>
+  <h2><span class="num">7.</span>Things you agree not to do</h2>
+  <p>You agree that you won’t:</p>
+  <ul>
+    <li>submit answers written by someone else as your own, or otherwise misrepresent who you are;</li>
+    <li>use the platform to harass, threaten, or abuse anyone;</li>
+    <li>try to game, scrape, or interfere with the platform or the AI scoring;</li>
+    <li>try to access another candidate’s data;</li>
+    <li>use Trial. for anything other than a genuine job application.</li>
+</ul>
+  <p>Breaching these may result in your assessment being voided or your account being banned (see Acceptable Use Policy).</p>
+  <h2><span class="num">8.</span>How long we keep your data</h2>
+  <p>Your assessment responses, score, summary, and personal information are deleted six months after your Last Activity, as defined in our Privacy Policy. We do not maintain a long-term profile of you. The venue also loses dashboard access to your information after that six-month period; only de-identified financial records (for example, an invoice line item with a reference number, no name attached) are retained beyond that point for tax purposes.</p>
+  <p>You can ask us to delete your data earlier than this if you want. Email <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a>.</p>
+  <h2><span class="num">9.</span>Platform bans</h2>
+  <p>In serious cases — for example, fraud, harassment, threats, or repeated abuse — we may permanently ban you from Trial. and from any related Trial. brand products. You can appeal a ban within 30 days by emailing <a href="mailto:appeals@hiretrial.com.au">appeals@hiretrial.com.au</a>. We’ll respond within 14 business days.</p>
+  <h2><span class="num">10.</span>Our role and our limits of responsibility</h2>
+  <p>We provide the platform. We do not employ you, we do not control venues, and we do not decide hiring outcomes. AI outputs we generate are informational and probabilistic — they are not a decision, a ranking, or a recommendation to hire or reject you.</p>
+  <p>Nothing in these Terms takes away any consumer guarantee or right you have under the Australian Consumer Law. Subject to that:</p>
+  <ul>
+    <li>We are not responsible for hiring decisions made by venues.</li>
+    <li>We are not responsible for the conduct of venues toward you (including pay, conditions, or treatment at any trial shift) — that is a matter between you and the venue.</li>
+    <li>We don’t guarantee that any AI output is free from error or bias. AI systems are probabilistic; they may not perfectly reflect your real-world suitability or capability.</li>
+    <li>We are not liable for indirect or consequential loss.</li>
+    <li>To the maximum extent permitted by law, our total liability to you arising out of or in connection with the Platform or Services is limited to A$100.</li>
+</ul>
+  <h2><span class="num">11.</span>Privacy and overseas processing</h2>
+  <p>Your data is stored in Australia (Supabase Sydney). The AI scoring is performed by Anthropic in the United States. We obtain your express informed consent to this overseas disclosure at the start of the assessment, before any answers are submitted. Full detail is in the Privacy Policy and AI Transparency Notice.</p>
+  <h2><span class="num">12.</span>Disputes</h2>
+  <p>If you have a problem, talk to us first — email <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a> and we’ll try to fix it. If we can’t resolve it, you have the right to complain to the OAIC or to take the matter to a court of competent jurisdiction in New South Wales, Australia. These Terms are governed by the laws of New South Wales.</p>
+  <h2><span class="num">13.</span>Future ownership of Trial.</h2>
+  <p>Trial. is currently operated by Anders Berggren as a sole trader trading as Hire Trial. The business may, in future, be transferred to a related corporate entity (for example, Berggren Holdings Pty Ltd) or to a wholly-owned subsidiary, or to any successor entity to which the Trial. brand is transferred. When that happens, these Terms will continue with the new entity in place of the sole trader, without needing any new agreement from you. Your rights and our obligations don’t change.</p>
+  <h2><span class="num">14.</span>Changes</h2>
+  <p>We may update these Terms from time to time. We’ll post the new version with an updated effective date. If we change anything material, we’ll let you know by email where we have your address.</p>
+  <h2><span class="num">15.</span>How to contact us</h2>
+  <ul>
+    <li>General: <a href="mailto:hello@hiretrial.com.au">hello@hiretrial.com.au</a></li>
+    <li>Privacy and data requests: <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a></li>
+    <li>Ban appeals: <a href="mailto:appeals@hiretrial.com.au">appeals@hiretrial.com.au</a></li>
+    <li>Legal: <a href="mailto:legal@hiretrial.com.au">legal@hiretrial.com.au</a></li>
+</ul>
+
+  <div class="contact-card">
+    <div class="contact-card-name">Trial<span style="color:var(--accent)">.</span></div>
+    <div class="contact-card-abn">ABN 71 441 417 792</div>
+    <div class="contact-card-line">General: <a href="mailto:hello@hiretrial.com.au">hello@hiretrial.com.au</a></div>
+    <div class="contact-card-line">Privacy: <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a></div>
+    <div class="contact-card-line">Billing: <a href="mailto:billing@hiretrial.com.au">billing@hiretrial.com.au</a></div>
+    <div class="contact-card-line">Appeals: <a href="mailto:appeals@hiretrial.com.au">appeals@hiretrial.com.au</a></div>
+  </div>
+
+  <div class="legal-nav">
+    <div class="legal-nav-title">Legal — full suite</div>
+    <div class="legal-nav-links">
+      <a href="/terms" >Terms of Service</a>
+      <a href="/candidate-terms" class="current">Candidate Terms</a>
+      <a href="/privacy" >Privacy Policy</a>
+      <a href="/ai-notice" >AI Transparency</a>
+      <a href="/acceptable-use" >Acceptable Use</a>
+    </div>
+  </div>
+
+</main>
+
+<div id="trial-footer"></div>
+<script>
+  fetch('/footer.html').then(r => r.text()).then(html => {
+    document.getElementById('trial-footer').innerHTML = html;
+  });
+</script>
+
+</body>
+</html>

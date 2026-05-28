@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Transparency Notice — Trial.</title>
+<meta name="description" content="Trial. AI Transparency Notice. What the AI does, what it doesn’t, and how we keep humans accountable.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:       #0a0a0a;
+  --bg2:      #111;
+  --bg3:      #161616;
+  --card:     #131313;
+
+  --border:        rgba(255,255,255,0.06);
+  --border2:       rgba(255,255,255,0.10);
+  --border-strong: rgba(255,255,255,0.18);
+
+  --white: #f8f6f0;
+  --muted: rgba(248,246,240,0.62);
+  --dim:   rgba(248,246,240,0.38);
+  --faint: rgba(248,246,240,0.22);
+
+  --accent:        #c8a96e;
+  --accent2:       #d4b887;
+  --accent-dim:    rgba(200,169,110,0.5);
+  --accent-bg:     rgba(200,169,110,0.06);
+  --accent-bg-strong: rgba(200,169,110,0.12);
+  --accent-line:   rgba(200,169,110,0.32);
+
+  --warning:      #d4a04a;
+  --warning-bg:   rgba(212,160,74,0.10);
+
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans:  'DM Sans', system-ui, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--white);
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(200,169,110,0.05), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 90%, rgba(200,169,110,0.025), transparent);
+  background-attachment: fixed;
+}
+
+a { color: var(--accent); text-decoration: none; transition: color 0.15s ease; }
+a:hover { color: var(--accent2); }
+
+.site-header { padding: 28px 0; border-bottom: 1px solid var(--border); }
+.site-header-inner { max-width: 880px; margin: 0 auto; padding: 0 32px; display: flex; justify-content: space-between; align-items: center; }
+.wordmark { font-family: var(--serif); font-weight: 800; font-size: 28px; letter-spacing: -0.4px; color: var(--white); display: inline-flex; align-items: baseline; }
+.wordmark .dot { color: var(--accent); font-size: 32px; margin-left: -2px; }
+.back-link { font-size: 13px; letter-spacing: 0.04em; color: var(--muted); font-weight: 400; }
+.back-link:hover { color: var(--accent); }
+
+.policy { max-width: 740px; margin: 0 auto; padding: 72px 32px 96px; }
+
+.eyebrow { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 16px; }
+
+h1 { font-family: var(--serif); font-weight: 800; font-size: clamp(36px, 5vw, 52px); line-height: 1.05; letter-spacing: -1px; margin-bottom: 18px; }
+h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
+
+.meta { font-size: 13px; color: var(--dim); margin-bottom: 48px; display: flex; flex-wrap: wrap; gap: 22px; }
+.meta-item { display: inline-flex; align-items: center; gap: 8px; }
+.meta-item-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--faint); font-weight: 600; }
+.meta-item-value { color: var(--muted); }
+
+.intro { font-size: 16px; color: var(--muted); line-height: 1.65; padding-bottom: 28px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.intro a { border-bottom: 1px solid var(--accent-dim); }
+
+.scope-note { background: linear-gradient(135deg, var(--accent-bg-strong), var(--accent-bg)); border: 1px solid var(--accent-dim); border-left: 3px solid var(--accent); border-radius: 8px; padding: 22px 26px; margin: 32px 0 48px; font-size: 14.5px; color: var(--white); line-height: 1.65; }
+.scope-note strong { color: var(--accent); font-weight: 600; font-family: var(--serif); font-style: italic; font-size: 16px; }
+
+h2 { font-family: var(--serif); font-weight: 700; font-size: 26px; letter-spacing: -0.4px; line-height: 1.2; margin: 56px 0 18px; color: var(--white); }
+h2 .num { color: var(--accent); font-style: italic; font-weight: 400; margin-right: 12px; }
+
+h3 { font-family: var(--serif); font-weight: 600; font-size: 20px; letter-spacing: -0.2px; line-height: 1.25; margin: 36px 0 14px; color: var(--white); }
+
+p { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 16px; }
+p strong { color: var(--white); font-weight: 500; }
+
+ul { list-style: none; padding: 0; margin: 16px 0 24px; }
+ul li { position: relative; padding-left: 22px; font-size: 15px; color: var(--muted); line-height: 1.65; margin-bottom: 10px; }
+ul li::before { content: '·'; position: absolute; left: 6px; color: var(--accent); font-weight: 700; font-size: 18px; line-height: 1.4; }
+ul li strong { color: var(--white); font-weight: 500; }
+
+ol { padding: 0; margin: 16px 0 24px; counter-reset: legal-list; }
+ol li { position: relative; padding-left: 28px; font-size: 15px; color: var(--muted); line-height: 1.65; margin-bottom: 10px; list-style: none; counter-increment: legal-list; }
+ol li::before { content: counter(legal-list) '.'; position: absolute; left: 0; color: var(--accent); font-weight: 600; font-family: var(--serif); }
+ol li strong { color: var(--white); font-weight: 500; }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+.contact-card { background: var(--card); border: 1px solid var(--border2); border-radius: 10px; padding: 26px 28px; margin: 24px 0; }
+.contact-card-name { font-family: var(--serif); font-weight: 700; font-size: 19px; letter-spacing: -0.3px; margin-bottom: 8px; color: var(--white); }
+.contact-card-abn { font-size: 12px; color: var(--dim); margin-bottom: 16px; letter-spacing: 0.04em; }
+.contact-card-line { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+.contact-card-line a { font-weight: 500; }
+
+.legal-nav { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 18px 22px; margin: 48px 0 0; }
+.legal-nav-title { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--faint); font-weight: 600; margin-bottom: 12px; }
+.legal-nav-links { display: flex; flex-wrap: wrap; gap: 18px; }
+.legal-nav-links a { font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+.legal-nav-links a:hover { color: var(--accent); border-color: var(--accent-dim); }
+.legal-nav-links a.current { color: var(--accent); border-color: var(--accent); }
+
+@media (max-width: 600px) {
+  .site-header { padding: 22px 0; }
+  .site-header-inner { padding: 0 22px; }
+  .wordmark { font-size: 24px; }
+  .wordmark .dot { font-size: 28px; }
+
+  .policy { padding: 48px 22px 72px; }
+  h1 { font-size: 32px; letter-spacing: -0.6px; }
+  h2 { font-size: 22px; margin-top: 44px; }
+  h3 { font-size: 18px; margin-top: 28px; }
+  .meta { gap: 14px; font-size: 12.5px; }
+  .scope-note { padding: 18px 20px; font-size: 14px; }
+  p, ul li, ol li { font-size: 14.5px; }
+  .contact-card { padding: 22px 22px; }
+  .legal-nav { padding: 16px 18px; }
+  .legal-nav-links { gap: 14px; }
+  .legal-nav-links a { font-size: 12.5px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a href="/" class="wordmark">Trial<span class="dot">.</span></a>
+    <a href="/" class="back-link">&larr; Back home</a>
+  </div>
+</header>
+
+<main class="policy">
+
+  <div class="eyebrow">Legal</div>
+  <h1>AI <em>Transparency</em> Notice.</h1>
+
+  <div class="meta">
+    <div class="meta-item">
+      <span class="meta-item-label">Last updated</span>
+      <span class="meta-item-value">28 May 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-item-label">Effective from</span>
+      <span class="meta-item-value">28 May 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-item-label">Version</span>
+      <span class="meta-item-value">v2.5</span>
+    </div>
+  </div>
+
+  <p class="intro">Trial. uses AI to help score and summarise candidate assessments. This Notice explains <strong>what the AI does, what it doesn’t do, which model is used, and where humans stay accountable</strong>. We’d rather be plain about this than hide it.</p>
+
+  <p><em>Operated by Anders Berggren, ABN 71 441 417 792, trading as Hire Trial (the <strong>“</strong>Brand<strong>“</strong>: Trial.)</em></p>
+  <p>This Notice is a standalone disclosure. It applies in addition to the Privacy Policy, the Candidate Terms of Use, and the Venue Terms of Service. It exists because AI-assisted hiring tools deserve clear, plain-English transparency.</p>
+  <h2><span class="num">1.</span>What the AI does</h2>
+  <p>Trial. uses an AI system to read each candidate’s text responses to a structured set of scenario-based questions, and to produce:</p>
+  <ul>
+    <li>a numerical score for that assessment;</li>
+    <li>a short written summary of the candidate’s responses; and</li>
+    <li>screening insights to help the venue prepare for an interview or trial shift.</li>
+</ul>
+  <p>That’s it. The AI does not determine who should or should not be hired. It does not output a “hire” or “don’t hire” recommendation. It does not rank candidates against each other.</p>
+  <h2><span class="num">2.</span>What the AI does NOT do</h2>
+  <ul>
+    <li>The AI does not make hiring decisions. A human at the venue does.</li>
+    <li>The AI does not analyse video or audio. There is no video or audio in the assessment.</li>
+    <li>The AI does not perform biometric processing, facial recognition, voice analysis, or any inference from images.</li>
+    <li>The AI does not psychometrically profile the candidate, infer personality traits, infer mental health, or infer cultural background.</li>
+    <li>The AI does not use the candidate’s race, gender, age, or other protected attribute as a scoring input.</li>
+    <li>The AI does not generate rankings of candidates against each other, suitability determinations, or recommendations to hire or reject.</li>
+</ul>
+  <h2><span class="num">2A.</span>No guarantee of bias-free outputs — read this honestly</h2>
+  <p>We take this seriously enough to say it directly. While Trial. takes reasonable steps to structure assessments consistently and to monitor for unintended bias, we do not warrant, represent, or guarantee that any AI-generated output will be completely free from bias, error, cultural weighting, linguistic weighting, or unintended discriminatory impact.</p>
+  <p>Trial. is designed as an assistive screening tool only — not a replacement for human judgement, independent review, or lawful recruitment practices. Both Candidates and Venues should approach AI outputs accordingly.</p>
+  <p>Candidates and Venues acknowledge that:</p>
+  <ul>
+    <li>language models are probabilistic systems and will produce slightly different outputs for similar inputs;</li>
+    <li>hospitality communication styles vary significantly across culture, education, neurotype, language background, and lived experience; and</li>
+    <li>AI-generated outputs may not perfectly reflect a Candidate’s real-world suitability, capability, or workplace performance.</li>
+</ul>
+  <p>Venues are contractually required to apply their own independent judgement to every hiring decision (Venue Terms of Service clause 11).</p>
+  <h2><span class="num">3.</span>Which AI system</h2>
+  <p>The current AI system is the Claude Haiku 4.5 model, provided by Anthropic, PBC (“Anthropic”), via Anthropic’s API. Anthropic processes the inputs in the United States and returns outputs to Trial. in Australia. According to Anthropic’s API terms as at the date of this Notice, Anthropic does not use API inputs to train its models; that is a representation by Anthropic and not by Trial. We may, in future, switch or supplement AI providers, and will update this Notice if we do.</p>
+  <h2><span class="num">3A.</span>The AI system evolves over time</h2>
+  <p>AI systems are continuously evolving. Over time we may, in our discretion:</p>
+  <ul>
+    <li>change the prompts, rubrics, and scoring methodology;</li>
+    <li>switch, supplement, or remove model providers;</li>
+    <li>iterate features, retire features, or introduce new features;</li>
+    <li>run AI-assisted features as experimental, beta, or pilot offerings while we refine them; and</li>
+    <li>withdraw or materially alter features at any time.</li>
+</ul>
+  <p>You should expect that outputs may vary over time for identical or similar inputs. We will keep this Notice up to date in respect of material changes, and Venue Terms of Service clause 28 (Regulatory Change and AI Compliance) governs the corresponding contractual position.</p>
+  <h2><span class="num">4.</span>What data is sent to the AI</h2>
+  <p>Information submitted during the assessment process — including the Candidate’s name, the role applied for, the venue applied to, and the written assessment responses — is processed by the AI provider for the purpose of generating scores, summaries, and screening insights. The structured prompt and rubric Trial. has authored for the role are also sent to the AI as part of each scoring request.</p>
+  <p>We do not intentionally submit government identification documents, payment information, or sensitive information (within the meaning of the Privacy Act 1988 (Cth)) to the AI provider as part of the assessment process.</p>
+  <p>No images, audio, video, or biometric data are sent. No financial information is sent.</p>
+  <h2><span class="num">5.</span>Why we use AI</h2>
+  <ul>
+    <li>To apply a defined rubric consistently across responses, rather than relying on free-form impressions.</li>
+    <li>To produce concise summaries that help venues focus their human review.</li>
+    <li>To give every candidate the same structured set of questions in the same format.</li>
+</ul>
+  <p>We use AI to add process consistency, structure, and transparency to the early-screening step. We do not claim, and you should not infer, that the use of AI in Trial. produces fair, unbiased, equitable, or non-discriminatory hiring outcomes. The use of AI does not relieve any Venue of its independent legal obligations under anti-discrimination, employment, or workplace-relations law.</p>
+  <h2><span class="num">6.</span>Human accountability</h2>
+  <p>Venues are contractually required to apply human judgement to every hiring decision and not to treat AI outputs as the sole basis for any decision (Venue Terms of Service clause 11). The dashboard surfaces this requirement at the point a venue reviews each candidate.</p>
+  <p>Trial. does not generally undertake to manually re-score, re-review, or re-evaluate AI outputs on Candidate or Venue request. The Operator retains discretion to do so in exceptional circumstances, including where reasonably necessary to address a platform malfunction, comply with a legal or regulatory requirement, respond to a serious complaint, or conduct an internal review. The AI produces outputs based on the information submitted. Candidates retain their statutory rights under the Privacy Act 1988 (Cth), including the right to access the personal information held about them, to correct inaccurate information, and to ask for their information to be deleted (see Privacy Policy section 11). Hiring decisions are the responsibility of the Venue and questions about them are for the Venue, not for Trial.</p>
+  <h2><span class="num">7.</span>Limitations of the AI — read this honestly</h2>
+  <p>We want you to be aware of the following limitations:</p>
+  <ul>
+    <li>AI outputs are probabilistic, not deterministic. Two near-identical answers may receive slightly different scores.</li>
+    <li>AI can be wrong, miss nuance, or fail to weight context the way a person would.</li>
+    <li>AI can carry latent bias from training data, even when prompts are designed to apply consistent rubric criteria.</li>
+    <li>AI summaries may oversimplify or misrepresent a long, nuanced answer.</li>
+    <li>Candidates whose first language is not English may write differently than the rubric expects.</li>
+    <li>A written assessment is one narrow window into a person. AI outputs may not reflect real-world workplace performance, interpersonal dynamics, growth potential, venue-specific suitability, or broader human qualities that simply do not show up in a short written exercise.</li>
+</ul>
+  <h2><span class="num">8.</span>Bias monitoring and improvement</h2>
+  <p>We monitor the AI system for emerging bias on an ongoing basis, including by reviewing score distributions and the substantive feedback from candidates and venues. Where issues are identified, we will update prompts, rubrics, or model selection and re-publish this Notice. De-identified or aggregated outputs (for example, score distributions across roles) may be retained beyond the standard candidate-data retention period for the purpose of monitoring AI behaviour and improving the Platform.</p>
+  <p>Where reasonably necessary to comply with applicable law, respond to regulatory guidance, address legal, ethical or discrimination-related concerns, or preserve the integrity of the Platform, we may modify, suspend, restrict, or discontinue any AI-assisted feature, scoring methodology, or automated process. See Venue Terms of Service clause 28 (Regulatory Change and AI Compliance) for the corresponding contractual position.</p>
+  <h2><span class="num">8A.</span>This Notice is not legal or HR advice</h2>
+  <p>This Notice explains how the AI system works. It is not legal, human resources, employment-law, workplace-relations, or recruitment advice, and should not be relied on as such. The AI outputs the Platform generates are informational only — not legal advice, not HR advice, and not a guarantee of compliance with the Fair Work Act 2009 (Cth), anti-discrimination legislation, or any other law. Venues are solely responsible for obtaining their own legal and HR advice. See Venue Terms of Service clause 14 (No Legal, HR or Recruitment Advice) for the corresponding contractual position.</p>
+  <h2><span class="num">9.</span>Your rights regarding AI outputs</h2>
+  <ul>
+    <li>You have the right to know that AI was used (you do — that’s what this Notice is for).</li>
+    <li>You have the right to access the AI outputs we hold about you (under the Privacy Policy).</li>
+    <li>You have the right to ask us to correct or delete AI outputs (subject to retention obligations).</li>
+    <li>You can complain to us or to the OAIC.</li>
+</ul>
+  <h2><span class="num">10.</span>Overseas processing summary</h2>
+  <p>AI processing occurs in the United States via Anthropic’s API. We obtain your express informed consent to this overseas disclosure before your assessment begins, via an unticked checkbox that you actively tick after reading the disclosure. See the Privacy Policy, section 6.</p>
+  <h2><span class="num">11.</span>Updates</h2>
+  <p>We will update this Notice whenever there is a material change to: the AI system used, the data sent to it, or our bias-monitoring practice. The current version will always be linked from the assessment start page.</p>
+  <h2><span class="num">12.</span>Contact</h2>
+  <p>Email: <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a></p>
+
+  <div class="contact-card">
+    <div class="contact-card-name">Trial<span style="color:var(--accent)">.</span></div>
+    <div class="contact-card-abn">ABN 71 441 417 792</div>
+    <div class="contact-card-line">General: <a href="mailto:hello@hiretrial.com.au">hello@hiretrial.com.au</a></div>
+    <div class="contact-card-line">Privacy: <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a></div>
+    <div class="contact-card-line">Billing: <a href="mailto:billing@hiretrial.com.au">billing@hiretrial.com.au</a></div>
+    <div class="contact-card-line">Appeals: <a href="mailto:appeals@hiretrial.com.au">appeals@hiretrial.com.au</a></div>
+  </div>
+
+  <div class="legal-nav">
+    <div class="legal-nav-title">Legal — full suite</div>
+    <div class="legal-nav-links">
+      <a href="/terms" >Terms of Service</a>
+      <a href="/candidate-terms" >Candidate Terms</a>
+      <a href="/privacy" >Privacy Policy</a>
+      <a href="/ai-notice" class="current">AI Transparency</a>
+      <a href="/acceptable-use" >Acceptable Use</a>
+    </div>
+  </div>
+
+</main>
+
+<div id="trial-footer"></div>
+<script>
+  fetch('/footer.html').then(r => r.text()).then(html => {
+    document.getElementById('trial-footer').innerHTML = html;
+  });
+</script>
+
+</body>
+</html>
