@@ -533,20 +533,6 @@ html,body{
       </div>
     </div>
 
-    <div class="consent-box" id="tier2-consent" onclick="toggleConsent('tier2')">
-      <div class="consent-label">
-        <div class="consent-checkbox">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M2 6L5 9L10 3" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div class="consent-text">
-          <strong>I consent to my assessment being part of the Trial. network.</strong><br>
-          Other venues I apply to in the future may see my assessment score and summary — saving me from re-doing this every time. I can opt out at any time.
-        </div>
-      </div>
-    </div>
-
     <button class="btn-primary" id="submit-btn" onclick="submitAssessment()" disabled>
       Submit your assessment
     </button>
@@ -689,7 +675,7 @@ function toggleConsent(tier) {
 function updateSubmitButton() {
   // Submit needs tier 2 + all answers filled
   const allAnswered = state.questions.every(q => (state.answers[q.id] || '').trim().length >= 20);
-  document.getElementById('submit-btn').disabled = !(state.consents.tier2 && allAnswered);
+  document.getElementById('submit-btn').disabled = !allAnswered;
 }
 
 // ─── Begin assessment ───
@@ -813,14 +799,14 @@ function showFinalScreen() {
   const sec = Math.floor((totalMs % 60000) / 1000);
   document.getElementById('final-time').textContent = `${min}m ${sec}s`;
 
-  document.getElementById('tier2-consent').classList.toggle('checked', state.consents.tier2);
+  // tier2-consent element removed
   updateSubmitButton();
   showScreen('screen-final');
 }
 
 // ─── Submit ───
 async function submitAssessment() {
-  if (!state.consents.tier2) return;
+  // tier2 network consent removed — submit proceeds without it
   showScreen('screen-submitting');
 
   const totalMs = state.startedAt ? (Date.now() - state.startedAt) : 0;
@@ -841,7 +827,7 @@ async function submitAssessment() {
     },
     consents: {
       tier1At: new Date(state.startedAt).toISOString(),
-      tier2At: new Date().toISOString()
+      tier2At: null // network consent removed
     }
   };
 
