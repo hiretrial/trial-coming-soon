@@ -9,7 +9,7 @@
 // the lambda before the request fires). Direct in-process call is faster,
 // cleaner, and reliable.
 
-import { callHaiku } from './anthropic-with-logging.js';
+import { callHaiku } from '../../lib/anthropic-with-logging.js';
 
 const ROLE_LABELS = {
   'bartender': 'Bartender',
