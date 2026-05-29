@@ -402,18 +402,13 @@ export default async function handler(req, res) {
     let detectedRole = null;
     let detectionMethod = 'unknown';
 
-    if (allowedRoles.length === 1) {
-      detectedRole = allowedRoles[0];
-      detectionMethod = 'layer_1_single_role';
-    }
-    if (!detectedRole) {
-      detectedRole = detectRoleFromText(subject, allowedRoles) || detectRoleFromText(bodyContent, allowedRoles);
-      if (detectedRole) detectionMethod = 'layer_2_keyword';
-    }
-    if (!detectedRole && venue.default_role) {
-      detectedRole = venue.default_role;
-      detectionMethod = 'fallback_default_role';
-    }
+const allRoles = ROLE_KEYWORDS.map(r => r.role);
+detectedRole = detectRoleFromText(subject, allRoles) || detectRoleFromText(bodyContent, allRoles);
+if (detectedRole) detectionMethod = 'layer_2_keyword';
+if (!detectedRole && venue.default_role) {
+  detectedRole = venue.default_role;
+  detectionMethod = 'fallback_default_role';
+}
     if (!detectedRole) {
       return res.status(200).json({ ignored: 'role_detection_failed', venue: venue.slug });
     }
