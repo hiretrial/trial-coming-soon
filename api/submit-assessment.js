@@ -8,7 +8,7 @@
 // 5. Returns success with the score
 
 import { createClient } from '@supabase/supabase-js';
-import { scoreAssessment } from './score-assessment-core.js';
+import { ... } from './_lib/score-assessment-core.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
