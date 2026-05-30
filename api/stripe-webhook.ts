@@ -20,6 +20,9 @@
 //      → Money landed. Distinguishes by invoice.subscription:
 //        • set     → 'subscription_renewed' (monthly auto-charge)
 //        • null    → 'success_fee_paid'     (one-off Success Fee invoice)
+//      → For success fees: stamps outcomes row with stripe_charge_id,
+//        stripe_charge_status='paid', charge_amount. Matched on
+//        stripe_invoice_id written to outcomes at day-120 charge fire.
 //
 //   3. invoice.payment_failed
 //      → Charge failed. Logs 'payment_failed'. For subscription
@@ -333,6 +336,45 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             })
             .eq('id', account_id)
             .in('subscription_status', ['past_due', 'active']); // safe set
+        }
+
+        // For success fee invoices (per-hire $99 charge), stamp the
+        // matching outcome row as paid. We match on stripe_invoice_id
+        // which is written to outcomes when the day-120 charge fires.
+        // If no match is found we log it — reconcile manually from
+        // the Stripe dashboard.
+        if (!isSubscriptionInvoice) {
+          const invoiceId = invoice.id || null;
+          if (invoiceId) {
+            const { data: outcome, error: oErr } = await admin
+              .from('outcomes')
+              .select('id')
+              .eq('stripe_invoice_id', invoiceId)
+              .maybeSingle();
+
+            if (oErr) {
+              console.error(`[stripe-webhook] outcomes lookup failed for invoice ${invoiceId}: ${oErr.message}`);
+            } else if (outcome) {
+              const { error: updateErr } = await admin
+                .from('outcomes')
+                .update({
+                  stripe_charge_id: asString(invoice.payment_intent),
+                  stripe_charge_status: 'paid',
+                  charge_amount: Math.round((invoice.amount_paid ?? 9900) / 100),
+                  updated_at: new Date().toISOString(),
+                })
+                .eq('id', outcome.id);
+
+              if (updateErr) {
+                console.error(`[stripe-webhook] outcomes update failed for invoice ${invoiceId}: ${updateErr.message}`);
+              } else {
+                console.log(`[stripe-webhook] outcome ${outcome.id} marked paid · invoice ${invoiceId}`);
+              }
+            } else {
+              // No matching outcome — log for manual reconciliation
+              console.warn(`[stripe-webhook] success_fee_paid: no outcome found for stripe_invoice_id ${invoiceId} · venue_id ${venue_id}`);
+            }
+          }
         }
 
         break;
