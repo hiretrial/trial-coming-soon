@@ -20,8 +20,7 @@ const ROLE_LABELS = {
   'cafe-manager': 'Café Manager',
   'duty-manager': 'Duty Manager',
   'expediter': 'Expediter',
-  'floor-staff': 'Floor Staff',
-  'food-runner': 'Food Runner',
+  'waiter': 'Waiter/Waitress',
   'host': 'Host',
   'restaurant-manager': 'Restaurant Manager',
   'supervisor': 'Supervisor'
@@ -54,7 +53,8 @@ export default async function handler(req, res) {
         submitted_at,
         candidate_profile,
         venue_id,
-        candidate_id
+        candidate_id,
+        candidates ( unsubscribe_token )
       `)
       .eq('token', token)
       .maybeSingle();
@@ -76,8 +76,9 @@ export default async function handler(req, res) {
       });
     }
 
-    // ─── 3. Check status — if already submitted, return a friendly state ───
-    if (assessment.status === 'submitted' || assessment.status === 'scored' || assessment.status === 'awaiting_review') {
+    // ─── 3. Check status — any status past in_progress means already submitted ───
+    const SUBMITTED_STATUSES = ['submitted', 'reviewed', 'interview_requested', 'interview_scheduled', 'interview_completed', 'offered', 'hired', 'rejected', 'expired'];
+    if (SUBMITTED_STATUSES.includes(assessment.status)) {
       return res.status(200).json({
         status: 'already_submitted',
         message: 'You\'ve already completed this assessment. The venue will be in touch soon.'
@@ -138,7 +139,8 @@ export default async function handler(req, res) {
         role: assessment.role,
         roleLabel: ROLE_LABELS[assessment.role] || assessment.role,
         candidateProfile: assessment.candidate_profile || {},
-        expiresAt: assessment.expires_at
+        expiresAt: assessment.expires_at,
+        unsubscribe_token: assessment.candidates?.unsubscribe_token || null
       },
       venue: {
         name: venue.name,
