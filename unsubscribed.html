@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>Unsubscribed · Trial.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --border: rgba(248,246,240,0.08);
+    --text: #f8f6f0;
+    --muted: rgba(248,246,240,0.55);
+    --dim: rgba(248,246,240,0.32);
+    --accent: #c8a96e;
+  }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .card {
+    max-width: 480px;
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 48px 40px 40px;
+    text-align: center;
+  }
+  .wordmark {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-bottom: 36px;
+  }
+  .wordmark span { color: var(--accent); font-size: 26px; }
+  .icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(200,169,110,0.1);
+    border: 1px solid rgba(200,169,110,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+  }
+  .icon svg { width: 22px; height: 22px; stroke: var(--accent); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+  .sub {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+  .note {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--dim);
+    padding: 16px 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 28px;
+    text-align: left;
+  }
+  .note strong { color: var(--muted); font-weight: 500; }
+  .back {
+    display: inline-block;
+    font-size: 12.5px;
+    color: var(--dim);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: color 0.15s;
+  }
+  .back:hover { color: var(--accent); }
+  .footer {
+    margin-top: 48px;
+    font-size: 11px;
+    color: var(--dim);
+    text-align: center;
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+  }
+  .footer a { color: var(--dim); text-decoration: none; }
+  .footer a:hover { color: var(--accent); }
+  .already { display: none; }
+  .error-msg { display: none; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="card">
+
+    <div class="wordmark">Trial<span>.</span></div>
+
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+
+    <h1 id="heading">You've been unsubscribed.</h1>
+
+    <p class="sub" id="sub-text">
+      You won't receive any more marketing emails from Trial.
+    </p>
+
+    <div class="note" id="note-text">
+      <strong>Note:</strong> If you have an active subscription, you'll still receive emails directly related to your account — billing confirmations, invoices, and any legally required notices. These can't be turned off while your subscription is active.
+    </div>
+
+    <a href="https://hiretrial.com.au" class="back">← Back to hiretrial.com.au</a>
+
+  </div>
+
+  <div class="footer">
+    Trial. &middot; ABN 71 441 417 792 &middot; Newcastle NSW<br>
+    <a href="https://hiretrial.com.au/privacy">Privacy Policy</a> &middot;
+    <a href="mailto:privacy@hiretrial.com.au">privacy@hiretrial.com.au</a>
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const type = params.get('type') || 'venue';
+  const already = params.get('already') === '1';
+  const error = params.get('error');
+
+  const heading = document.getElementById('heading');
+  const subText = document.getElementById('sub-text');
+  const noteText = document.getElementById('note-text');
+
+  if (error) {
+    heading.textContent = "Something went wrong.";
+    subText.textContent = "We couldn't process your unsubscribe request. Please email privacy@hiretrial.com.au and we'll remove you manually — within 5 business days.";
+    noteText.style.display = 'none';
+  } else if (already) {
+    heading.textContent = "Already unsubscribed.";
+    subText.textContent = type === 'candidate'
+      ? "You're already opted out of Trial. candidate emails. Nothing has changed."
+      : "You're already opted out of Trial. marketing emails. Nothing has changed.";
+  } else if (type === 'candidate') {
+    subText.textContent = "You won't receive any more Trial. assessment or candidate emails.";
+    noteText.innerHTML = '<strong>Note:</strong> If you have an active assessment in progress, you may still receive one final message to close it out.';
+  }
+</script>
+
+</body>
+</html>
