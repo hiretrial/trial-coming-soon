@@ -522,6 +522,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   // ── 9. Send branded welcome email ────────────────────────────────
+  // Check opt-out before sending — respect unsubscribe even at this stage
+  const { data: optOutCheck } = await admin
+    .from('venues')
+    .select('email_opt_out')
+    .eq('id', venue.id)
+    .maybeSingle();
+
+  if (optOutCheck?.email_opt_out) {
+    console.log(`[approve-eoi] Email skipped — venue ${venue.id} has opted out`);
+    return res.status(200).json({ ok: true, venue_id: venue.id, email_skipped: true });
+  }
+
   const setupUrl = `${PUBLIC_SITE_URL}/setup.html?token=${setupToken}`;
   const unsubscribeUrl = `${PUBLIC_SITE_URL}/api/unsubscribe?token=${venue.unsubscribe_token}&type=venue`;
   const emailResult = await sendWelcomeEmail({
