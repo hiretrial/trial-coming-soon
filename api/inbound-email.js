@@ -14,9 +14,8 @@ const ROLE_KEYWORDS = [
   { role: 'bar-back',           patterns: ['bar back', 'bar-back', 'barback'] },
   { role: 'cafe-allrounder',    patterns: ['all-rounder', 'all rounder', 'allrounder', 'cafe all-rounder'] },
   { role: 'cafe-kitchen-hand',  patterns: ['kitchen hand', 'kitchen-hand', 'kitchenhand'] },
-  { role: 'food-runner',        patterns: ['food runner', 'runner'] },
+  { role: 'waiter',             patterns: ['food runner', 'runner', 'floor staff', 'wait staff', 'waiter', 'waitress', 'server'] },
   { role: 'expediter',          patterns: ['expediter', 'expeditor', 'expo'] },
-  { role: 'floor-staff',        patterns: ['floor staff', 'wait staff', 'waiter', 'waitress', 'server'] },
   { role: 'bartender',          patterns: ['bartender', 'bar tender'] },
   { role: 'barista',            patterns: ['barista'] },
   { role: 'host',               patterns: ['hostess', 'host'] }
@@ -27,7 +26,7 @@ const ROLE_LABELS = {
   'barista': 'Barista', 'cafe-allrounder': 'Café All-Rounder',
   'cafe-kitchen-hand': 'Kitchen Hand', 'cafe-manager': 'Café Manager',
   'duty-manager': 'Duty Manager', 'expediter': 'Expediter',
-  'floor-staff': 'Floor Staff', 'food-runner': 'Food Runner',
+  'waiter': 'Waiter/Waitress',
   'host': 'Host', 'restaurant-manager': 'Restaurant Manager', 'supervisor': 'Supervisor'
 };
 
