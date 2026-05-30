@@ -21,8 +21,7 @@ const ROLE_LABELS = {
   'cafe-manager': 'Café Manager',
   'duty-manager': 'Duty Manager',
   'expediter': 'Expediter',
-  'floor-staff': 'Floor Staff',
-  'food-runner': 'Food Runner',
+  'waiter': 'Waiter/Waitress',
   'host': 'Host',
   'restaurant-manager': 'Restaurant Manager',
   'supervisor': 'Supervisor'
