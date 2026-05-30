@@ -456,6 +456,16 @@ if (!detectedRole && venue.default_role) {
       return res.status(500).send('No questions available');
     }
 
+    // Fetch unsubscribe token for candidate — needed for Spam Act compliant footer
+    const { data: candidateTokenRow } = await supabase
+      .from('candidates')
+      .select('unsubscribe_token')
+      .eq('id', candidateId)
+      .maybeSingle();
+    const candidateUnsubscribeUrl = candidateTokenRow?.unsubscribe_token
+      ? `https://hiretrial.com.au/api/unsubscribe?token=${candidateTokenRow.unsubscribe_token}&type=candidate`
+      : 'https://hiretrial.com.au/unsubscribed.html?type=candidate';
+
     const token = crypto.randomUUID();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -483,7 +493,8 @@ if (!detectedRole && venue.default_role) {
         subject: `Complete your trial for ${venue.name} — ${roleLabel(detectedRole)}`,
         html: candidateEmailHtml({
           firstName: displayName, venueName: venue.name,
-          roleLabel: roleLabel(detectedRole), assessmentUrl
+          roleLabel: roleLabel(detectedRole), assessmentUrl,
+          unsubscribeUrl: candidateUnsubscribeUrl
         })
       });
     } catch (err) {
@@ -545,7 +556,7 @@ if (!detectedRole && venue.default_role) {
   }
 }
 
-function candidateEmailHtml({ firstName, venueName, roleLabel, assessmentUrl }) {
+function candidateEmailHtml({ firstName, venueName, roleLabel, assessmentUrl, unsubscribeUrl }) {
   return `<!DOCTYPE html>
 <html lang="en-AU"><head><meta charset="UTF-8"><title>Your Trial. assessment</title></head>
 <body style="margin:0;padding:0;background:#0a0a0a;font-family:Georgia,'Times New Roman',serif;color:#f8f6f0;">
@@ -568,7 +579,7 @@ function candidateEmailHtml({ firstName, venueName, roleLabel, assessmentUrl }) 
           Your link expires in 7 days. If the button doesn't work, paste this into your browser:<br>
           <span style="color:#c8a96e;word-break:break-all;">${assessmentUrl}</span>
         </p>
-        <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(200,169,110,0.18);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.5);text-align:center;font-family:Arial,sans-serif;">Trial. · hello@hiretrial.com.au · ABN 71 441 417 792</div>
+        <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(200,169,110,0.18);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.5);text-align:center;font-family:Arial,sans-serif;">Trial. · hello@hiretrial.com.au · ABN 71 441 417 792<br><a href="${unsubscribeUrl}" style="color:rgba(248,246,240,0.32);text-decoration:underline;">Unsubscribe</a></div>
       </td></tr>
     </table>
   </td></tr>
@@ -600,7 +611,7 @@ function forwardEmailHtml({ venueName, candidateName, candidateEmail, roleLabel,
           <div style="font-size:13.5px;color:rgba(248,246,240,0.75);line-height:1.65;white-space:pre-wrap;font-family:Arial,sans-serif;">${escapeHtml(originalBody)}</div>
         </div>
         <div style="font-size:13px;color:rgba(248,246,240,0.5);margin:32px 0 0 0;font-family:Arial,sans-serif;line-height:1.5;">Reply to this email to respond directly to <strong style="color:rgba(248,246,240,0.7);font-weight:500;">${candidateName}</strong>.</div>
-        <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(200,169,110,0.18);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.5);text-align:center;font-family:Arial,sans-serif;">Trial<span style="color:#c8a96e;">.</span> &middot; hello@hiretrial.com.au &middot; ABN 71 441 417 792</div>
+        <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(200,169,110,0.18);font-size:11px;line-height:1.7;color:rgba(248,246,240,0.5);text-align:center;font-family:Arial,sans-serif;">Trial<span style="color:#c8a96e;">.</span> &middot; hello@hiretrial.com.au &middot; ABN 71 441 417 792<br><span style="color:rgba(248,246,240,0.3);">This is a transactional notification for your Trial. account.</span></div>
       </td></tr>
     </table>
   </td></tr>
