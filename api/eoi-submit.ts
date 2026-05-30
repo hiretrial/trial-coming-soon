@@ -299,8 +299,11 @@ async function notifyAnders(eoi: any): Promise<void> {
 
 // ─── Handler ──────────────────────────────────────────────────────
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS — only allow the live site origin in production, * for now during testing
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // CORS — locked to live site origin
+  const origin = req.headers.origin as string | undefined;
+  const allowedOrigins = ['https://hiretrial.com.au', 'https://www.hiretrial.com.au'];
+  const corsOrigin = origin && allowedOrigins.includes(origin) ? origin : 'https://hiretrial.com.au';
+  res.setHeader('Access-Control-Allow-Origin', corsOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
 
