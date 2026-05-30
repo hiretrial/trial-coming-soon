@@ -561,9 +561,22 @@ html,body{
     </p>
   </div>
 
+  <!-- ═══ EXPIRED SCREEN ═══ -->
+  <div class="screen" id="screen-expired">
+    <div class="intro-label">Link expired</div>
+    <h1 class="intro-title serif">This assessment <em>has expired.</em></h1>
+    <p class="intro-lead">
+      Assessment links are valid for a limited time. This one is no longer active.
+    </p>
+    <p class="intro-lead" style="font-size:16px;color:var(--dim);">
+      If you believe this is an error, contact the venue directly or email <a href="mailto:hello@hiretrial.com.au" style="color:var(--gold)">hello@hiretrial.com.au</a>.
+    </p>
+  </div>
+
   <!-- ═══ FOOTER ═══ -->
   <div class="footer">
-    Trial<span class="dot">.</span> &middot; hello@hiretrial.com.au &middot; ABN 71 441 417 792
+    Trial<span class="dot">.</span> &middot; hello@hiretrial.com.au &middot; ABN 71 441 417 792<br>
+    <span style="font-size:11px;color:var(--dim);">You received an assessment link from Trial. &middot; <a id="footer-unsub-link" href="https://hiretrial.com.au/unsubscribed.html?type=candidate" style="color:var(--dim);text-decoration:underline;">Unsubscribe</a></span>
   </div>
 
 </div>
@@ -577,7 +590,7 @@ let state = {
   questions: [],
   answers: {},           // questionId → text
   currentIdx: 0,
-  consents: { tier1: false, tier2: false },
+  consents: { tier1: false },
   // Integrity signals
   pasteCount: 0,
   pastedQuestionIndices: [],
@@ -636,7 +649,7 @@ function loadProgress() {
     const data = JSON.parse(raw);
     state.answers = data.answers || {};
     state.currentIdx = data.currentIdx || 0;
-    state.consents = data.consents || { tier1: false, tier2: false };
+    state.consents = data.consents || { tier1: false };
     state.pasteCount = data.pasteCount || 0;
     state.pastedQuestionIndices = data.pastedQuestionIndices || [];
     state.tabSwitchCount = data.tabSwitchCount || 0;
@@ -900,8 +913,7 @@ function renderIntro() {
     const resp = await fetch(`/api/assess/${state.token}`);
     if (!resp.ok) {
       if (resp.status === 410) {
-        const data = await resp.json();
-        showError(data.message || 'This assessment link has expired.');
+        showScreen('screen-expired');
         return;
       }
       if (resp.status === 404) {
@@ -921,6 +933,14 @@ function renderIntro() {
     state.assessment = data.assessment;
     state.venue = data.venue;
     state.questions = data.questions;
+
+    // Update footer unsubscribe link with candidate's real token
+    if (data.assessment?.unsubscribe_token) {
+      const unsubLink = document.getElementById('footer-unsub-link');
+      if (unsubLink) {
+        unsubLink.href = `https://hiretrial.com.au/api/unsubscribe?token=${data.assessment.unsubscribe_token}&type=candidate`;
+      }
+    }
 
     // Apply venue brand colour if set
     if (state.venue.brandPrimaryColor && state.venue.brandPrimaryColor !== '#c8a96e') {
