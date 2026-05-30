@@ -665,6 +665,10 @@ const WELCOME_HTML_TEMPLATE = `<!DOCTYPE html>
           Operated by Anders Berggren · ABN 71 441 417 792 · Newcastle NSW<br>
           Questions: <a href="mailto:hello@hiretrial.com.au" style="color:rgba(248,246,240,0.38);text-decoration:none;">hello@hiretrial.com.au</a>
         </p>
+        <p style="font-size:11px;line-height:1.6;color:rgba(248,246,240,0.18);margin:8px 0 0 0;">
+          You received this because you signed up for Trial. &middot;
+          <a href="{{unsubscribe_url}}" style="color:rgba(248,246,240,0.28);text-decoration:underline;">Unsubscribe</a>
+        </p>
       </td></tr>
 
     </table>
@@ -760,18 +764,22 @@ Founder, Trial.
 Trial. is a hospitality hiring platform — hiretrial.com.au
 Operated by Anders Berggren · ABN 71 441 417 792 · Newcastle NSW
 Questions: hello@hiretrial.com.au
+
+You received this because you signed up for Trial.
+To unsubscribe: {{unsubscribe_url}}
 `;
 
 function fillWelcomeTemplate(
   tpl: string,
-  fields: { venue_name: string; contact_name: string; inbound_address: string; dashboard_url: string; plan_label: string }
+  fields: { venue_name: string; contact_name: string; inbound_address: string; dashboard_url: string; plan_label: string; unsubscribe_url: string }
 ): string {
   return tpl
     .split('{{venue_name}}').join(fields.venue_name)
     .split('{{contact_name}}').join(fields.contact_name)
     .split('{{inbound_address}}').join(fields.inbound_address)
     .split('{{dashboard_url}}').join(fields.dashboard_url)
-    .split('{{plan_label}}').join(fields.plan_label);
+    .split('{{plan_label}}').join(fields.plan_label)
+    .split('{{unsubscribe_url}}').join(fields.unsubscribe_url);
 }
 
 // Send the post-payment welcome email. Never throws.
@@ -790,7 +798,7 @@ async function sendWelcomeEmail(
     // Fetch the venue row. We need name, contact, forwarding address, plan.
     const { data: venue, error: vErr } = await admin
       .from('venues')
-      .select('id, name, manager_name, contact_email, inbound_address, subscription_phase, subscription_tier, welcome_email_sent_at')
+      .select('id, name, manager_name, contact_email, inbound_address, subscription_phase, subscription_tier, welcome_email_sent_at, unsubscribe_token')
       .eq('id', venueId)
       .maybeSingle();
 
@@ -821,6 +829,7 @@ async function sendWelcomeEmail(
       inbound_address: venue.inbound_address || '',
       dashboard_url: DASHBOARD_URL,
       plan_label: planLabel,
+      unsubscribe_url: `https://hiretrial.com.au/api/unsubscribe?token=${venue.unsubscribe_token || ''}&type=venue`,
     };
 
     const htmlBody = fillWelcomeTemplate(WELCOME_HTML_TEMPLATE, fields);
