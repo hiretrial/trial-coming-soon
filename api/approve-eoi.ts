@@ -56,16 +56,16 @@ const PLAN_LABELS: Record<PlanSize, string> = {
 // Pricing — matches PRICING const in hq.html modal (single source of truth lives there).
 const PRICING: Record<'founding' | 'standard', Record<PlanSize, { monthly: number | null; perHire: number | null }>> = {
   founding: {
-    solo: { monthly: 99.99, perHire: 99 },
-    starter: { monthly: 199.00, perHire: 89 },
-    growth: { monthly: 349.00, perHire: 79 },
-    enterprise: { monthly: null, perHire: null },
+    solo:       { monthly: 89.99,  perHire: 99 },
+    starter:    { monthly: 99.99,  perHire: 99 },
+    growth:     { monthly: 109.99, perHire: 99 },
+    enterprise: { monthly: null,   perHire: null },
   },
   standard: {
-    solo: { monthly: 129.99, perHire: 79 },
-    starter: { monthly: 249.00, perHire: 99 },
-    growth: { monthly: 499.00, perHire: 135 },
-    enterprise: { monthly: null, perHire: null },
+    solo:       { monthly: 129.99, perHire: 199 },
+    starter:    { monthly: 249.00, perHire: 199 },
+    growth:     { monthly: 499.00, perHire: 199 },
+    enterprise: { monthly: null,   perHire: null },
   },
 };
 
@@ -170,12 +170,13 @@ async function sendWelcomeEmail(opts: {
   planSize: PlanSize;
   isFounding: boolean;
   setupUrl: string;
+  unsubscribeUrl: string;
 }): Promise<{ ok: boolean; error?: string }> {
   if (!RESEND_API_KEY) {
     return { ok: false, error: 'RESEND_API_KEY missing' };
   }
 
-  const { to, contactName, venueName, planSize, isFounding, setupUrl } = opts;
+  const { to, contactName, venueName, planSize, isFounding, setupUrl, unsubscribeUrl } = opts;
   const phase = isFounding ? 'founding' : 'standard';
   const price = PRICING[phase][planSize];
   const planLabel = PLAN_LABELS[planSize];
@@ -206,6 +207,10 @@ async function sendWelcomeEmail(opts: {
     `— Anders, founder`,
     `Trial. · ABN 71 441 417 792 · Sydney`,
     `hiretrial.com.au`,
+    ``,
+    `─────────────────────────────────────────────`,
+    `You received this email because you submitted an EOI for Trial.`,
+    `To unsubscribe: ${unsubscribeUrl}`,
   ].join('\n');
 
   // ═══ Branded HTML — matches hiretrial.com.au styling ═══
@@ -326,6 +331,10 @@ async function sendWelcomeEmail(opts: {
             </div>
             <div style="margin-top:18px;font-size:11px;letter-spacing:0.06em;color:rgba(248,246,240,0.28);">
               ABN 71 441 417 792 &middot; Sydney, Australia &middot; <a href="https://hiretrial.com.au" style="color:#c8a96e;text-decoration:none;">hiretrial.com.au</a>
+            </div>
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(248,246,240,0.06);font-size:11px;color:rgba(248,246,240,0.22);line-height:1.6;">
+              You received this email because you submitted an EOI for Trial.<br>
+              <a href="${esc(unsubscribeUrl)}" style="color:rgba(248,246,240,0.32);text-decoration:underline;">Unsubscribe</a>
             </div>
           </td>
         </tr>
@@ -486,7 +495,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       setup_token: setupToken,
       setup_dispatched_at: new Date().toISOString(),
     })
-    .select('id, slug, inbound_address')
+    .select('id, slug, inbound_address, unsubscribe_token')
     .single();
 
   if (vErr || !venue) {
@@ -514,6 +523,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // ── 9. Send branded welcome email ────────────────────────────────
   const setupUrl = `${PUBLIC_SITE_URL}/setup.html?token=${setupToken}`;
+  const unsubscribeUrl = `${PUBLIC_SITE_URL}/api/unsubscribe?token=${venue.unsubscribe_token}&type=venue`;
   const emailResult = await sendWelcomeEmail({
     to: eoi.email,
     contactName: eoi.contact_name,
@@ -521,6 +531,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     planSize: plan_size as PlanSize,
     isFounding: is_founding_partner,
     setupUrl,
+    unsubscribeUrl,
   });
 
   if (!emailResult.ok) {
