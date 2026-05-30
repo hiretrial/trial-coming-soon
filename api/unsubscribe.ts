@@ -48,12 +48,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.redirect(302, `${PUBLIC_SITE_URL}/unsubscribed.html?error=invalid`);
   }
 
-  if (type !== 'venue' && type !== 'candidate') {
+  if (type !== 'venue' && type !== 'candidate' && type !== 'eoi') {
     return res.redirect(302, `${PUBLIC_SITE_URL}/unsubscribed.html?error=invalid`);
   }
 
   const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-  const table = type === 'venue' ? 'venues' : 'candidates';
+  const table = type === 'venue' ? 'venues' : type === 'candidate' ? 'candidates' : 'eoi_submissions';
 
   try {
     // Look up by token
