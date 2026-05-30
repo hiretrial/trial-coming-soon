@@ -798,7 +798,7 @@ async function sendWelcomeEmail(
     // Fetch the venue row. We need name, contact, forwarding address, plan.
     const { data: venue, error: vErr } = await admin
       .from('venues')
-      .select('id, name, manager_name, contact_email, inbound_address, subscription_phase, subscription_tier, welcome_email_sent_at, unsubscribe_token')
+      .select('id, name, manager_name, contact_email, inbound_address, subscription_phase, subscription_tier, welcome_email_sent_at, unsubscribe_token, email_opt_out')
       .eq('id', venueId)
       .maybeSingle();
 
@@ -809,6 +809,12 @@ async function sendWelcomeEmail(
 
     // Idempotency guard — already sent, don't send again on a Stripe retry.
     if (venue.welcome_email_sent_at) {
+      return;
+    }
+
+    // Opt-out check — respect unsubscribe even for welcome email.
+    if (venue.email_opt_out) {
+      console.log(`[stripe-webhook] welcome email skipped (${ctx.eventId}): venue ${venueId} has opted out`);
       return;
     }
 
