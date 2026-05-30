@@ -486,19 +486,30 @@ if (!detectedRole && venue.default_role) {
     const assessmentUrl = `https://hiretrial.com.au/assess.html?token=${token}`;
     const displayName = first_name || 'there';
 
-    try {
-      await resend.emails.send({
-        from: `${venue.name} via Trial. <hello@hiretrial.com.au>`,
-        to: candidateEmail, reply_to: 'hello@hiretrial.com.au',
-        subject: `Complete your trial for ${venue.name} — ${roleLabel(detectedRole)}`,
-        html: candidateEmailHtml({
-          firstName: displayName, venueName: venue.name,
-          roleLabel: roleLabel(detectedRole), assessmentUrl,
-          unsubscribeUrl: candidateUnsubscribeUrl
-        })
-      });
-    } catch (err) {
-      console.error('[inbound-email] Candidate email send failed:', err);
+    // Check candidate opt-out before sending assessment email
+    const { data: candidateOptOut } = await supabase
+      .from('candidates')
+      .select('email_opt_out')
+      .eq('id', candidateId)
+      .maybeSingle();
+
+    if (candidateOptOut?.email_opt_out) {
+      console.log(`[inbound-email] Assessment email skipped — candidate ${candidateId} has opted out`);
+    } else {
+      try {
+        await resend.emails.send({
+          from: `${venue.name} via Trial. <hello@hiretrial.com.au>`,
+          to: candidateEmail, reply_to: 'hello@hiretrial.com.au',
+          subject: `Complete your trial for ${venue.name} — ${roleLabel(detectedRole)}`,
+          html: candidateEmailHtml({
+            firstName: displayName, venueName: venue.name,
+            roleLabel: roleLabel(detectedRole), assessmentUrl,
+            unsubscribeUrl: candidateUnsubscribeUrl
+          })
+        });
+      } catch (err) {
+        console.error('[inbound-email] Candidate email send failed:', err);
+      }
     }
 
     if (venue.manager_email) {
