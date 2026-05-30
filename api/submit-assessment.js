@@ -98,6 +98,11 @@ export default async function handler(req, res) {
       });
     } else {
       console.error('[submit-assessment] Scoring failed (non-fatal):', scoringResult.error, scoringResult.code);
+      // Flag the assessment for manual re-score — surfaces in TrialHQ pulse health
+      await supabase
+        .from('assessments')
+        .update({ status: 'submitted', manager_notes: `[AUTO] Scoring failed at submit: ${scoringResult.code} — ${scoringResult.error}. Re-score via /api/score-assessment.` })
+        .eq('id', assessment.id);
     }
 
     // ─── 6. Return success ───
