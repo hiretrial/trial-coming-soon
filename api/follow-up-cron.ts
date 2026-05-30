@@ -70,7 +70,7 @@ const BOOKING_URL = 'https://hiretrial.com.au/#eoi';
 interface Template {
   subject: string;
   preheader: string;
-  bodyHtml: (vars: { firstName: string; venueName: string }) => string;
+  bodyHtml: (vars: { firstName: string; venueName: string; unsubscribeUrl: string }) => string;
 }
 
 const TEMPLATES: Record<Temperature, Template> = {
@@ -80,8 +80,8 @@ const TEMPLATES: Record<Temperature, Template> = {
   hot: {
     subject: 'Hey {{firstName}} — saw you watched the whole walkthrough',
     preheader: 'A founding partner spot is still yours if you want it.',
-    bodyHtml: ({ firstName, venueName }) => `
-      ${shell({ firstName, venueName, title: 'You watched the whole thing.' }, `
+    bodyHtml: ({ firstName, venueName, unsubscribeUrl }) => `
+      ${shell({ firstName, venueName, title: 'You watched the whole thing.', unsubscribeUrl }, `
         <p style="${pStyle}">
           ${firstName}, you watched the full walkthrough but haven't booked a call yet. That tells me one of two things — either you're still thinking, or something specific about ${escapeHtml(venueName)} is making you hesitate.
         </p>
@@ -104,8 +104,8 @@ const TEMPLATES: Record<Temperature, Template> = {
   warm: {
     subject: '{{firstName}} — quick thought after you watched the Trial. walkthrough',
     preheader: "The 90-day mechanic is the part most people want to ask about.",
-    bodyHtml: ({ firstName, venueName }) => `
-      ${shell({ firstName, venueName, title: 'A thought, after the walkthrough.' }, `
+    bodyHtml: ({ firstName, venueName, unsubscribeUrl }) => `
+      ${shell({ firstName, venueName, title: 'A thought, after the walkthrough.', unsubscribeUrl }, `
         <p style="${pStyle}">
           ${firstName}, thanks for watching the Trial. walkthrough. You got most of the way through, which usually means you understood the mechanic but had a question we didn't fully answer.
         </p>
@@ -113,7 +113,7 @@ const TEMPLATES: Record<Temperature, Template> = {
           For most operators, the question is the same one: <em style="color:#c8a96e;">"What if a hire leaves at day 89?"</em> Short answer — you pay nothing. The ninety-day mechanic is built around the moment most hospitality hiring actually fails, not the moment a candidate walks in.
         </p>
         <p style="${pStyle}">
-          Founding Partner pricing is still locked for the first fifty venues. Worth a thirty-minute conversation if you're considering it — bring your specific questions and I'll show you how Trial. would actually work for ${escapeHtml(venueName)}.
+          Founding Partner pricing is locked until 16 August 2026. Worth a thirty-minute conversation if you're considering it — bring your specific questions and I'll show you how Trial. would actually work for ${escapeHtml(venueName)}.
         </p>
         ${ctaButton('Book a thirty-minute conversation')}
         <p style="${pSmall}">
@@ -129,8 +129,8 @@ const TEMPLATES: Record<Temperature, Template> = {
   cool: {
     subject: '{{firstName}} — three days on from your Trial. signup',
     preheader: 'No pressure — just a quick check-in on the hiring problem.',
-    bodyHtml: ({ firstName, venueName }) => `
-      ${shell({ firstName, venueName, title: 'Three days on.' }, `
+    bodyHtml: ({ firstName, venueName, unsubscribeUrl }) => `
+      ${shell({ firstName, venueName, title: 'Three days on.', unsubscribeUrl }, `
         <p style="${pStyle}">
           ${firstName}, three days ago you registered interest in Trial. We see the people who watch the whole walkthrough, the ones who watch part of it, and the ones who don't get a chance to.
         </p>
@@ -156,8 +156,8 @@ const TEMPLATES: Record<Temperature, Template> = {
   cold: {
     subject: 'Following up — your Trial. expression of interest',
     preheader: 'Quick reminder of what you signed up for, and what happens next.',
-    bodyHtml: ({ firstName, venueName }) => `
-      ${shell({ firstName, venueName, title: 'A quick follow-up.' }, `
+    bodyHtml: ({ firstName, venueName, unsubscribeUrl }) => `
+      ${shell({ firstName, venueName, title: 'A quick follow-up.', unsubscribeUrl }, `
         <p style="${pStyle}">
           ${firstName} — three days ago you registered interest in Trial. for ${escapeHtml(venueName)}. Just checking in to make sure the email didn't get buried.
         </p>
@@ -168,7 +168,7 @@ const TEMPLATES: Record<Temperature, Template> = {
           You only pay for hires that stick. If a hire leaves at day eighty-nine, you've paid nothing for them. That's the part most operators want to ask about.
         </p>
         <p style="${pStyle}">
-          The Founding Partner cohort — still open for the first fifty venues — locks your rate for life regardless of how Trial. is priced in twelve months or three years. The trade-off: you give us your honest operational read while we're still building.
+          The Founding Partner window — open until 16 August 2026 — locks your rate for life regardless of how Trial. is priced in twelve months or three years. The trade-off: you give us your honest operational read while we're still building.
         </p>
         ${ctaButton('Take another look')}
         <p style="${pSmall}">
@@ -205,7 +205,7 @@ function ctaButton(text: string) {
 }
 
 function shell(
-  vars: { firstName: string; venueName: string; title: string },
+  vars: { firstName: string; venueName: string; title: string; unsubscribeUrl: string },
   innerHtml: string
 ) {
   return `<!DOCTYPE html>
@@ -252,6 +252,10 @@ function shell(
               </p>
               <p style="font-family:'Inter Tight',-apple-system,sans-serif;font-size:11px;color:rgba(248,246,240,0.32);margin:8px 0 0;">
                 Sydney, Australia &nbsp;·&nbsp; ABN 71 441 417 792
+              </p>
+              <p style="font-family:'Inter Tight',-apple-system,sans-serif;font-size:11px;color:rgba(248,246,240,0.22);margin:8px 0 0;">
+                You received this because you registered interest at hiretrial.com.au. &nbsp;·&nbsp;
+                <a href="${vars.unsubscribeUrl}" style="color:rgba(248,246,240,0.32);text-decoration:underline;">Unsubscribe</a>
               </p>
             </td>
           </tr>
@@ -310,7 +314,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const { data: eois, error: queryErr } = await admin
     .from('eoi_submissions')
-    .select('id, email, contact_name, venue_name, created_at, status, calendly_booking_at, followup_sent_at, followup_attempts, loom_watch_pct')
+    .select('id, email, contact_name, venue_name, created_at, status, calendly_booking_at, followup_sent_at, followup_attempts, loom_watch_pct, unsubscribe_token, email_opt_out')
     .eq('status', 'new')                         // hasn't booked
     .is('followup_sent_at', null)                // hasn't been sent yet
     .is('calendly_booking_at', null)             // belt-and-braces: not booked
@@ -335,12 +339,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   for (const eoi of eois) {
     try {
+      // Skip opted-out EOIs
+      if (eoi.email_opt_out) {
+        console.log(`[follow-up-cron] Skipping ${eoi.email} — opted out`);
+        continue;
+      }
+
       const temperature = classifyLead(eoi);
       const template    = TEMPLATES[temperature];
       const firstName   = (eoi.contact_name || '').trim().split(/\s+/)[0] || 'there';
       const venueName   = eoi.venue_name || 'your venue';
+      const unsubscribeUrl = eoi.unsubscribe_token
+        ? `https://hiretrial.com.au/api/unsubscribe?token=${eoi.unsubscribe_token}&type=eoi`
+        : 'https://hiretrial.com.au/unsubscribed.html?type=venue';
 
-      const vars = { firstName, venueName };
+      const vars = { firstName, venueName, unsubscribeUrl };
       const subject = fillTemplate(template.subject, vars);
       const html    = template.bodyHtml(vars);
 
