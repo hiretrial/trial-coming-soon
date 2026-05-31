@@ -1755,6 +1755,20 @@ footer .sep {
       .replace(/'/g, '&#39;');
   }
 
+  // ─── ?ref=email — skip form, go straight to walkthrough ───
+  // Handles people returning from nudge emails who've already submitted.
+  (function checkEmailRef() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('ref') === 'email') {
+      formIntro.style.display = 'none';
+      form.style.display = 'none';
+      revealGreeting.innerHTML = `Welcome back<em>.</em>`;
+      initCalendlyWithPrefill({ name: '', email: '' });
+      reveal.classList.add('show');
+      reveal.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  })();
+
   // ─── Calendly inline widget init with prefill ────────────────────────
   // Renders the Calendly booking widget inside #calendly-embed with the
   // booker's name + email already filled in. Calendly's auto-scan ignored
