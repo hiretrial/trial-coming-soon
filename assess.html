@@ -519,7 +519,7 @@ html,body{
     <div class="intro-label">One last thing</div>
     <h1 class="intro-title serif">Ready to <em>submit?</em></h1>
     <p class="intro-lead">
-      You've finished all ten questions. Before we send your responses to <strong id="final-venue">the venue</strong>, just one more thing.
+      You've finished all ten questions. Before we send your responses to <strong id="final-venue">the venue</strong>, review the options below.
     </p>
 
     <div class="final-grid">
@@ -533,11 +533,39 @@ html,body{
       </div>
     </div>
 
-    <button class="btn-primary" id="submit-btn" onclick="submitAssessment()" disabled>
+    <div class="consent-box" id="network-consent" onclick="toggleNetworkConsent()">
+      <div class="consent-label">
+        <div class="consent-checkbox">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2 6L5 9L10 3" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="consent-text">
+          <strong>Add me to the Trial. Talent Network.</strong><br>
+          I agree to my assessment results and profile being used to match me with future opportunities through the Trial. platform. You can opt out at any time.
+        </div>
+      </div>
+    </div>
+
+    <div class="consent-box" id="reuse-consent" onclick="toggleReuseConsent()">
+      <div class="consent-label">
+        <div class="consent-checkbox">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2 6L5 9L10 3" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="consent-text">
+          <strong>Share my results with other venues I apply to.</strong><br>
+          If I apply to another venue using Trial. my existing assessment results may be shared with them directly.
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="submit-btn" onclick="submitAssessment()">
       Submit your assessment
     </button>
     <p style="font-size:12px;color:var(--dim);margin-top:14px;text-align:left;">
-      Once submitted, you can't change your answers.
+      Once submitted, you can't change your answers. Both options above are optional.
     </p>
   </div>
 
@@ -590,7 +618,7 @@ let state = {
   questions: [],
   answers: {},           // questionId → text
   currentIdx: 0,
-  consents: { tier1: false },
+  consents: { tier1: false, networkOptIn: false, scoreReuse: false },
   // Integrity signals
   pasteCount: 0,
   pastedQuestionIndices: [],
@@ -674,19 +702,25 @@ function setupIntegrityListeners() {
 // ─── Tier 1 / Tier 2 consent toggle ───
 function toggleConsent(tier) {
   state.consents[tier] = !state.consents[tier];
-  const box = document.getElementById(tier === 'tier1' ? 'tier1-consent' : 'tier2-consent');
+  const box = document.getElementById('tier1-consent');
   box.classList.toggle('checked', state.consents[tier]);
+  document.getElementById('begin-btn').disabled = !state.consents.tier1;
+  saveProgress();
+}
 
-  if (tier === 'tier1') {
-    document.getElementById('begin-btn').disabled = !state.consents.tier1;
-  } else {
-    updateSubmitButton();
-  }
+function toggleNetworkConsent() {
+  state.consents.networkOptIn = !state.consents.networkOptIn;
+  document.getElementById('network-consent').classList.toggle('checked', state.consents.networkOptIn);
+  saveProgress();
+}
+
+function toggleReuseConsent() {
+  state.consents.scoreReuse = !state.consents.scoreReuse;
+  document.getElementById('reuse-consent').classList.toggle('checked', state.consents.scoreReuse);
   saveProgress();
 }
 
 function updateSubmitButton() {
-  // Submit needs tier 2 + all answers filled
   const allAnswered = state.questions.every(q => (state.answers[q.id] || '').trim().length >= 20);
   document.getElementById('submit-btn').disabled = !allAnswered;
 }
@@ -840,7 +874,10 @@ async function submitAssessment() {
     },
     consents: {
       tier1At: new Date(state.startedAt).toISOString(),
-      tier2At: null // network consent removed
+      networkOptIn: state.consents.networkOptIn,
+      networkOptInAt: state.consents.networkOptIn ? new Date().toISOString() : null,
+      scoreReuse: state.consents.scoreReuse,
+      scoreReuseAt: state.consents.scoreReuse ? new Date().toISOString() : null
     }
   };
 
