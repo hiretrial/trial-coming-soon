@@ -276,15 +276,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // If the booking gets cancelled, EOI returns to 'new' so it shows up again.
   if (matchedEoiId) {
     const newStatus = booking.status === 'cancelled' ? 'new' : 'booked';
+
+    // Check if this booking came via the re-engagement email
+    const isReengagement = body.payload?.tracking?.utm_source === 'reengagement' ||
+      body.payload?.questions_and_answers?.some((qa: any) =>
+        String(qa.answer || '').toLowerCase().includes('reengagement')
+      );
+
+    const eoiUpdate: Record<string, any> = {
+      status:                  newStatus,
+      calendly_booking_id:     bookingRow.id,
+      calendly_booking_at:     booking.scheduled_at,
+      calendly_booking_status: booking.status,
+      updated_at:              new Date().toISOString(),
+    };
+
+    if (isReengagement && booking.status !== 'cancelled') {
+      eoiUpdate.reengagement_booked_at = booking.scheduled_at;
+      eoiUpdate.reengagement_offer = 'reengagement';
+      console.log(`[calendly-webhook] Re-engagement booking flagged for EOI ${matchedEoiId.slice(0, 8)}`);
+    }
+
     const { error: updErr } = await admin
       .from('eoi_submissions')
-      .update({
-        status:                  newStatus,
-        calendly_booking_id:     bookingRow.id,
-        calendly_booking_at:     booking.scheduled_at,
-        calendly_booking_status: booking.status,
-        updated_at:              new Date().toISOString(),
-      })
+      .update(eoiUpdate)
       .eq('id', matchedEoiId);
     if (updErr) {
       console.error('[calendly-webhook] EOI cache update failed (non-fatal):', updErr);
