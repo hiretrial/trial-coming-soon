@@ -208,6 +208,39 @@ export async function scoreAssessment(supabase, assessmentId) {
       integrity_score: integrityScore
     });
 
+    // ─── 7. Send candidate results email ───
+    try {
+      const { data: candidate, error: cErr } = await supabase
+        .from('candidates')
+        .select('email, unsubscribe_token')
+        .eq('id', assessment.candidate_id)
+        .maybeSingle();
+
+      if (candidate?.email) {
+        const candidateName = assessment.candidate_profile?.first_name || 'there';
+        const roleLabel = ROLE_LABELS[assessment.role] || assessment.role;
+        const level = getCandidateLevel(scoring.tier);
+
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            from: 'Trial. <hello@hiretrial.com.au>',
+            to: candidate.email,
+            subject: `Your Trial. assessment results`,
+            html: buildCandidateResultsEmail({ candidateName, roleLabel, level, unsubscribeToken: candidate.unsubscribe_token })
+          })
+        });
+
+        console.log('[score-core] Candidate results email sent:', candidate.email);
+      }
+    } catch (emailErr) {
+      console.error('[score-core] Candidate results email failed (non-fatal):', emailErr);
+    }
+
     return {
       ok: true,
       overall_score: scoring.overall_score,
@@ -220,6 +253,74 @@ export async function scoreAssessment(supabase, assessmentId) {
     console.error('[score-core] Unexpected error:', err);
     return { ok: false, error: 'Server error', code: 'unexpected' };
   }
+}
+
+function getCandidateLevel(tier) {
+  const levels = { 'A': 'Advanced', 'B': 'Intermediate', 'C': 'Foundation', 'D': 'Developing' };
+  return levels[tier] || 'Foundation';
+}
+
+function buildCandidateResultsEmail({ candidateName, roleLabel, level, unsubscribeToken }) {
+  const unsubUrl = unsubscribeToken
+    ? `https://hiretrial.com.au/api/unsubscribe?token=${unsubscribeToken}&type=candidate`
+    : 'https://hiretrial.com.au/unsubscribed.html?type=candidate';
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Your Trial. results</title></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px;">
+  <tr><td align="center">
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;">
+
+      <!-- Logo -->
+      <tr><td style="padding-bottom:32px;">
+        <span style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:#f8f6f0;letter-spacing:-0.4px;">Trial<span style="color:#c8a96e;">.</span></span>
+      </td></tr>
+
+      <!-- Card -->
+      <tr><td style="background:linear-gradient(160deg,#1f1a12 0%,#16120c 100%);border:1px solid rgba(200,169,110,0.35);border-radius:16px;padding:40px 36px;box-shadow:0 0 40px rgba(200,169,110,0.08);">
+
+        <p style="margin:0 0 8px;font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#c8a96e;font-weight:600;">Your assessment</p>
+        <h1 style="margin:0 0 24px;font-family:Georgia,serif;font-size:28px;font-weight:700;color:#f8f6f0;line-height:1.2;">Thanks, ${candidateName}.</h1>
+
+        <p style="margin:0 0 28px;font-size:15px;line-height:1.65;color:rgba(248,246,240,0.75);">
+          You've completed your Trial. assessment for <strong style="color:#f8f6f0;">${roleLabel}</strong>. Here's how your responses were rated.
+        </p>
+
+        <!-- Score block -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:12px;margin-bottom:28px;">
+          <tr>
+            <td style="padding:24px 28px;">
+              <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(248,246,240,0.5);">Your result</p>
+              <p style="margin:0;font-family:Georgia,serif;font-size:26px;font-weight:700;color:#c8a96e;">${roleLabel} — ${level}</p>
+            </td>
+          </tr>
+        </table>
+
+        <p style="margin:0 0 16px;font-size:14px;line-height:1.65;color:rgba(248,246,240,0.6);">
+          Your results have been shared with the venue. They'll be in touch directly if they'd like to take things further. You don't need to do anything else from here.
+        </p>
+
+        <p style="margin:0;font-size:14px;line-height:1.65;color:rgba(248,246,240,0.6);">
+          Questions? Email us at <a href="mailto:hello@hiretrial.com.au" style="color:#c8a96e;text-decoration:none;">hello@hiretrial.com.au</a>
+        </p>
+
+      </td></tr>
+
+      <!-- Footer -->
+      <tr><td style="padding-top:28px;text-align:center;">
+        <p style="margin:0;font-size:11px;color:rgba(248,246,240,0.3);line-height:1.8;">
+          Trial. &middot; ABN 71 441 417 792<br>
+          <a href="${unsubUrl}" style="color:rgba(248,246,240,0.3);text-decoration:underline;">Unsubscribe</a>
+        </p>
+      </td></tr>
+
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>`;
 }
 
 async function markScoringFailed(supabase, assessmentId, reason) {
