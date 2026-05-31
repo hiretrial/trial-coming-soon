@@ -116,7 +116,7 @@ function esc(s: string | undefined | null): string {
     .replace(/'/g, '&#39;');
 }
 
-const LOOM_URL = process.env.LOOM_URL || 'https://hiretrial.com.au/#walkthrough';
+const LOOM_URL = process.env.LOOM_URL || 'https://hiretrial.com.au/?ref=email';
 const CALENDLY_URL = 'https://calendly.com/anders-hiretrial/demo';
 
 // ─── EOI confirmation email to venue ──────────────────────────────
