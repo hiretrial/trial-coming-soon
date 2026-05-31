@@ -35,6 +35,10 @@
     {
       "path": "/api/follow-up-cron",
       "schedule": "0 23 * * *"
+    },
+    {
+      "path": "/api/eoi-nudge-worker",
+      "schedule": "0 23 * * *"
     }
   ]
 }
