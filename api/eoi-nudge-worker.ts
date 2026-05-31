@@ -166,7 +166,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const results = [];
 
-  const EOI_CLOSE_DATE = new Date('2026-07-15T23:59:59+10:00'); // 15 July 2026 AEST
+  const EOI_CLOSE_DATE = new Date('2026-05-01T23:59:59+10:00'); // TEMP TEST — change back to 2026-07-15 after testing
 
   for (const eoi of eois || []) {
     const days = daysSince(eoi.created_at);
