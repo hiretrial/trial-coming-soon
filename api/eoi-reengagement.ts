@@ -24,7 +24,7 @@ const CRON_SECRET = process.env.CRON_SECRET!;
 
 const CALENDLY_REENGAGEMENT_URL = 'https://calendly.com/anders-hiretrial/demo?utm_source=reengagement';
 const EOI_WINDOW_CLOSE = new Date('2026-07-15T23:59:59+10:00');
-const LAUNCH_DATE = new Date('2026-08-17T00:00:00+10:00');
+const LAUNCH_DATE = new Date('2026-05-01T00:00:00+10:00'); // TEMP TEST — change back to 2026-08-17 after testing
 const OFFER_EXPIRY_HOURS = 24;
 
 function esc(s: string | undefined | null): string {
