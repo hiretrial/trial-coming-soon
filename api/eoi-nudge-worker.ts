@@ -24,7 +24,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL!;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const RESEND_API_KEY = process.env.RESEND_API_KEY!;
 const CRON_SECRET = process.env.CRON_SECRET!;
-const LOOM_URL = process.env.LOOM_URL || 'https://hiretrial.com.au/#walkthrough';
+const LOOM_URL = process.env.LOOM_URL || 'https://hiretrial.com.au/?ref=email';
 const CALENDLY_URL = 'https://calendly.com/anders-hiretrial/demo';
 
 function esc(s: string | undefined | null): string {
@@ -59,7 +59,7 @@ function buildDay3Html(firstName: string, venueName: string): string {
 
     <table cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
       <tr><td style="background:#c8a96e;border-radius:10px;">
-        <a href="${LOOM_URL}" style="display:inline-block;padding:15px 32px;color:#0a0a0a;text-decoration:none;font-family:Arial,sans-serif;font-weight:700;font-size:15px;letter-spacing:0.02em;">Watch the walkthrough &rarr;</a>
+        <a href="https://hiretrial.com.au/?ref=email" style="display:inline-block;padding:15px 32px;color:#0a0a0a;text-decoration:none;font-family:Arial,sans-serif;font-weight:700;font-size:15px;letter-spacing:0.02em;">Watch the walkthrough &rarr;</a>
       </td></tr>
     </table>
 
@@ -117,7 +117,7 @@ function buildDay7Html(firstName: string, venueName: string): string {
 
     <table cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
       <tr><td style="background:#c8a96e;border-radius:10px;">
-        <a href="${LOOM_URL}" style="display:inline-block;padding:15px 32px;color:#0a0a0a;text-decoration:none;font-family:Arial,sans-serif;font-weight:700;font-size:15px;letter-spacing:0.02em;">Watch the walkthrough &rarr;</a>
+        <a href="https://hiretrial.com.au/?ref=email" style="display:inline-block;padding:15px 32px;color:#0a0a0a;text-decoration:none;font-family:Arial,sans-serif;font-weight:700;font-size:15px;letter-spacing:0.02em;">Watch the walkthrough &rarr;</a>
       </td></tr>
     </table>
 
