@@ -24,7 +24,7 @@ const CRON_SECRET = process.env.CRON_SECRET!;
 
 const CALENDLY_REENGAGEMENT_URL = 'https://calendly.com/anders-hiretrial/demo?utm_source=reengagement';
 const EOI_WINDOW_CLOSE = new Date('2026-07-15T23:59:59+10:00');
-const LAUNCH_DATE = new Date('2026-05-01T00:00:00+10:00'); // TEMP TEST — change back to 2026-08-17 after testing
+const LAUNCH_DATE = new Date('2026-08-17T00:00:00+10:00');
 const OFFER_EXPIRY_HOURS = 24;
 
 function esc(s: string | undefined | null): string {
@@ -64,15 +64,15 @@ function buildReengagementHtml(firstName: string, venueName: string, offerExpiry
         <p style="margin:0 0 12px;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(248,246,240,0.45);font-family:Arial,sans-serif;">Your exclusive offer — expires ${esc(offerExpiry)}</p>
         <table width="100%" cellpadding="0" cellspacing="0">
           <tr>
-            <td style="font-size:13px;color:rgba(248,246,240,0.55);font-family:Arial,sans-serif;padding-bottom:8px;">Solo</td>
+            <td style="font-size:13px;color:rgba(248,246,240,0.55);font-family:Arial,sans-serif;padding-bottom:8px;">Solo <span style="font-size:11px;color:rgba(248,246,240,0.35);">· 1 venue</span></td>
             <td align="right" style="font-size:13px;color:#f8f6f0;font-weight:600;font-family:Arial,sans-serif;padding-bottom:8px;">$109.99/mo</td>
           </tr>
           <tr>
-            <td style="font-size:13px;color:rgba(248,246,240,0.55);font-family:Arial,sans-serif;padding-bottom:8px;">Starter</td>
+            <td style="font-size:13px;color:rgba(248,246,240,0.55);font-family:Arial,sans-serif;padding-bottom:8px;">Starter <span style="font-size:11px;color:rgba(248,246,240,0.35);">· 2–3 venues</span></td>
             <td align="right" style="font-size:13px;color:#f8f6f0;font-weight:600;font-family:Arial,sans-serif;padding-bottom:8px;">$169.99/mo</td>
           </tr>
           <tr>
-            <td style="font-size:13px;color:rgba(248,246,240,0.55);font-family:Arial,sans-serif;">Growth</td>
+            <td style="font-size:13px;color:rgba(248,246,240,0.55);font-family:Arial,sans-serif;">Growth <span style="font-size:11px;color:rgba(248,246,240,0.35);">· 4–5 venues</span></td>
             <td align="right" style="font-size:13px;color:#f8f6f0;font-weight:600;font-family:Arial,sans-serif;">$299.99/mo</td>
           </tr>
         </table>
