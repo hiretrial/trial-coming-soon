@@ -423,7 +423,7 @@ if (!detectedRole && venue.default_role) {
     }
 
     const { data: existingCandidate } = await supabase
-      .from('candidates').select('id').eq('email', candidateEmail).maybeSingle();
+      .from('candidates').select('id, assessment_valid_until, score_reuse_consent').eq('email', candidateEmail).maybeSingle();
 
     let candidateId;
     if (existingCandidate) {
@@ -436,6 +436,67 @@ if (!detectedRole && venue.default_role) {
         await supabase.from('candidates')
           .update({ last_active_at: new Date().toISOString() })
           .eq('id', candidateId);
+      }
+
+      // ─── Score freshness check ───
+      // If candidate has consented to score reuse AND their score is still valid,
+      // skip reassessment and forward existing score to venue.
+      if (
+        existingCandidate.score_reuse_consent &&
+        existingCandidate.assessment_valid_until &&
+        new Date(existingCandidate.assessment_valid_until) > new Date()
+      ) {
+        console.log('[inbound-email] Returning candidate with fresh score — skipping reassessment:', candidateId);
+
+        // Load their most recent scored assessment
+        const { data: freshAssessment } = await supabase
+          .from('assessments')
+          .select('id, role, overall_score, tier, ai_summary, scored_at')
+          .eq('candidate_id', candidateId)
+          .eq('status', 'submitted')
+          .not('overall_score', 'is', null)
+          .order('scored_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (freshAssessment) {
+          // Forward existing score to venue
+          if (venue.manager_email) {
+            const ROLE_LABELS_LOCAL = {
+              'bartender': 'Bartender', 'bar-back': 'Bar Back', 'bar-manager': 'Bar Manager',
+              'barista': 'Barista', 'cafe-allrounder': 'Café All-Rounder',
+              'cafe-kitchen-hand': 'Kitchen Hand', 'cafe-manager': 'Café Manager',
+              'duty-manager': 'Duty Manager', 'expediter': 'Expediter',
+              'waiter': 'Waiter/Waitress', 'host': 'Host',
+              'restaurant-manager': 'Restaurant Manager', 'supervisor': 'Supervisor'
+            };
+            const rl = ROLE_LABELS_LOCAL[detectedRole] || detectedRole;
+            const candidateFullName = `${first_name} ${last_name}`.trim() || candidateEmail;
+            try {
+              await resend.emails.send({
+                from: `Trial. <hello@hiretrial.com.au>`,
+                to: venue.manager_email, reply_to: candidateEmail,
+                subject: `[Trial. — ${rl}] ${subject}`,
+                html: forwardEmailHtml({
+                  venueName: venue.name,
+                  candidateName: candidateFullName,
+                  candidateEmail, roleLabel: rl,
+                  originalSubject: subject, originalBody: bodyContent,
+                  existingScore: {
+                    tier: freshAssessment.tier,
+                    summary: freshAssessment.ai_summary,
+                    scoredAt: freshAssessment.scored_at
+                  }
+                })
+              });
+            } catch (err) {
+              console.error('[inbound-email] Fresh score forward failed:', err);
+            }
+          }
+
+          console.log('[inbound-email] Fresh score forwarded to venue, no new assessment created:', candidateId);
+          return res.status(200).json({ ok: true, reused: true, candidate_id: candidateId });
+        }
       }
     } else {
       const { data: newCandidate, error: insertErr } = await supabase
@@ -597,7 +658,16 @@ function candidateEmailHtml({ firstName, venueName, roleLabel, assessmentUrl, un
 </body></html>`;
 }
 
-function forwardEmailHtml({ venueName, candidateName, candidateEmail, roleLabel, originalSubject, originalBody }) {
+function forwardEmailHtml({ venueName, candidateName, candidateEmail, roleLabel, originalSubject, originalBody, existingScore }) {
+  const getCandidateLevel = (tier) => ({ 'A': 'Advanced', 'B': 'Intermediate', 'C': 'Foundation', 'D': 'Developing' }[tier] || 'Foundation');
+
+  const existingScoreBlock = existingScore ? `
+        <div style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.25);border-radius:10px;padding:20px 24px;margin:0 0 24px 0;">
+          <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:8px;font-family:Arial,sans-serif;">Previous assessment result</div>
+          <div style="font-size:18px;font-family:Georgia,serif;font-weight:700;color:#c8a96e;margin-bottom:8px;">${roleLabel} — ${getCandidateLevel(existingScore.tier)}</div>
+          <div style="font-size:13px;color:rgba(248,246,240,0.65);line-height:1.6;font-family:Arial,sans-serif;">${escapeHtml(existingScore.summary || '')}</div>
+        </div>` : '';
+
   return `<!DOCTYPE html>
 <html lang="en-AU"><head><meta charset="UTF-8"><title>New application via Trial.</title></head>
 <body style="margin:0;padding:0;background:#0a0a0a;font-family:Georgia,'Times New Roman',serif;color:#f8f6f0;">
@@ -611,8 +681,12 @@ function forwardEmailHtml({ venueName, candidateName, candidateEmail, roleLabel,
         <div style="font-size:14px;color:rgba(248,246,240,0.6);margin-bottom:32px;font-family:Arial,sans-serif;">
           <a href="mailto:${candidateEmail}" style="color:#c8a96e;text-decoration:none;">${candidateEmail}</a>
         </div>
+        ${existingScoreBlock}
         <p style="font-size:14.5px;line-height:1.65;color:rgba(248,246,240,0.75);margin:0 0 28px 0;font-family:Arial,sans-serif;">
-          Original application as it landed in your Trial<span style="color:#c8a96e;">.</span> inbox for <strong style="color:#f8f6f0;font-weight:500;">${venueName}</strong>. CV attached. We've sent the candidate their assessment — score lands in <a href="https://dashboard.hiretrial.com.au" style="color:#c8a96e;text-decoration:none;font-weight:500;">your dashboard</a> shortly.
+          ${existingScore
+            ? `This candidate has a recent Trial. assessment on file — their result is shown above. CV attached.`
+            : `Original application as it landed in your Trial<span style="color:#c8a96e;">.</span> inbox for <strong style="color:#f8f6f0;font-weight:500;">${venueName}</strong>. CV attached. We've sent the candidate their assessment — score lands in <a href="https://dashboard.hiretrial.com.au" style="color:#c8a96e;text-decoration:none;font-weight:500;">your dashboard</a> shortly.`
+          }
         </p>
         <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(200,169,110,0.22);border-radius:10px;padding:24px;margin:24px 0;">
           <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:10px;font-family:Arial,sans-serif;">Original subject</div>
