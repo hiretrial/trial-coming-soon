@@ -29,10 +29,11 @@ const PLAN_DETAILS = {
 };
 
 export async function sendVenueWelcomeEmail({
+  to,
   venueName,
   contactName,
   inboundAddress,
-  planKey, // 'solo' | 'starter' | 'growth'
+  planKey,
   dashboardUrl = 'https://dashboard.hiretrial.com.au',
   resendApiKey = process.env.RESEND_API_KEY,
 }) {
@@ -48,7 +49,7 @@ export async function sendVenueWelcomeEmail({
     },
     body: JSON.stringify({
       from: 'Anders at Trial. <hello@hiretrial.com.au>',
-      to: contactName ? undefined : undefined, // caller passes `to`
+      to,
       reply_to: 'hello@hiretrial.com.au',
       subject: `You're live on Trial. — everything you need to know`,
       html,
