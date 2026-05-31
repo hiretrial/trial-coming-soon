@@ -208,7 +208,23 @@ export async function scoreAssessment(supabase, assessmentId) {
       integrity_score: integrityScore
     });
 
-    // ─── 7. Send candidate results email ───
+    // ─── 7. Update candidate last_assessed_at ───
+    if (assessment.candidate_id) {
+      const now = new Date();
+      const validUntil = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
+      const { error: tsErr } = await supabase
+        .from('candidates')
+        .update({
+          last_assessed_at: now.toISOString(),
+          assessment_valid_until: validUntil.toISOString()
+        })
+        .eq('id', assessment.candidate_id);
+      if (tsErr) {
+        console.error('[score-core] Failed to update last_assessed_at (non-fatal):', tsErr);
+      }
+    }
+
+    // ─── 8. Send candidate results email ───
     try {
       const { data: candidate, error: cErr } = await supabase
         .from('candidates')
