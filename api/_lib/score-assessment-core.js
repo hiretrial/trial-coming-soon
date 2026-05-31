@@ -281,6 +281,15 @@ function buildCandidateResultsEmail({ candidateName, roleLabel, level, unsubscri
     ? `https://hiretrial.com.au/api/unsubscribe?token=${unsubscribeToken}&type=candidate`
     : 'https://hiretrial.com.au/unsubscribed.html?type=candidate';
 
+  const profileUrl = unsubscribeToken
+    ? `https://hiretrial.com.au/candidate-profile.html?token=${unsubscribeToken}`
+    : null;
+
+  const profileBlock = profileUrl ? `
+        <p style="margin:16px 0 0;font-size:13px;line-height:1.65;color:rgba(248,246,240,0.5);">
+          <a href="${profileUrl}" style="color:#c8a96e;text-decoration:none;">View your profile</a> to manage your preferences or see your results anytime.
+        </p>` : '';
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Your Trial. results</title></head>
@@ -321,6 +330,7 @@ function buildCandidateResultsEmail({ candidateName, roleLabel, level, unsubscri
         <p style="margin:0;font-size:14px;line-height:1.65;color:rgba(248,246,240,0.6);">
           Questions? Email us at <a href="mailto:hello@hiretrial.com.au" style="color:#c8a96e;text-decoration:none;">hello@hiretrial.com.au</a>
         </p>
+        ${profileBlock}
 
       </td></tr>
 
