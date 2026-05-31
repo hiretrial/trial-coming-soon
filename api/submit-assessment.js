@@ -73,13 +73,36 @@ export default async function handler(req, res) {
         tab_switch_count: integrity?.tabSwitchCount || 0,
         avg_response_time_seconds: integrity?.avgResponseTimeSeconds || 0,
         tier1_consent_at: consents?.tier1At || new Date().toISOString(),
-        tier2_consent_at: consents?.tier2At || new Date().toISOString()
+        tier2_consent_at: consents?.tier2At || null
       })
       .eq('id', assessment.id);
 
     if (updateErr) {
       console.error('[submit-assessment] Update failed:', updateErr);
       return res.status(500).json({ error: 'Failed to save submission' });
+    }
+
+    // ─── 4b. Save Talent Network + score reuse consents to candidate ───
+    if (assessment.candidate_id) {
+      const consentUpdate = {};
+      if (consents?.networkOptIn !== undefined) {
+        consentUpdate.talent_network_opt_in = consents.networkOptIn;
+        consentUpdate.talent_network_opt_in_at = consents.networkOptInAt || null;
+        consentUpdate.profile_visible = consents.networkOptIn;
+      }
+      if (consents?.scoreReuse !== undefined) {
+        consentUpdate.score_reuse_consent = consents.scoreReuse;
+        consentUpdate.score_reuse_consent_at = consents.scoreReuseAt || null;
+      }
+      if (Object.keys(consentUpdate).length > 0) {
+        const { error: consentErr } = await supabase
+          .from('candidates')
+          .update(consentUpdate)
+          .eq('id', assessment.candidate_id);
+        if (consentErr) {
+          console.error('[submit-assessment] Consent update failed (non-fatal):', consentErr);
+        }
+      }
     }
 
     console.log('[submit-assessment] Submitted, scoring inline:', assessment.id);
