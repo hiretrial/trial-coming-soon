@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Your Trial. profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,800;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --black:#0a0a0a;
+  --surface:#111;
+  --surface2:#1a1a1a;
+  --off-white:#f8f6f0;
+  --gold:#c8a96e;
+  --gold-soft:rgba(200,169,110,0.12);
+  --gold-glow:rgba(200,169,110,0.32);
+  --muted:rgba(248,246,240,0.62);
+  --dim:rgba(248,246,240,0.42);
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.14);
+  --success:#1d9e75;
+  --danger:#e24b4a;
+}
+
+html,body{
+  background:var(--black);
+  color:var(--off-white);
+  font-family:'DM Sans',system-ui,-apple-system,sans-serif;
+  font-weight:300;
+  line-height:1.6;
+  font-size:16px;
+  min-height:100vh;
+}
+
+.serif{font-family:'Playfair Display',Georgia,serif}
+
+.app{
+  max-width:680px;
+  margin:0 auto;
+  padding:32px 24px 80px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+.brand-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:48px;
+}
+.brand-logo{
+  font-family:'Playfair Display',Georgia,serif;
+  font-weight:800;
+  font-size:24px;
+  letter-spacing:-0.4px;
+  color:var(--off-white);
+}
+.brand-logo .dot{color:var(--gold)}
+.brand-divider{flex:1;height:1px;background:var(--border)}
+
+.screen{flex:1;display:none;flex-direction:column;animation:fadeIn 0.4s ease}
+.screen.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.loading{
+  display:flex;align-items:center;justify-content:center;
+  flex:1;flex-direction:column;gap:20px;padding:64px 0;
+}
+.loading-spinner{
+  width:32px;height:32px;
+  border:2px solid var(--border);
+  border-top-color:var(--gold);
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--dim);letter-spacing:0.04em}
+
+.page-label{
+  font-size:11px;letter-spacing:0.28em;text-transform:uppercase;
+  color:var(--gold);font-weight:600;margin-bottom:16px;
+}
+.page-title{
+  font-family:'Playfair Display',Georgia,serif;
+  font-weight:800;font-size:clamp(30px,6vw,44px);
+  line-height:1.1;letter-spacing:-1px;
+  color:var(--off-white);margin-bottom:32px;
+}
+.page-title em{font-style:italic;color:var(--gold);font-weight:500}
+
+/* ─── Score cards ─── */
+.scores-section{margin-bottom:40px}
+.section-heading{
+  font-size:11px;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--dim);font-weight:600;margin-bottom:16px;
+}
+.score-card{
+  background:var(--gold-soft);
+  border:1px solid rgba(200,169,110,0.2);
+  border-radius:12px;
+  padding:20px 24px;
+  margin-bottom:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.score-card-role{font-size:14px;color:var(--muted);letter-spacing:0.02em}
+.score-card-level{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:18px;font-weight:700;color:var(--gold);
+}
+.score-fresh{
+  font-size:11px;color:var(--success);letter-spacing:0.04em;
+  margin-top:4px;
+}
+.score-stale{
+  font-size:11px;color:var(--dim);letter-spacing:0.04em;
+  margin-top:4px;
+}
+.no-scores{
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:24px;
+  font-size:14px;
+  color:var(--dim);
+  line-height:1.6;
+}
+
+/* ─── Toggle rows ─── */
+.toggles-section{margin-bottom:40px}
+.toggle-row{
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:20px 24px;
+  margin-bottom:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+.toggle-row.active{
+  background:var(--gold-soft);
+  border-color:rgba(200,169,110,0.2);
+}
+.toggle-info{flex:1}
+.toggle-label{font-size:14px;font-weight:500;color:var(--off-white);margin-bottom:4px}
+.toggle-desc{font-size:12.5px;color:var(--dim);line-height:1.5}
+
+.toggle-btn{
+  position:relative;
+  width:44px;height:24px;
+  border-radius:12px;
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  cursor:pointer;
+  transition:background 0.2s ease, border-color 0.2s ease;
+  flex-shrink:0;
+}
+.toggle-btn.on{background:var(--gold);border-color:var(--gold)}
+.toggle-btn::after{
+  content:'';
+  position:absolute;
+  top:3px;left:3px;
+  width:16px;height:16px;
+  border-radius:50%;
+  background:var(--off-white);
+  transition:transform 0.2s ease;
+}
+.toggle-btn.on::after{transform:translateX(20px)}
+.toggle-btn:disabled{opacity:0.5;cursor:not-allowed}
+
+/* ─── Footer ─── */
+.footer{
+  margin-top:64px;padding-top:24px;
+  border-top:1px solid var(--border);
+  font-size:11px;color:var(--dim);
+  text-align:center;letter-spacing:0.02em;
+}
+.footer .dot{color:var(--gold)}
+
+/* ─── Error ─── */
+.error-box{
+  background:rgba(226,75,74,0.08);
+  border:1px solid rgba(226,75,74,0.3);
+  border-radius:12px;padding:20px 24px;
+  margin-bottom:24px;color:var(--off-white);
+  font-size:14px;line-height:1.6;
+}
+.error-box strong{color:#e24b4a;font-weight:600}
+
+@media(max-width:520px){
+  .app{padding:24px 18px 60px}
+  .brand-row{margin-bottom:36px}
+  .score-card{flex-direction:column;align-items:flex-start;gap:8px}
+  .toggle-row{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="brand-row">
+    <div class="brand-logo">Trial<span class="dot">.</span></div>
+    <div class="brand-divider"></div>
+  </div>
+
+  <!-- ═══ LOADING ═══ -->
+  <div class="screen active" id="screen-loading">
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading your profile...</div>
+    </div>
+  </div>
+
+  <!-- ═══ ERROR ═══ -->
+  <div class="screen" id="screen-error">
+    <div class="page-label">Something went wrong</div>
+    <h1 class="page-title serif">This link <em>isn't working.</em></h1>
+    <div class="error-box" id="error-message"></div>
+    <p style="font-size:14px;color:var(--dim);line-height:1.6;">
+      Need help? Email <a href="mailto:hello@hiretrial.com.au" style="color:var(--gold);text-decoration:none;">hello@hiretrial.com.au</a>
+    </p>
+  </div>
+
+  <!-- ═══ PROFILE ═══ -->
+  <div class="screen" id="screen-profile">
+    <div class="page-label">Your profile</div>
+    <h1 class="page-title serif">Hi <em id="profile-firstname">there</em>.</h1>
+
+    <!-- Scores -->
+    <div class="scores-section">
+      <div class="section-heading">Your assessment results</div>
+      <div id="scores-container"></div>
+    </div>
+
+    <!-- Toggles -->
+    <div class="toggles-section">
+      <div class="section-heading">Your preferences</div>
+
+      <div class="toggle-row" id="row-network">
+        <div class="toggle-info">
+          <div class="toggle-label">Trial. Talent Network</div>
+          <div class="toggle-desc">Allow venues to find and contact you about future opportunities through the Trial. platform.</div>
+        </div>
+        <button class="toggle-btn" id="toggle-network" onclick="toggleField('talent_network_opt_in', 'toggle-network', 'row-network')"></button>
+      </div>
+
+      <div class="toggle-row" id="row-reuse">
+        <div class="toggle-info">
+          <div class="toggle-label">Share results with other venues</div>
+          <div class="toggle-desc">If you apply to another venue using Trial. your existing assessment results may be shared with them directly — no need to reassess.</div>
+        </div>
+        <button class="toggle-btn" id="toggle-reuse" onclick="toggleField('score_reuse_consent', 'toggle-reuse', 'row-reuse')"></button>
+      </div>
+    </div>
+
+    <p style="font-size:12px;color:var(--dim);line-height:1.6;">
+      Questions about your data? Email <a href="mailto:privacy@hiretrial.com.au" style="color:var(--gold);text-decoration:none;">privacy@hiretrial.com.au</a>
+    </p>
+  </div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <div class="footer">
+    Trial<span class="dot">.</span> &middot; hello@hiretrial.com.au &middot; ABN 71 441 417 792
+  </div>
+
+</div>
+
+<script>
+let state = {
+  token: null,
+  candidate: null,
+  scores: [],
+  updating: {}
+};
+
+function getToken() {
+  return new URLSearchParams(window.location.search).get('token');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showError(msg) {
+  document.getElementById('error-message').innerHTML = `<strong>Error:</strong> ${msg}`;
+  showScreen('screen-error');
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function renderScores() {
+  const container = document.getElementById('scores-container');
+  if (!state.scores.length) {
+    container.innerHTML = `<div class="no-scores">No assessment results yet. Complete an assessment through a venue to see your results here.</div>`;
+    return;
+  }
+  container.innerHTML = state.scores.map(s => `
+    <div class="score-card">
+      <div>
+        <div class="score-card-role">${s.roleLabel}</div>
+        <div class="${state.candidate.scoresFresh ? 'score-fresh' : 'score-stale'}">
+          ${state.candidate.scoresFresh ? `Valid until ${formatDate(state.candidate.assessmentValidUntil)}` : `Assessed ${formatDate(s.scoredAt)} — reassessment may be required`}
+        </div>
+      </div>
+      <div class="score-card-level">${s.level}</div>
+    </div>
+  `).join('');
+}
+
+function renderToggles() {
+  const c = state.candidate;
+  setToggle('toggle-network', 'row-network', c.talentNetworkOptIn);
+  setToggle('toggle-reuse', 'row-reuse', c.scoreReuseConsent);
+}
+
+function setToggle(btnId, rowId, value) {
+  const btn = document.getElementById(btnId);
+  const row = document.getElementById(rowId);
+  btn.classList.toggle('on', value);
+  row.classList.toggle('active', value);
+}
+
+async function toggleField(field, btnId, rowId) {
+  if (state.updating[field]) return;
+  state.updating[field] = true;
+
+  const btn = document.getElementById(btnId);
+  btn.disabled = true;
+
+  const currentValue = field === 'talent_network_opt_in'
+    ? state.candidate.talentNetworkOptIn
+    : state.candidate.scoreReuseConsent;
+  const newValue = !currentValue;
+
+  try {
+    const resp = await fetch('/api/candidate-profile-update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: state.token, field, value: newValue })
+    });
+
+    if (!resp.ok) throw new Error('Update failed');
+
+    if (field === 'talent_network_opt_in') state.candidate.talentNetworkOptIn = newValue;
+    if (field === 'score_reuse_consent') state.candidate.scoreReuseConsent = newValue;
+
+    setToggle(btnId, rowId, newValue);
+
+  } catch (err) {
+    console.error('[profile] Toggle failed:', err);
+  } finally {
+    btn.disabled = false;
+    state.updating[field] = false;
+  }
+}
+
+(async function init() {
+  state.token = getToken();
+  if (!state.token) {
+    showError('No profile token in the URL. Please use the link from your results email.');
+    return;
+  }
+
+  try {
+    const resp = await fetch(`/api/candidate-profile?token=${state.token}`);
+    if (!resp.ok) {
+      if (resp.status === 404) {
+        showError('Profile not found. Please use the link from your results email.');
+        return;
+      }
+      throw new Error(`Server error (${resp.status})`);
+    }
+
+    const data = await resp.json();
+    state.candidate = data.candidate;
+    state.scores = data.scores;
+
+    document.getElementById('profile-firstname').textContent = data.candidate.firstName || 'there';
+
+    renderScores();
+    renderToggles();
+    showScreen('screen-profile');
+
+  } catch (err) {
+    console.error('[profile] Init failed:', err);
+    showError(`Couldn't load your profile: ${err.message}`);
+  }
+})();
+</script>
+</body>
+</html>
