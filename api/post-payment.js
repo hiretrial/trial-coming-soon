@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     // Lookup venue + account by setup_token
     const { data: venue, error: vErr } = await supabase
       .from('venues')
-      .select('id, account_id, accounts(id, subscription_status)')
+      .select('id, account_id, name, manager_name, manager_email, inbound_address, subscription_tier, accounts(id, subscription_status, email)')
       .eq('setup_token', setupToken)
       .maybeSingle();
 
@@ -100,6 +100,22 @@ export default async function handler(req, res) {
     }
 
     console.log(`[post-payment] ✅ Activated account ${venue.account_id} via token ${setupToken}`);
+
+    // ─── Send welcome email ───
+    try {
+      const { sendVenueWelcomeEmail } = await import('../lib/welcome-email.js');
+      await sendVenueWelcomeEmail({
+        to: venue.manager_email || venue.accounts?.email,
+        venueName: venue.name,
+        contactName: venue.manager_name,
+        inboundAddress: venue.inbound_address,
+        planKey: venue.subscription_tier || 'solo',
+        dashboardUrl: 'https://dashboard.hiretrial.com.au',
+      });
+      console.log('[post-payment] Welcome email sent:', venue.name);
+    } catch (emailErr) {
+      console.error('[post-payment] Welcome email failed (non-fatal):', emailErr);
+    }
 
     return res.redirect(302, `/setup.html?token=${setupToken}`);
 
