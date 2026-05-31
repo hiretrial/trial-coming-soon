@@ -36,7 +36,7 @@ function daysSince(iso: string): number {
   return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
 }
 
-function buildDay3Html(firstName: string, venueName: string): string {
+function buildDay3Html(firstName: string, venueName: string, unsubToken: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Still keen? — Trial.</title></head>
@@ -75,7 +75,8 @@ function buildDay3Html(firstName: string, venueName: string): string {
 
   <tr><td style="padding-top:28px;text-align:center;">
     <p style="margin:0;font-size:11px;color:rgba(248,246,240,0.3);font-family:Arial,sans-serif;line-height:1.8;">
-      Trial. &middot; ABN 71 441 417 792 &middot; <a href="mailto:hello@hiretrial.com.au" style="color:rgba(248,246,240,0.3);text-decoration:none;">hello@hiretrial.com.au</a>
+      Trial. &middot; ABN 71 441 417 792 &middot; <a href="mailto:hello@hiretrial.com.au" style="color:rgba(248,246,240,0.3);text-decoration:none;">hello@hiretrial.com.au</a><br>
+      <a href="https://hiretrial.com.au/api/unsubscribe?token=${unsubToken}&type=eoi" style="color:rgba(248,246,240,0.3);text-decoration:underline;">Unsubscribe</a>
     </p>
   </td></tr>
 
@@ -86,7 +87,7 @@ function buildDay3Html(firstName: string, venueName: string): string {
 </html>`;
 }
 
-function buildDay7Html(firstName: string, venueName: string): string {
+function buildDay7Html(firstName: string, venueName: string, unsubToken: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Last chance — Trial.</title></head>
@@ -132,7 +133,8 @@ function buildDay7Html(firstName: string, venueName: string): string {
 
   <tr><td style="padding-top:28px;text-align:center;">
     <p style="margin:0;font-size:11px;color:rgba(248,246,240,0.3);font-family:Arial,sans-serif;line-height:1.8;">
-      Trial. &middot; ABN 71 441 417 792 &middot; <a href="mailto:hello@hiretrial.com.au" style="color:rgba(248,246,240,0.3);text-decoration:none;">hello@hiretrial.com.au</a>
+      Trial. &middot; ABN 71 441 417 792 &middot; <a href="mailto:hello@hiretrial.com.au" style="color:rgba(248,246,240,0.3);text-decoration:none;">hello@hiretrial.com.au</a><br>
+      <a href="https://hiretrial.com.au/api/unsubscribe?token=${unsubToken}&type=eoi" style="color:rgba(248,246,240,0.3);text-decoration:underline;">Unsubscribe</a>
     </p>
   </td></tr>
 
@@ -155,7 +157,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Load EOIs with no demo booking and no opt-out
   const { data: eois, error } = await supabase
     .from('eoi_submissions')
-    .select('id, venue_name, contact_name, email, created_at, calendly_booking_at, nudge_day3_sent_at, nudge_day7_sent_at, email_opt_out')
+    .select('id, venue_name, contact_name, email, created_at, calendly_booking_at, nudge_day3_sent_at, nudge_day7_sent_at, email_opt_out, unsubscribe_token')
     .is('calendly_booking_at', null)
     .not('email_opt_out', 'is', true)
     .order('created_at', { ascending: true });
@@ -189,7 +191,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             to: eoi.email,
             reply_to: 'anders@hiretrial.com.au',
             subject: `Did you get a chance to watch the walkthrough?`,
-            html: buildDay3Html(firstName, eoi.venue_name),
+            html: buildDay3Html(firstName, eoi.venue_name, eoi.unsubscribe_token || ''),
             tags: [{ name: 'category', value: 'eoi-nudge-day3' }],
           }),
         });
@@ -214,7 +216,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             to: eoi.email,
             reply_to: 'anders@hiretrial.com.au',
             subject: `Founding Partner pricing closes 15 July — last nudge`,
-            html: buildDay7Html(firstName, eoi.venue_name),
+            html: buildDay7Html(firstName, eoi.venue_name, eoi.unsubscribe_token || ''),
             tags: [{ name: 'category', value: 'eoi-nudge-day7' }],
           }),
         });
