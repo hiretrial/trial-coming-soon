@@ -116,88 +116,7 @@ function esc(s: string | undefined | null): string {
     .replace(/'/g, '&#39;');
 }
 
-const LOOM_URL = process.env.LOOM_URL || 'https://hiretrial.com.au/?ref=email';
-const CALENDLY_URL = 'https://calendly.com/anders-hiretrial/demo';
 
-// ─── EOI confirmation email to venue ──────────────────────────────
-async function sendEoiConfirmation(eoi: any): Promise<void> {
-  if (!RESEND_API_KEY) return;
-  try {
-    const firstName = eoi.contact_name?.split(' ')[0] || eoi.contact_name || 'there';
-    const html = `<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>You're on the list — Trial.</title></head>
-<body style="margin:0;padding:0;background:#0a0a0a;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px;">
-<tr><td align="center">
-<table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;">
-
-  <tr><td style="padding-bottom:32px;">
-    <span style="font-family:Georgia,serif;font-size:22px;font-weight:800;color:#f8f6f0;letter-spacing:-0.4px;">Trial<span style="color:#c8a96e;">.</span></span>
-  </td></tr>
-
-  <tr><td style="background:linear-gradient(160deg,#1f1a12 0%,#16120c 100%);border:1px solid rgba(200,169,110,0.35);border-radius:16px;padding:44px 40px 36px;box-shadow:0 0 48px rgba(200,169,110,0.08);">
-    <p style="margin:0 0 8px;font-size:11px;letter-spacing:0.26em;text-transform:uppercase;color:#c8a96e;font-weight:600;font-family:Arial,sans-serif;">Founding Partner EOI</p>
-    <h1 style="margin:0 0 20px;font-family:Georgia,serif;font-size:30px;font-weight:800;color:#f8f6f0;line-height:1.15;letter-spacing:-0.6px;">You're on the list, ${esc(firstName)}.</h1>
-
-    <p style="margin:0 0 24px;font-size:15px;line-height:1.65;color:rgba(248,246,240,0.75);font-family:Arial,sans-serif;">
-      We've got your EOI for <strong style="color:#f8f6f0;">${esc(eoi.venue_name)}</strong>. Next step — watch the walkthrough to see exactly how Trial. works, then book a demo call with Anders.
-    </p>
-
-    <table cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
-      <tr><td style="background:#c8a96e;border-radius:10px;">
-        <a href="${LOOM_URL}" style="display:inline-block;padding:15px 32px;color:#0a0a0a;text-decoration:none;font-family:Arial,sans-serif;font-weight:700;font-size:15px;letter-spacing:0.02em;">Watch the walkthrough &rarr;</a>
-      </td></tr>
-    </table>
-
-    <p style="margin:0 0 24px;font-size:14px;line-height:1.65;color:rgba(248,246,240,0.6);font-family:Arial,sans-serif;">
-      After watching, book your demo here: <a href="${CALENDLY_URL}" style="color:#c8a96e;text-decoration:none;">${CALENDLY_URL}</a>
-    </p>
-
-    <table width="100%" cellpadding="0" cellspacing="0" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:12px;margin-bottom:24px;">
-      <tr><td style="padding:20px 24px;">
-        <p style="margin:0 0 8px;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(248,246,240,0.45);font-family:Arial,sans-serif;">Founding Partner pricing — locked for life</p>
-        <p style="margin:0;font-size:14px;color:rgba(248,246,240,0.7);line-height:1.6;font-family:Arial,sans-serif;">
-          Solo $89.99/mo &middot; Starter $99.99/mo &middot; Growth $109.99/mo<br>
-          <span style="font-size:12px;color:rgba(248,246,240,0.4);">Hire fee only applies if your hire stays 90 days. EOI window closes 15 July 2026.</span>
-        </p>
-      </td></tr>
-    </table>
-
-    <p style="margin:0;font-size:13px;line-height:1.65;color:rgba(248,246,240,0.45);font-family:Arial,sans-serif;">
-      Questions? Just reply to this email — it comes straight to Anders.
-    </p>
-  </td></tr>
-
-  <tr><td style="padding-top:28px;text-align:center;">
-    <p style="margin:0;font-size:11px;color:rgba(248,246,240,0.3);font-family:Arial,sans-serif;line-height:1.8;">
-      Trial. &middot; ABN 71 441 417 792 &middot; <a href="mailto:hello@hiretrial.com.au" style="color:rgba(248,246,240,0.3);text-decoration:none;">hello@hiretrial.com.au</a>
-    </p>
-  </td></tr>
-
-</table>
-</td></tr>
-</table>
-</body>
-</html>`;
-
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: 'Anders at Trial. <hello@hiretrial.com.au>',
-        to: eoi.email,
-        reply_to: 'anders@hiretrial.com.au',
-        subject: `You're on the list — here's what happens next`,
-        html,
-        tags: [{ name: 'category', value: 'eoi-confirmation' }],
-      }),
-    });
-    console.log('[eoi] ✅ Confirmation email sent to', eoi.email);
-  } catch (e: any) {
-    console.warn('[eoi] Confirmation email error (non-fatal):', e?.message);
-  }
-}
 async function notifyAnders(eoi: any): Promise<void> {
   if (!RESEND_API_KEY) {
     console.log('[eoi] RESEND_API_KEY missing — skipping notification');
@@ -445,7 +364,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Fire-and-forget notification (don't block response on Resend)
   await notifyAnders({ ...data }).catch(e => console.warn('[eoi] notifyAnders error:', e?.message));
-  await sendEoiConfirmation({ ...data }).catch(e => console.warn('[eoi] confirmation error:', e?.message));
 
   return res.status(200).json({
     ok: true,
