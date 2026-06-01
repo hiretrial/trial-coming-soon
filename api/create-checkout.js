@@ -9,19 +9,28 @@
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
+const TEST_MODE = process.env.TEST_MODE === 'true';
+
 const PRICE_IDS = {
-  founding: {
-    solo:    'price_1TY20MJ8Zl4UEY21ceaQ5LX7',
-    starter: 'price_1TY27AJ8Zl4UEY21ruN0GEBA',
-    growth:  'price_1TY28OJ8Zl4UEY21WTrHqIIO',
+  live: {
+    founding: {
+      solo:    'price_1TY20MJ8Zl4UEY21ceaQ5LX7',
+      starter: 'price_1TY27AJ8Zl4UEY21ruN0GEBA',
+      growth:  'price_1TY28OJ8Zl4UEY21WTrHqIIO',
+    },
   },
-  // standard prices added at V2 (mid-2027)
+  test: {
+    founding: {
+      solo:    'price_1TVnt7J8Zl4UEY21g6LT4aQf',
+      starter: 'price_1TVpb4J8Zl4UEY212fUJFetT',
+      growth:  'price_1TVpcWJ8Zl4UEY21nq6BaldQ',
+    },
+  },
 };
 
 const PUBLIC_SITE_URL = process.env.PUBLIC_SITE_URL || 'https://hiretrial.com.au';
 
 export default async function handler(req, res) {
-  // CORS — setup.html runs on hiretrial.com.au, same origin, but be explicit
   res.setHeader('Access-Control-Allow-Origin', 'https://hiretrial.com.au');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -70,7 +79,7 @@ export default async function handler(req, res) {
 
     const account = venue.accounts;
 
-    // Already paid — bounce back to setup.html, don't create a duplicate session
+    // Already paid — bounce back to setup.html
     if (account.subscription_status === 'active') {
       return res.status(200).json({
         checkout_url: `${PUBLIC_SITE_URL}/setup.html?token=${token}`,
@@ -80,13 +89,19 @@ export default async function handler(req, res) {
 
     const phase = account.subscription_phase;
     const tier = account.subscription_tier;
-    const priceId = PRICE_IDS[phase]?.[tier];
+    const priceSet = TEST_MODE ? PRICE_IDS.test : PRICE_IDS.live;
+    const priceId = priceSet[phase]?.[tier];
+
     if (!priceId) {
-      console.error('[create-checkout] No price ID for', phase, tier);
+      console.error('[create-checkout] No price ID for', phase, tier, TEST_MODE ? '(test)' : '(live)');
       return res.status(500).json({ error: `No price configured for ${phase} ${tier}` });
     }
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY_LIVE, {
+    const stripeKey = TEST_MODE
+      ? process.env.STRIPE_SECRET_KEY_TEST
+      : process.env.STRIPE_SECRET_KEY_LIVE;
+
+    const stripe = new Stripe(stripeKey, {
       apiVersion: '2024-11-20.acacia',
     });
 
