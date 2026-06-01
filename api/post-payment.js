@@ -101,52 +101,8 @@ export default async function handler(req, res) {
 
     console.log(`[post-payment] ✅ Activated account ${venue.account_id} via token ${setupToken}`);
 
-    // ─── Create Supabase auth user for dashboard login ───
-    const loginEmail = venue.manager_email || venue.accounts?.billing_email;
-    try {
-      const { error: authErr } = await supabase.auth.admin.createUser({
-        email: loginEmail,
-        password: setupToken.slice(0, 16) + 'A1!',
-        email_confirm: true,
-        user_metadata: {
-          account_id: venue.account_id,
-          venue_id: venue.id,
-          venue_name: venue.name,
-        },
-      });
-      if (authErr && !authErr.message.includes('already registered') && !authErr.message.includes('already been registered')) {
-        console.error('[post-payment] Auth user creation failed:', authErr);
-      } else {
-        console.log('[post-payment] Auth user created:', loginEmail);
-
-        // ─── Insert users table row to link auth user → venue ───
-        try {
-          const { data: authUser } = await supabase.auth.admin.getUserByEmail(loginEmail);
-          if (authUser?.user?.id) {
-            const { error: userRowErr } = await supabase
-              .from('users')
-              .upsert({
-                id: authUser.user.id,
-                email: loginEmail,
-                full_name: venue.manager_name || '',
-                role_at_venue: 'manager',
-                venue_id: venue.id,
-              }, { onConflict: 'id' });
-            if (userRowErr) {
-              console.error('[post-payment] Users table insert failed:', userRowErr);
-            } else {
-              console.log('[post-payment] Users table row created for:', loginEmail);
-            }
-          }
-        } catch (userRowCreateErr) {
-          console.error('[post-payment] Users table insert error (non-fatal):', userRowCreateErr);
-        }
-      }
-    } catch (authCreateErr) {
-      console.error('[post-payment] Auth user creation error (non-fatal):', authCreateErr);
-    }
-
     // ─── Send welcome email ───
+    const loginEmail = venue.manager_email || venue.accounts?.billing_email;
     try {
       const { sendVenueWelcomeEmail } = await import('../lib/welcome-email.js');
       await sendVenueWelcomeEmail({
