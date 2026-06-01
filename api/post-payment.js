@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     // Lookup venue + account by setup_token
     const { data: venue, error: vErr } = await supabase
       .from('venues')
-      .select('id, account_id, name, manager_name, manager_email, inbound_address, subscription_tier, accounts(id, subscription_status, email)')
+      .select('id, account_id, name, manager_name, manager_email, inbound_address, subscription_tier, accounts(id, subscription_status, billing_email)')
       .eq('setup_token', setupToken)
       .maybeSingle();
 
@@ -105,7 +105,7 @@ export default async function handler(req, res) {
     try {
       const { sendVenueWelcomeEmail } = await import('../lib/welcome-email.js');
       await sendVenueWelcomeEmail({
-        to: venue.manager_email || venue.accounts?.email,
+        to: venue.manager_email || venue.accounts?.billing_email,
         venueName: venue.name,
         contactName: venue.manager_name,
         inboundAddress: venue.inbound_address,
