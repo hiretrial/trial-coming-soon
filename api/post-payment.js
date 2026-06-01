@@ -118,6 +118,29 @@ export default async function handler(req, res) {
         console.error('[post-payment] Auth user creation failed:', authErr);
       } else {
         console.log('[post-payment] Auth user created:', loginEmail);
+
+        // ─── Insert users table row to link auth user → venue ───
+        try {
+          const { data: authUser } = await supabase.auth.admin.getUserByEmail(loginEmail);
+          if (authUser?.user?.id) {
+            const { error: userRowErr } = await supabase
+              .from('users')
+              .upsert({
+                id: authUser.user.id,
+                email: loginEmail,
+                full_name: venue.manager_name || '',
+                role_at_venue: 'manager',
+                venue_id: venue.id,
+              }, { onConflict: 'id' });
+            if (userRowErr) {
+              console.error('[post-payment] Users table insert failed:', userRowErr);
+            } else {
+              console.log('[post-payment] Users table row created for:', loginEmail);
+            }
+          }
+        } catch (userRowCreateErr) {
+          console.error('[post-payment] Users table insert error (non-fatal):', userRowCreateErr);
+        }
       }
     } catch (authCreateErr) {
       console.error('[post-payment] Auth user creation error (non-fatal):', authCreateErr);
