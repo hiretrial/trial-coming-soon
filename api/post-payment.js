@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     // Lookup venue + account by setup_token
     const { data: venue, error: vErr } = await supabase
       .from('venues')
-      .select('id, account_id, name, manager_name, manager_email, inbound_address, subscription_tier, accounts(id, subscription_status, billing_email)')
+      .select('id, account_id, name, manager_name, manager_email, inbound_address, accounts(id, subscription_status, billing_email, subscription_tier)')
       .eq('setup_token', setupToken)
       .maybeSingle();
 
@@ -109,7 +109,7 @@ export default async function handler(req, res) {
         venueName: venue.name,
         contactName: venue.manager_name,
         inboundAddress: venue.inbound_address,
-        planKey: venue.subscription_tier || 'solo',
+        planKey: venue.accounts?.subscription_tier || 'solo',
         dashboardUrl: 'https://dashboard.hiretrial.com.au',
       });
       console.log('[post-payment] Welcome email sent:', venue.name);
