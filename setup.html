@@ -1934,7 +1934,7 @@ function onRunTestClick() {
     progress.tested = true;
     saveProgress();
     btn.disabled = false;
-    btn.textContent = 'Continue &rarr;';
+    btn.innerHTML = 'Continue &rarr;';
     btn.onclick = () => { setActiveSection(); };
   }, 3000);
 }
