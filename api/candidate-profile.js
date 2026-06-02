@@ -51,10 +51,10 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Profile not found' });
     }
 
-    // ─── 2. Load their scored assessments ───
+    // ─── 2. Load their scored assessments (now includes score + AI fields) ───
     const { data: assessments } = await supabase
       .from('assessments')
-      .select('id, role, tier, overall_score, scored_at')
+      .select('id, role, tier, overall_score, ai_summary, ai_strengths, ai_concerns, ai_risk_level, integrity_score, scored_at')
       .eq('candidate_id', candidate.id)
       .not('tier', 'is', null)
       .not('overall_score', 'is', null)
@@ -69,6 +69,11 @@ export default async function handler(req, res) {
           roleLabel: ROLE_LABELS[a.role] || a.role,
           tier: a.tier,
           level: getCandidateLevel(a.tier),
+          score: a.overall_score,
+          aiSummary: a.ai_summary || null,
+          aiStrengths: a.ai_strengths || [],
+          aiConcerns: a.ai_concerns || [],
+          integrityScore: a.integrity_score || null,
           scoredAt: a.scored_at
         };
       }
