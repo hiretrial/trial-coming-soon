@@ -368,6 +368,7 @@ function renderScores() {
         ${strengths.map(str => `<div class="score-list-item">${str}</div>`).join('')}
       </div>` : '';
 
+    const scoreVal = (s.score !== null && s.score !== undefined) ? s.score : 0;
     return `
     <div class="score-card">
       <div class="score-card-header">
@@ -376,17 +377,16 @@ function renderScores() {
           <div class="score-card-level">${s.level}</div>
         </div>
         <div style="text-align:right;flex-shrink:0">
-          <div class="score-number">${s.score || '—'}<span class="score-denom">${s.score ? '/100' : ''}</span></div>
+          <div class="score-number">${scoreVal}<span class="score-denom">/100</span></div>
         </div>
       </div>
-      <div class="score-bar-wrap"><div class="score-bar" style="width:${s.score || 0}%"></div></div>
-      ${strengthsHtml}
-      <div class="score-band">
-        <div class="score-band-label">${bandLabel(s.score)}</div>
-        <div class="score-band-text">${bandText(s.score)}</div>
-      </div>
+      <div class="score-bar-wrap"><div class="score-bar" style="width:${scoreVal}%"></div></div>
       ${strengthsHtml}
       <div class="${validityClass}" style="margin-top:16px">${validityText}</div>
+    </div>
+    <div class="score-band">
+      <div class="score-band-label">${bandLabel(scoreVal)}</div>
+      <div class="score-band-text">${bandText(scoreVal)}</div>
     </div>`;
   }).join('');
 }
