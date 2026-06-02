@@ -87,7 +87,7 @@ html,body{
 }
 .page-title{
   font-family:'Playfair Display',Georgia,serif;
-  font-weight:800;font-size:clamp(30px,6vw,44px);
+  font-weight:800;font-size:clamp(36px,6vw,52px);
   line-height:1.1;letter-spacing:-1px;
   color:var(--off-white);margin-bottom:32px;
 }
@@ -96,8 +96,8 @@ html,body{
 /* ─── Score cards ─── */
 .scores-section{margin-bottom:40px}
 .section-heading{
-  font-size:11px;letter-spacing:0.22em;text-transform:uppercase;
-  color:var(--dim);font-weight:600;margin-bottom:16px;
+  font-size:13px;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--dim);font-weight:600;margin-bottom:20px;
 }
 .score-card{
   background:var(--gold-soft);
@@ -148,26 +148,37 @@ html,body{
   gap:16px;
   flex-wrap:nowrap;
 }
-.score-card-role{font-size:11px;color:var(--dim);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px}
+.score-card-role{font-size:12px;color:var(--dim);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px}
 .score-card-level{
   font-family:'Playfair Display',Georgia,serif;
-  font-size:24px;font-weight:700;color:var(--off-white);
+  font-size:30px;font-weight:700;color:var(--off-white);
   line-height:1.1;
 }
 .score-number{
   font-family:'Playfair Display',Georgia,serif;
-  font-size:48px;font-weight:800;color:var(--gold);
+  font-size:64px;font-weight:800;color:var(--gold);
   line-height:1;white-space:nowrap;
 }
-.score-denom{font-size:18px;color:var(--muted);font-weight:300}
-.score-bar-wrap{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;margin-bottom:4px}
-.score-bar{height:100%;border-radius:3px;background:var(--gold);transition:width 0.8s ease}
-.score-list-label{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
-.score-list-item{font-size:13.5px;color:var(--off-white);line-height:1.55;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.score-denom{font-size:22px;color:var(--muted);font-weight:300}
+.score-bar-wrap{height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;margin:20px 0 6px}
+.score-bar{height:100%;border-radius:4px;background:var(--gold);transition:width 0.8s ease}
+.score-list-label{font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+.score-list-item{font-size:15px;color:var(--off-white);line-height:1.6;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
 .score-list-item:last-child{border-bottom:none}
-.score-list-item::before{content:"→ ";color:var(--gold);font-size:11px}
-.score-validity{font-size:11px;color:var(--dim);letter-spacing:0.02em}
+.score-list-item::before{content:"→ ";color:var(--gold);font-size:12px}
+.score-validity{font-size:12px;color:var(--dim);letter-spacing:0.02em}
 .score-validity.fresh{color:var(--success)}
+
+/* ─── Score band explainer ─── */
+.score-band{
+  margin-top:20px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:20px 22px;
+}
+.score-band-label{font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:10px}
+.score-band-text{font-size:15px;color:var(--muted);line-height:1.7}
 
 /* ─── Toggle rows ─── */
 .toggles-section{margin-bottom:40px}
@@ -187,8 +198,8 @@ html,body{
   border-color:rgba(200,169,110,0.2);
 }
 .toggle-info{flex:1}
-.toggle-label{font-size:14px;font-weight:500;color:var(--off-white);margin-bottom:4px}
-.toggle-desc{font-size:12.5px;color:var(--dim);line-height:1.5}
+.toggle-label{font-size:16px;font-weight:500;color:var(--off-white);margin-bottom:6px}
+.toggle-desc{font-size:14px;color:var(--dim);line-height:1.6}
 
 .toggle-btn{
   position:relative;
@@ -370,12 +381,26 @@ function renderScores() {
       </div>
       <div class="score-bar-wrap"><div class="score-bar" style="width:${s.score || 0}%"></div></div>
       ${strengthsHtml}
-      <div style="margin-top:14px;font-size:13px;color:var(--dim);line-height:1.6">
-        Keep developing your hospitality knowledge and the next assessment will reflect that.
+      <div class="score-band">
+        <div class="score-band-label">${bandLabel(s.score)}</div>
+        <div class="score-band-text">${bandText(s.score)}</div>
       </div>
-      <div class="${validityClass}" style="margin-top:10px">${validityText}</div>
+      ${strengthsHtml}
+      <div class="${validityClass}" style="margin-top:16px">${validityText}</div>
     </div>`;
   }).join('');
+}
+
+function bandLabel(score) {
+  if (score >= 70) return 'Strong result';
+  if (score >= 40) return 'In the mix';
+  return 'Room to grow';
+}
+
+function bandText(score) {
+  if (score >= 70) return 'Your responses showed solid hospitality knowledge and good judgement. Venues using Trial. will see you near the top of their shortlist.';
+  if (score >= 40) return 'Your responses showed some good instincts but also some gaps. Venues will still see your submission — it's up to them whether they'd like to meet you.';
+  return 'This assessment didn't surface enough to recommend you for interview. That doesn't mean you're not a good fit — it means the responses didn't demonstrate it this time. You can reassess in the future.';
 }
 
 function renderToggles() {
