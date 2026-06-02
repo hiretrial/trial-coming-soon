@@ -132,6 +132,47 @@ html,body{
   line-height:1.6;
 }
 
+/* ─── Score breakdown ─── */
+.score-card{
+  background:var(--gold-soft);
+  border:1px solid rgba(200,169,110,0.2);
+  border-radius:12px;
+  padding:24px;
+  margin-bottom:16px;
+}
+.score-card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:16px;
+  gap:16px;
+}
+.score-card-role{font-size:13px;color:var(--muted);letter-spacing:0.04em;text-transform:uppercase;margin-bottom:6px}
+.score-card-level{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:22px;font-weight:700;color:var(--off-white);
+}
+.score-number{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:42px;font-weight:800;color:var(--gold);
+  line-height:1;white-space:nowrap;
+}
+.score-denom{font-size:16px;color:var(--muted);font-weight:300}
+.score-bar-wrap{margin:16px 0;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden}
+.score-bar{height:100%;border-radius:3px;background:var(--gold);transition:width 0.6s ease}
+.score-summary{font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:16px}
+.score-lists{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.score-list-label{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.score-list-item{font-size:13px;color:var(--off-white);line-height:1.5;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.score-list-item:last-child{border-bottom:none}
+.score-list-item::before{content:"→ ";color:var(--gold);font-size:11px}
+.score-validity{font-size:11px;color:var(--dim);margin-top:14px;letter-spacing:0.02em}
+.score-validity.fresh{color:var(--success)}
+@media(max-width:520px){
+  .score-lists{grid-template-columns:1fr}
+  .score-card-header{flex-direction:column}
+}
+
 /* ─── Toggle rows ─── */
 .toggles-section{margin-bottom:40px}
 .toggle-row{
@@ -307,17 +348,46 @@ function renderScores() {
     container.innerHTML = `<div class="no-scores">No assessment results yet. Complete an assessment through a venue to see your results here.</div>`;
     return;
   }
-  container.innerHTML = state.scores.map(s => `
-    <div class="score-card">
+  container.innerHTML = state.scores.map(s => {
+    const strengths = (s.aiStrengths || []).slice(0, 3);
+    const concerns = (s.aiConcerns || []).slice(0, 3);
+    const validityClass = state.candidate.scoresFresh ? 'score-validity fresh' : 'score-validity';
+    const validityText = state.candidate.scoresFresh
+      ? `Valid until ${formatDate(state.candidate.assessmentValidUntil)}`
+      : `Assessed ${formatDate(s.scoredAt)} — reassessment may be required`;
+
+    const strengthsHtml = strengths.length ? `
       <div>
-        <div class="score-card-role">${s.roleLabel}</div>
-        <div class="${state.candidate.scoresFresh ? 'score-fresh' : 'score-stale'}">
-          ${state.candidate.scoresFresh ? `Valid until ${formatDate(state.candidate.assessmentValidUntil)}` : `Assessed ${formatDate(s.scoredAt)} — reassessment may be required`}
+        <div class="score-list-label">Strengths</div>
+        ${strengths.map(str => `<div class="score-list-item">${str}</div>`).join('')}
+      </div>` : '';
+
+    const concernsHtml = concerns.length ? `
+      <div>
+        <div class="score-list-label">Areas to develop</div>
+        ${concerns.map(c => `<div class="score-list-item">${c}</div>`).join('')}
+      </div>` : '';
+
+    const listsHtml = (strengthsHtml || concernsHtml) ? `
+      <div class="score-lists">${strengthsHtml}${concernsHtml}</div>` : '';
+
+    return `
+    <div class="score-card">
+      <div class="score-card-header">
+        <div>
+          <div class="score-card-role">${s.roleLabel}</div>
+          <div class="score-card-level">${s.level}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="score-number">${s.score}<span class="score-denom">/100</span></div>
         </div>
       </div>
-      <div class="score-card-level">${s.level}</div>
-    </div>
-  `).join('');
+      <div class="score-bar-wrap"><div class="score-bar" style="width:${s.score}%"></div></div>
+      ${s.aiSummary ? `<div class="score-summary">${s.aiSummary}</div>` : ''}
+      ${listsHtml}
+      <div class="${validityClass}">${validityText}</div>
+    </div>`;
+  }).join('');
 }
 
 function renderToggles() {
