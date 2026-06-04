@@ -53,19 +53,19 @@ const PLAN_LABELS: Record<PlanSize, string> = {
   enterprise: 'Enterprise',
 };
 
-// Pricing — matches PRICING const in hq.html modal (single source of truth lives there).
-const PRICING: Record<'founding' | 'standard', Record<PlanSize, { monthly: number | null; perHire: number | null }>> = {
+// Pricing — subscription-only model (per-hire fees removed 4 June 2026).
+const PRICING: Record<'founding' | 'standard', Record<PlanSize, { monthly: number | null }>> = {
   founding: {
-    solo:       { monthly: 89.99,  perHire: 99 },
-    starter:    { monthly: 99.99,  perHire: 99 },
-    growth:     { monthly: 109.99, perHire: 99 },
-    enterprise: { monthly: null,   perHire: null },
+    solo:       { monthly: 89.99  },
+    starter:    { monthly: 99.99  },
+    growth:     { monthly: 109.99 },
+    enterprise: { monthly: null   },
   },
   standard: {
-    solo:       { monthly: 129.99, perHire: 199 },
-    starter:    { monthly: 249.00, perHire: 199 },
-    growth:     { monthly: 499.00, perHire: 199 },
-    enterprise: { monthly: null,   perHire: null },
+    solo:       { monthly: 129.99 },
+    starter:    { monthly: 249.00 },
+    growth:     { monthly: 499.00 },
+    enterprise: { monthly: null   },
   },
 };
 
@@ -186,8 +186,8 @@ async function sendWelcomeEmail(opts: {
 
   // Pricing line (skip if enterprise/null)
   const priceLine =
-    price.monthly !== null && price.perHire !== null
-      ? `${fmtAud(price.monthly)} + GST per month · ${fmtAud(price.perHire)} + GST per retained hire`
+    price.monthly !== null
+      ? `${fmtAud(price.monthly)} + GST per month · unlimited assessments, unlimited candidates`
       : "Custom pricing — we'll be in touch separately to walk through enterprise terms";
 
   // Plain-text fallback
